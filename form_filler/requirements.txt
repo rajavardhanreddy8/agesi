@@ -1,0 +1,11 @@
+flask
+playwright
+mammoth
+flask-cors
+mysql-connector-python
+bcrypt
+pyjwt
+cryptography
+python-dotenv
+razorpay
+pymupdf
