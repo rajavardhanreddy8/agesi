@@ -1,23 +1,14 @@
 # Dependencies
 node_modules/
 __pycache__/
-*.py[cod]
+*.pyc
+.venv/
+venv/
 
-# Environment files (SENSITIVE - DO NOT COMMIT!)
+# Environment files with secrets
 .env
-.env.local
-.env.production
-
-# Build outputs
-dist/
-build/
-*.egg-info/
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
+*.env
+!.env.example
 
 # Logs
 *.log
@@ -25,13 +16,30 @@ automation.log
 
 # Temporary files
 temp_uploads/
-screenshots/
-*.png
-*.pdf
+*.tmp
+*.bak
+
+# Build outputs
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
 
 # OS files
 .DS_Store
 Thumbs.db
 
-# Debug files
-debug_*.py
+# Secrets and credentials
+token.json
+credentials.json
+*.key
+*.pem
+
+# Screenshots (except proof)
+error_*.png
+screenshots/error_*.png
+
+# Test files
+test_*.pdf

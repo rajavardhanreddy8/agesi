@@ -18,26 +18,45 @@ export const RegisterForm = () => {
         studentPhone: '',
         studentEmail: '',
 
-        // Parent 1
-        parent1Name: '',
-        parent1Email: '',
-        parent1Phone: '',
-        parent1Relation: 'Father',
+        // Mother Details
+        motherName: '',
+        motherEmail: '',
+        motherPhone: '',
 
-        // Parent 2 (optional)
-        parent2Name: '',
-        parent2Email: '',
-        parent2Phone: '',
-        parent2Relation: 'Mother',
+        // Father Details
+        fatherName: '',
+        fatherEmail: '',
+        fatherPhone: '',
 
         // Signature
-        signatureData: ''
+        signatureData: '',
+        signaturePreview: null
     });
 
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [verifyingCredentials, setVerifyingCredentials] = useState(false);
+    const [signatureFile, setSignatureFile] = useState(null);
+
+    // Handle signature file upload
+    const handleSignatureUpload = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        setSignatureFile(file);
+
+        // Convert to base64 for preview and storage
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setFormData(prev => ({
+                ...prev,
+                signatureData: reader.result,
+                signaturePreview: reader.result
+            }));
+        };
+        reader.readAsDataURL(file);
+    };
 
     const handleChange = (e) => {
         setFormData({
@@ -72,14 +91,14 @@ export const RegisterForm = () => {
                 specialization: formData.specialization,
                 student_phone: formData.studentPhone,
                 student_email: formData.studentEmail || null,
-                parent1_name: formData.parent1Name,
-                parent1_email: formData.parent1Email,
-                parent1_phone: formData.parent1Phone,
-                parent1_relation: formData.parent1Relation,
-                parent2_name: formData.parent2Name || null,
-                parent2_email: formData.parent2Email || null,
-                parent2_phone: formData.parent2Phone || null,
-                parent2_relation: formData.parent2Relation,
+                parent1_name: formData.fatherName,
+                parent1_email: formData.fatherEmail,
+                parent1_phone: formData.fatherPhone,
+                parent1_relation: 'Father',
+                parent2_name: formData.motherName,
+                parent2_email: formData.motherEmail,
+                parent2_phone: formData.motherPhone,
+                parent2_relation: 'Mother',
                 signature_data: formData.signatureData || null
             });
 
@@ -101,9 +120,6 @@ export const RegisterForm = () => {
     return (
         <div className="register-container">
             <h2>Register for Outing Automation</h2>
-
-            {error && <div className="alert alert-error" style={{ color: 'red' }}>{error}</div>}
-            {success && <div className="alert alert-success" style={{ color: 'green' }}>{success}</div>}
 
             <form onSubmit={handleSubmit}>
                 {/* Document Upload Section */}
@@ -139,14 +155,17 @@ export const RegisterForm = () => {
                                     specialization: data.specialization || prev.specialization,
                                     studentPhone: data.studentPhone || prev.studentPhone,
                                     studentEmail: data.studentEmail || prev.studentEmail,
-                                    parent1Name: data.parent1Name || prev.parent1Name,
-                                    parent1Email: data.parent1Email || prev.parent1Email,
-                                    parent1Phone: data.parent1Phone || prev.parent1Phone,
-                                    parent2Name: data.parent2Name || prev.parent2Name,
-                                    parent2Email: data.parent2Email || prev.parent2Email,
-                                    parent2Phone: data.parent2Phone || prev.parent2Phone,
+                                    fatherName: data.fatherName || prev.fatherName,
+                                    fatherEmail: data.fatherEmail || prev.fatherEmail,
+                                    fatherPhone: data.fatherPhone || prev.fatherPhone,
+                                    motherName: data.motherName || prev.motherName,
+                                    motherEmail: data.motherEmail || prev.motherEmail,
+                                    motherPhone: data.motherPhone || prev.motherPhone,
+                                    signatureData: data.signatureData || prev.signatureData,
+                                    signaturePreview: data.signatureData || prev.signaturePreview,
                                 }));
-                                setSuccess('Data extracted successfully! Please review below.');
+                                const signatureMsg = data.signatureData ? ' Signature also extracted!' : '';
+                                setSuccess('Data extracted successfully!' + signatureMsg + ' Please review below.');
                             } catch (err) {
                                 setError('Failed to extract data: ' + err.message);
                             } finally {
@@ -283,52 +302,114 @@ export const RegisterForm = () => {
                     </div>
                 </section>
 
-                {/* Parent/Guardian 1 */}
+                {/* Mother Details */}
                 <section>
-                    <h3>Parent/Guardian 1 Details</h3>
+                    <h3>Mother's Details</h3>
 
                     <div className="form-group">
-                        <label>Name *</label>
+                        <label>Mother's Name *</label>
                         <input
                             type="text"
-                            name="parent1Name"
-                            value={formData.parent1Name}
+                            name="motherName"
+                            value={formData.motherName}
                             onChange={handleChange}
                             required
+                            placeholder="Mother's full name"
                         />
                     </div>
 
                     <div className="form-group">
-                        <label>Relation *</label>
-                        <select name="parent1Relation" value={formData.parent1Relation} onChange={handleChange}>
-                            <option value="Father">Father</option>
-                            <option value="Mother">Mother</option>
-                            <option value="Guardian">Guardian</option>
-                        </select>
-                    </div>
-
-                    <div className="form-group">
-                        <label>Email *</label>
+                        <label>Mother's Email *</label>
                         <input
                             type="email"
-                            name="parent1Email"
-                            value={formData.parent1Email}
+                            name="motherEmail"
+                            value={formData.motherEmail}
                             onChange={handleChange}
                             required
+                            placeholder="mother@email.com"
                         />
                     </div>
 
                     <div className="form-group">
-                        <label>Phone *</label>
+                        <label>Mother's Phone *</label>
                         <input
                             type="tel"
-                            name="parent1Phone"
-                            value={formData.parent1Phone}
+                            name="motherPhone"
+                            value={formData.motherPhone}
                             onChange={handleChange}
                             required
                             pattern="[0-9]{10}"
+                            placeholder="10-digit mobile number"
                         />
                     </div>
+                </section>
+
+                {/* Father Details */}
+                <section>
+                    <h3>Father's Details</h3>
+
+                    <div className="form-group">
+                        <label>Father's Name *</label>
+                        <input
+                            type="text"
+                            name="fatherName"
+                            value={formData.fatherName}
+                            onChange={handleChange}
+                            required
+                            placeholder="Father's full name"
+                        />
+                    </div>
+
+                    <div className="form-group">
+                        <label>Father's Email *</label>
+                        <input
+                            type="email"
+                            name="fatherEmail"
+                            value={formData.fatherEmail}
+                            onChange={handleChange}
+                            required
+                            placeholder="father@email.com"
+                        />
+                    </div>
+
+                    <div className="form-group">
+                        <label>Father's Phone *</label>
+                        <input
+                            type="tel"
+                            name="fatherPhone"
+                            value={formData.fatherPhone}
+                            onChange={handleChange}
+                            required
+                            pattern="[0-9]{10}"
+                            placeholder="10-digit mobile number"
+                        />
+                    </div>
+                </section>
+
+                {/* Signature Upload */}
+                <section>
+                    <h3>Your Signature</h3>
+                    <p className="text-sm text-gray-600 mb-3">Upload an image of your signature (PNG or JPG)</p>
+
+                    <div className="form-group">
+                        <input
+                            type="file"
+                            accept="image/png, image/jpeg"
+                            onChange={handleSignatureUpload}
+                            className="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer"
+                        />
+                    </div>
+
+                    {formData.signaturePreview && (
+                        <div className="mt-3 p-3 border rounded bg-gray-50">
+                            <p className="text-sm font-medium mb-2">Signature Preview:</p>
+                            <img
+                                src={formData.signaturePreview}
+                                alt="Signature preview"
+                                style={{ maxHeight: '80px', border: '1px solid #ccc', background: '#fff', padding: '5px' }}
+                            />
+                        </div>
+                    )}
                 </section>
 
                 <button
@@ -341,6 +422,9 @@ export const RegisterForm = () => {
                         isLoading ? 'Registering...' :
                             'Register'}
                 </button>
+
+                {error && <div className="alert alert-error" style={{ color: 'red', marginTop: '15px', padding: '10px', background: '#ffe6e6', borderRadius: '5px' }}>{error}</div>}
+                {success && <div className="alert alert-success" style={{ color: 'green', marginTop: '15px', padding: '10px', background: '#e6ffe6', borderRadius: '5px' }}>{success}</div>}
 
                 <p className="text-center">
                     Already have an account? <a href="/login">Login here</a>

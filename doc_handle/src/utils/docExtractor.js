@@ -43,12 +43,12 @@ export const extractRegistrationData = async (file) => {
             - specialization (e.g. CSE)
             - studentPhone
             - studentEmail
-            - parent1Name (Father/Guardian Name)
-            - parent1Email
-            - parent1Phone
-            - parent2Name (Mother Name - optional)
-            - parent2Email
-            - parent2Phone
+            - fatherName (Father's Name)
+            - fatherEmail (Father's Email)
+            - fatherPhone (Father's Phone)
+            - motherName (Mother's Name)
+            - motherEmail (Mother's Email)
+            - motherPhone (Mother's Phone)
 
             If a field is not found, use empty string "".
             
@@ -75,7 +75,29 @@ export const extractRegistrationData = async (file) => {
             throw new Error("Could not parse AI response.");
         }
 
-        return JSON.parse(jsonMatch[0]);
+        const extractedData = JSON.parse(jsonMatch[0]);
+
+        // 3. Extract signature image from document
+        try {
+            const htmlResult = await mammoth.convertToHtml({ arrayBuffer });
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(htmlResult.value, 'text/html');
+            const images = doc.querySelectorAll('img');
+
+            // Find the last image (usually the signature at the bottom)
+            if (images.length > 0) {
+                const lastImage = images[images.length - 1];
+                const signatureSrc = lastImage.getAttribute('src');
+                if (signatureSrc && signatureSrc.startsWith('data:image')) {
+                    extractedData.signatureData = signatureSrc;
+                    console.log('Signature extracted from document');
+                }
+            }
+        } catch (imgErr) {
+            console.warn('Could not extract signature image:', imgErr);
+        }
+
+        return extractedData;
 
     } catch (error) {
         console.error("Extraction error:", error);

@@ -1,21 +1,47 @@
 """
 Microsoft Forms Automation for Weekend Outing Submission
 Handles authentication, form filling, PDF upload, and submission
+With human-like random delays to avoid detection
 """
 
 from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeout
 import time
+import random
 import json
 import os
 from datetime import datetime
 from pathlib import Path
 
 class MSFormAutomation:
-    def __init__(self, headless=False):
+    def __init__(self, headless=False, min_delay=180, max_delay=420):
+        """
+        Initialize automation with configurable delays.
+        min_delay: minimum delay in seconds (default 3 minutes = 180s)
+        max_delay: maximum delay in seconds (default 7 minutes = 420s)
+        """
         self.headless = headless
         self.browser = None
         self.context = None
         self.page = None
+        self.min_delay = min_delay  # 3 minutes
+        self.max_delay = max_delay  # 7 minutes
+    
+    def human_delay(self, action_name="action", short=False):
+        """
+        Add random human-like delay between actions.
+        short=True: Small delay (5-15 seconds) for between field fills
+        short=False: Long delay (3-7 minutes) for between major sections
+        """
+        if short:
+            delay = random.uniform(5, 15)  # 5-15 seconds between fields
+        else:
+            delay = random.uniform(self.min_delay, self.max_delay)  # 3-7 minutes
+        
+        minutes = int(delay // 60)
+        seconds = int(delay % 60)
+        print(f"⏳ Human-like delay before {action_name}: {minutes}m {seconds}s")
+        time.sleep(delay)
+        return delay
         
     def start_browser(self):
         """Initialize browser with optimal settings"""
@@ -126,6 +152,7 @@ class MSFormAutomation:
     def fill_form(self, form_data):
         """
         Fill all form fields with provided data
+        Includes random micro-delays between fields to simulate human behavior
         """
         try:
             print("📝 Starting form filling...")
@@ -141,18 +168,24 @@ class MSFormAutomation:
             def fill_idx(idx, val):
                 try:
                     if inputs.nth(idx).is_visible():
+                        # Random micro-delay before each field (2-8 seconds)
+                        delay = random.uniform(2, 8)
+                        time.sleep(delay)
                         inputs.nth(idx).fill(val)
-                        print(f"Filled input index {idx} with {val}")
+                        print(f"Filled input index {idx} with {val} (waited {delay:.1f}s)")
                 except Exception as e:
                     print(f"Skipping input {idx}: {e}")
 
             def click_radio(text):
                 try:
+                    # Random micro-delay before clicking (2-6 seconds)
+                    delay = random.uniform(2, 6)
+                    time.sleep(delay)
                     # Try span locators first (common in MS Forms)
                     el = self.page.locator(f'span:has-text("{text}")').first
                     if el.count() > 0:
                         el.click()
-                        print(f"Clicked radio/text: {text}")
+                        print(f"Clicked radio/text: {text} (waited {delay:.1f}s)")
                     else:
                          # Fallback to div role=radio
                         el = self.page.locator(f'div[role="radio"]:has-text("{text}")').first
@@ -278,17 +311,19 @@ class MSFormAutomation:
     
     def run_automation(self, form_url, email, password, form_data, pdf_path):
         """
-        Complete automation workflow
+        Complete automation workflow with human-like delays
         """
         try:
             print("=" * 60)
             print("🤖 STARTING MICROSOFT FORMS AUTOMATION")
             print("=" * 60)
+            print(f"⏱️  Human-like delays: {self.min_delay//60}-{self.max_delay//60} minutes between steps")
             
             # Step 1: Start browser
             self.start_browser()
             
-            # Step 2: Navigate to form
+            # Step 2: Navigate to form (with initial delay to simulate reading email)
+            self.human_delay("opening form link")
             print(f"\n📍 Navigating to form: {form_url}")
             self.page.goto(form_url)
             time.sleep(3)
@@ -298,15 +333,24 @@ class MSFormAutomation:
             print("-" * 60)
             self.microsoft_login(email, password)
             
+            # Delay after login - simulating user reviewing the form
+            self.human_delay("reviewing form")
+            
             # Step 4: Fill form
             print("\n📝 FORM FILLING PHASE")
             print("-" * 60)
             self.fill_form(form_data)
             
+            # Delay after filling - simulating user reviewing entries
+            self.human_delay("reviewing filled data")
+            
             # Step 5: Upload PDF
             print("\n📤 PDF UPLOAD PHASE")
             print("-" * 60)
             self.upload_pdf(pdf_path)
+            
+            # Delay after upload - simulating user waiting for upload confirmation
+            self.human_delay("confirming upload", short=True)  # Shorter delay for this
             
             # Step 6: Submit
             print("\n🚀 SUBMISSION PHASE")

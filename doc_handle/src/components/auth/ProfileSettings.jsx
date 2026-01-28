@@ -1,56 +1,366 @@
+
 import React, { useState, useEffect } from 'react';
-import { auth } from '../../utils/auth';
+import api from '../../utils/api';
 
 export const ProfileSettings = () => {
-    const [profile, setProfile] = useState(null);
-    const [isEditing, setIsEditing] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
-    const [message, setMessage] = useState('');
+    const [formData, setFormData] = useState({
+        // Authentication (readonly mostly, except Outlook PWD)
+        email: '',
+        outlookPassword: '', // Only for updating
 
+        // Personal Info
+        fullName: '',
+        rollNumber: '',
+        school: 'School of Technology',
+        academicYear: '2024-2028',
+        programme: 'B.Tech',
+        specialization: '',
+        studentPhone: '',
+        studentEmail: '',
+
+        // Mother Details
+        motherName: '',
+        motherEmail: '',
+        motherPhone: '',
+
+        // Father Details
+        fatherName: '',
+        fatherEmail: '',
+        fatherPhone: '',
+
+        // Signature
+        signatureData: '',
+        signaturePreview: null
+    });
+
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
+    const [loadingProfile, setLoadingProfile] = useState(true);
+
+    // Initial Load
     useEffect(() => {
-        fetchProfile();
+        loadProfile();
     }, []);
 
-    const fetchProfile = async () => {
+    const loadProfile = async () => {
         try {
-            const result = await auth.getProfile();
-            if (result.success) {
-                setProfile(result.profile);
+            const res = await api.get('/profile');
+            if (res.data.success) {
+                const p = res.data.profile;
+                setFormData(prev => ({
+                    ...prev,
+                    email: p.email || '',
+                    fullName: p.full_name || '',
+                    rollNumber: p.roll_number || '',
+                    school: p.school || 'School of Technology',
+                    academicYear: p.academic_year || '2024-2028',
+                    programme: p.programme || 'B.Tech',
+                    specialization: p.specialization || '',
+                    studentPhone: p.student_phone || '',
+                    studentEmail: p.student_email || p.email || '', // fallback to main email
+
+                    fatherName: p.parent1_name || '',
+                    fatherEmail: p.parent1_email || '',
+                    fatherPhone: p.parent1_phone || '',
+
+                    motherName: p.parent2_name || '',
+                    motherEmail: p.parent2_email || '',
+                    motherPhone: p.parent2_phone || '',
+
+                    signatureData: p.signature_data || '',
+                    signaturePreview: p.signature_data || null
+                }));
+            }
+        } catch (e) {
+            setError('Failed to load profile data.');
+        } finally {
+            setLoadingProfile(false);
+        }
+    };
+
+    const handleSignatureUpload = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setFormData(prev => ({
+                ...prev,
+                signatureData: reader.result,
+                signaturePreview: reader.result
+            }));
+        };
+        reader.readAsDataURL(file);
+    };
+
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError('');
+        setSuccess('');
+        setIsLoading(true);
+
+        try {
+            // Map frontend state to API expected fields
+            const payload = {
+                full_name: formData.fullName,
+                roll_number: formData.rollNumber,
+                school: formData.school,
+                academic_year: formData.academicYear,
+                programme: formData.programme,
+                specialization: formData.specialization,
+                student_phone: formData.studentPhone,
+                student_email: formData.studentEmail,
+
+                parent1_name: formData.fatherName,
+                parent1_email: formData.fatherEmail,
+                parent1_phone: formData.fatherPhone,
+
+                parent2_name: formData.motherName,
+                parent2_email: formData.motherEmail,
+                parent2_phone: formData.motherPhone,
+
+                signature_data: formData.signatureData,
+                outlook_password: formData.outlookPassword // Will only update if not empty
+            };
+
+            const res = await api.put('/profile', payload);
+            if (res.data.success) {
+                setSuccess('Profile updated successfully!');
+                setFormData(prev => ({ ...prev, outlookPassword: '' })); // Clear password field for security
+                // Optionally reload or just stay put
+                window.scrollTo(0, 0);
             }
         } catch (err) {
-            console.error('Failed to fetch profile:', err);
+            setError(err.response?.data?.error || 'Failed to update profile.');
+            window.scrollTo(0, 0);
         } finally {
             setIsLoading(false);
         }
     };
 
-    if (isLoading) return <div>Loading profile...</div>;
-    if (!profile) return <div>Profile not found</div>;
+    if (loadingProfile) return <div className="text-center p-8 text-white">Loading profile...</div>;
 
     return (
-        <div className="profile-settings">
-            <h2>Profile Settings</h2>
+        <div className="register-container" style={{ minHeight: 'auto', borderRadius: '16px' }}>
+            <h2>Edit Profile</h2>
 
-            {message && <div className="alert">{message}</div>}
+            <form onSubmit={handleSubmit}>
+                {/* Document Upload Section */}
+                <div className="mb-8 p-6 bg-indigo-50 rounded-lg border-2 border-dashed border-indigo-300">
+                    <div className="flex items-center gap-2 mb-3">
+                        <span className="text-xl">📄</span>
+                        <h3 className="text-lg font-semibold text-gray-800">Auto-Update from Document</h3>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-4">
+                        Upload a new ID card or form to auto-update your details.
+                    </p>
 
-            <div className="profile-info">
-                <h3>Personal Information</h3>
-                <p><strong>Name:</strong> {profile.full_name}</p>
-                <p><strong>Roll Number:</strong> {profile.roll_number}</p>
-                <p><strong>Email:</strong> {profile.email}</p>
-                <p><strong>School:</strong> {profile.school}</p>
-                <p><strong>Programme:</strong> {profile.programme}</p>
-                <p><strong>Specialization:</strong> {profile.specialization}</p>
+                    <input
+                        type="file"
+                        accept=".docx"
+                        onChange={async (e) => {
+                            const file = e.target.files[0];
+                            if (!file) return;
 
-                <p><strong>Student Phone:</strong> {profile.student_phone}</p>
-                <p><strong>Parent Name:</strong> {profile.parent1_name}</p>
-                <p><strong>Parent Email:</strong> {profile.parent1_email}</p>
-                <p><strong>Parent Phone:</strong> {profile.parent1_phone}</p>
+                            setIsLoading(true);
+                            setSuccess('Extracting data from document...');
+                            try {
+                                const { extractRegistrationData } = await import('../../utils/docExtractor');
+                                const data = await extractRegistrationData(file);
 
-                <button onClick={() => alert("Edit not implemented yet")}>
-                    Edit Profile
+                                setFormData(prev => ({
+                                    ...prev,
+                                    fullName: data.fullName || prev.fullName,
+                                    rollNumber: data.rollNumber || prev.rollNumber,
+                                    school: data.school || prev.school,
+                                    academicYear: data.academicYear || prev.academicYear,
+                                    programme: data.programme || prev.programme,
+                                    specialization: data.specialization || prev.specialization,
+                                    studentPhone: data.studentPhone || prev.studentPhone,
+                                    studentEmail: data.studentEmail || prev.studentEmail,
+                                    fatherName: data.fatherName || prev.fatherName,
+                                    fatherEmail: data.fatherEmail || prev.fatherEmail,
+                                    fatherPhone: data.fatherPhone || prev.fatherPhone,
+                                    motherName: data.motherName || prev.motherName,
+                                    motherEmail: data.motherEmail || prev.motherEmail,
+                                    motherPhone: data.motherPhone || prev.motherPhone,
+                                    signatureData: data.signatureData || prev.signatureData,
+                                    signaturePreview: data.signatureData || prev.signaturePreview,
+                                }));
+                                const signatureMsg = data.signatureData ? ' Signature also found!' : '';
+                                setSuccess('Data extracted! Review changes below.' + signatureMsg);
+                            } catch (err) {
+                                setError('Extraction failed: ' + err.message);
+                            } finally {
+                                setIsLoading(false);
+                            }
+                        }}
+                        className="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer"
+                    />
+                </div>
+
+                {/* Login Credentials (Update Only) */}
+                <section>
+                    <h3>Account Credentials</h3>
+
+                    <div className="form-group">
+                        <label>College Email (Read-Only)</label>
+                        <input
+                            type="email"
+                            value={formData.email}
+                            disabled
+                            style={{ opacity: 0.7, cursor: 'not-allowed' }}
+                        />
+                    </div>
+
+                    <div className="form-group">
+                        <label>Update Outlook Password</label>
+                        <input
+                            type="password"
+                            name="outlookPassword"
+                            value={formData.outlookPassword}
+                            onChange={handleChange}
+                            placeholder="Leave empty to keep current password"
+                        />
+                        <small className="form-text" style={{ display: 'block', color: '#666' }}>
+                            Update this ONLY if you changed your actual Outlook password.
+                        </small>
+                    </div>
+                </section>
+
+                {/* Personal Information */}
+                <section>
+                    <h3>Personal Information</h3>
+
+                    <div className="form-group">
+                        <label>Full Name</label>
+                        <input type="text" name="fullName" value={formData.fullName} onChange={handleChange} required />
+                    </div>
+
+                    <div className="form-group">
+                        <label>Roll Number</label>
+                        <input type="text" name="rollNumber" value={formData.rollNumber} onChange={handleChange} required />
+                    </div>
+
+                    <div className="form-group">
+                        <label>School</label>
+                        <select name="school" value={formData.school} onChange={handleChange} required>
+                            <option value="School of Technology">School of Technology</option>
+                            <option value="School of Business">School of Business</option>
+                            <option value="School of Law">School of Law</option>
+                            <option value="School of Arts and Design">School of Arts and Design</option>
+                            <option value="School of Liberal Arts and Humanities">School of Liberal Arts and Humanities</option>
+                            <option value="School of Architecture and Planning">School of Architecture and Planning</option>
+                            <option value="School of Sciences">School of Sciences</option>
+                        </select>
+                    </div>
+
+                    <div className="form-group">
+                        <label>Programme</label>
+                        <select name="programme" value={formData.programme} onChange={handleChange} required>
+                            <option value="B.Tech">B.Tech</option>
+                            <option value="BBA">BBA</option>
+                            <option value="B.Com">B.Com</option>
+                            <option value="BA LLB">BA LLB</option>
+                            <option value="BBA LLB">BBA LLB</option>
+                            <option value="B.Sc">B.Sc</option>
+                            <option value="BCA">BCA</option>
+                        </select>
+                    </div>
+
+                    <div className="form-group">
+                        <label>Specialization</label>
+                        <input type="text" name="specialization" value={formData.specialization} onChange={handleChange} required />
+                    </div>
+
+                    <div className="form-group">
+                        <label>Academic Year</label>
+                        <input type="text" name="academicYear" value={formData.academicYear} onChange={handleChange} required />
+                    </div>
+
+                    <div className="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" name="studentPhone" value={formData.studentPhone} onChange={handleChange} required pattern="[0-9]{10}" />
+                    </div>
+                </section>
+
+                {/* Mother Details */}
+                <section>
+                    <h3>Mother's Details</h3>
+                    <div className="form-group">
+                        <label>Name</label>
+                        <input type="text" name="motherName" value={formData.motherName} onChange={handleChange} required />
+                    </div>
+                    <div className="form-group">
+                        <label>Email</label>
+                        <input type="email" name="motherEmail" value={formData.motherEmail} onChange={handleChange} required />
+                    </div>
+                    <div className="form-group">
+                        <label>Phone</label>
+                        <input type="tel" name="motherPhone" value={formData.motherPhone} onChange={handleChange} required pattern="[0-9]{10}" />
+                    </div>
+                </section>
+
+                {/* Father Details */}
+                <section>
+                    <h3>Father's Details</h3>
+                    <div className="form-group">
+                        <label>Name</label>
+                        <input type="text" name="fatherName" value={formData.fatherName} onChange={handleChange} required />
+                    </div>
+                    <div className="form-group">
+                        <label>Email</label>
+                        <input type="email" name="fatherEmail" value={formData.fatherEmail} onChange={handleChange} required />
+                    </div>
+                    <div className="form-group">
+                        <label>Phone</label>
+                        <input type="tel" name="fatherPhone" value={formData.fatherPhone} onChange={handleChange} required pattern="[0-9]{10}" />
+                    </div>
+                </section>
+
+                {/* Signature Upload */}
+                <section>
+                    <h3>Your Signature</h3>
+                    <p className="text-sm text-gray-600 mb-3">Upload a new signature (PNG/JPG) to update.</p>
+
+                    <div className="form-group">
+                        <input
+                            type="file"
+                            accept="image/png, image/jpeg"
+                            onChange={handleSignatureUpload}
+                            className="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer"
+                        />
+                    </div>
+
+                    {formData.signaturePreview && (
+                        <div className="mt-3 p-3 border rounded bg-gray-50">
+                            <p className="text-sm font-medium mb-2">Current Signature:</p>
+                            <img
+                                src={formData.signaturePreview?.startsWith('signatures/') ? `http://localhost:5000/${formData.signaturePreview}` : formData.signaturePreview}
+                                alt="Signature preview"
+                                style={{ maxHeight: '80px', border: '1px solid #ccc', background: '#fff', padding: '5px' }}
+                            />
+                        </div>
+                    )}
+                </section>
+
+                <button
+                    type="submit"
+                    className="btn-primary" // Reuse class from Register
+                    disabled={isLoading}
+                    style={{ marginTop: '20px', width: '100%', padding: '15px' }}
+                >
+                    {isLoading ? 'Updating...' : 'Update Profile'}
                 </button>
-            </div>
+
+                {error && <div className="alert alert-error" style={{ color: 'red', marginTop: '15px', padding: '10px', background: '#ffe6e6', borderRadius: '5px' }}>{error}</div>}
+                {success && <div className="alert alert-success" style={{ color: 'green', marginTop: '15px', padding: '10px', background: '#e6ffe6', borderRadius: '5px' }}>{success}</div>}
+            </form>
         </div>
     );
 };

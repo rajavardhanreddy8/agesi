@@ -1,0 +1,17 @@
+[build]
+builder = "nixpacks"
+
+[deploy]
+numReplicas = 1
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 3
+
+[[services]]
+name = "backend"
+root = "form_filler"
+
+[[services]]
+name = "mail-agent"
+root = "mail_agent"
+# Schedule: Daily at 7 AM IST (1:30 AM UTC)
+cronSchedule = "30 1 * * *"

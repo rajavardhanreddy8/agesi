@@ -100,7 +100,7 @@ const SubscriptionPlans = () => {
 
                             <h2 className="text-2xl font-bold text-white mb-2">{plan.name}</h2>
                             <div className="text-4xl font-bold text-indigo-400 mb-4">
-                                ₹{plan.price} <span className="text-lg text-gray-400 font-normal">/ semester</span>
+                                ₹{plan.price} <span className="text-lg text-gray-400 font-normal">/ {key === 'basic' ? 'month' : '4 months'}</span>
                             </div>
 
                             <ul className="space-y-4 mb-8">

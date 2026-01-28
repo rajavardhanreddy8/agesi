@@ -283,7 +283,8 @@ body {
   cursor: not-allowed;
 }
 
-.spinner {
+.spinner,
+.spin {
   animation: spin 1s linear infinite;
 }
 

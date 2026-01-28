@@ -13,26 +13,36 @@ def process_content_with_groq(email_content):
 
     prompt = f"""
     Analyze the following email content and extract:
-    1. The weekend dates mentions (e.g. Saturday and Sunday dates).
-    2. Any valid URL/link found in the email, especially permission form links.
+    1. The weekend start date (e.g. 30.01.2026). 
+    2. Any valid Microsoft Forms (forms.office.com) URL found.
 
     Email Subject: {email_content.get('subject')}
-    Email Body:
-    {email_content.get('body')}
+    Email Body Snippet:
+    {email_content.get('body')[:2000]}
 
-    Output ONLY the result in this format:
-    Weekend Dates: [Date 1, Date 2]
-    Link: [The Link]
+    Output PURE JSON ONLY:
+    {{
+        "start_date": "DD.MM.YYYY",
+        "form_link": "https://..."
+    }}
+    If not found, return null values. do NOT wrap in markdown code blocks.
     """
 
-    chat_completion = client.chat.completions.create(
-        messages=[
-            {
-                "role": "user",
-                "content": prompt,
-            }
-        ],
-        model="llama-3.3-70b-versatile",
-    )
-
-    return chat_completion.choices[0].message.content
+    try:
+        chat_completion = client.chat.completions.create(
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt,
+                }
+            ],
+            model="llama-3.3-70b-versatile",
+        )
+        # Clean response
+        content = chat_completion.choices[0].message.content
+        content = content.replace('```json', '').replace('```', '').strip()
+        import json
+        return json.loads(content)
+    except Exception as e:
+        print(f"Grok API Error: {e}")
+        return None

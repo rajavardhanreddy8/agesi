@@ -3,6 +3,7 @@ import { Download, FileText, Upload, Image, Brain, Loader2, Send, AlertCircle } 
 import * as mammoth from 'mammoth';
 import { auth } from '../utils/auth';
 import api from '../utils/api';
+import { generateOutingPDF } from '../utils/pdfGenerator';
 
 export default function OutingFormGenerator() {
     // Basic Form Data
@@ -104,122 +105,32 @@ export default function OutingFormGenerator() {
     };
 
     const generatePDF = () => {
-        const printWindow = window.open('', '', 'height=900,width=800');
-        // ... (Same HTML generation as before, reusing formData state)
-        // I will paste the HTML generation block here to ensure it works
-        const htmlContent = `
-      <!DOCTYPE html><html><head><title>Outing Form</title>
-      <style>
-          @media print { 
-              body { margin: 0; } 
-              .no-print { display: none; } 
-              * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-          }
-          body { font-family: 'Times New Roman', serif; padding: 40px; max-width: 800px; margin: 0 auto; color: #000; line-height: 1.5; font-size: 14pt; }
-          
-          /* Utility classes */
-          .bold { font-weight: bold; }
-          .center { text-align: center; }
-          .underline { text-decoration: underline; }
-          
-          /* Layout Tables */
-          table.main-layout { width: 100%; border-collapse: collapse; border: none; }
-          table.main-layout td { border: none; padding: 5px 0; vertical-align: top; }
-          
-          /* Data Table */
-          table.data-table { width: 100%; border-collapse: collapse; border: 2px solid #000; margin-top: 20px; }
-          table.data-table td { border: 1px solid #000; padding: 8px; vertical-align: middle; }
-          
-          .field-line { border-bottom: 1px solid #000; display: inline-block; min-width: 50px; text-align: center; font-weight: bold; padding: 0 5px; }
+        generateOutingPDF({
+            studentName: formData.studentName,
+            studentId: formData.studentId,
+            program: formData.program,
+            academicYear: formData.academicYear,
 
-      </style></head><body>
-        
-        <!-- Header -->
-        <div class="center" style="margin-bottom: 30px;">
-            <h1 style="font-size: 18pt; text-decoration: underline; margin: 0; text-transform: uppercase;">Undertaking by Parents</h1>
-        </div>
+            startDate: formData.startDate,
+            startTime: formData.startTime,
+            endDate: formData.endDate,
+            endTime: formData.endTime,
+            purpose: formData.purpose,
+            todayDate: formData.todayDate,
 
-        <!-- First Paragraph -->
-        <div style="text-align: justify; line-height: 2; margin-bottom: 20px;">
-            I hereby confirm that my ward Mr./Ms. <span class="field-line" style="min-width: 200px;">${formData.studentName}</span> 
-            bearing the student ID <span class="field-line" style="min-width: 120px;">${formData.studentId}</span> of 
-            <span class="field-line" style="min-width: 100px;">${formData.program}</span> program registered for the A.Y 
-            <span class="field-line" style="min-width: 80px;">${formData.academicYear}</span>.
-        </div>
+            fatherName: formData.fatherName,
+            fatherEmail: formData.fatherEmail,
+            fatherMobile: formData.fatherMobile,
 
-        <!-- Consent Header -->
-        <div class="center" style="margin: 20px 0;">
-            <h2 style="font-size: 16pt; text-decoration: underline; margin: 0;">Letter of Consent:</h2>
-        </div>
+            motherName: formData.motherName,
+            motherEmail: formData.motherEmail,
+            motherMobile: formData.motherMobile,
 
-        <!-- Consent Body -->
-        <div style="text-align: justify; margin-bottom: 20px;">
-            I, father/ mother/ guardian, of the student, batch, section, request you to permit <span class="bold">my child/ ward/ son/ daughter</span> to leave the campus <span class="bold">on date</span> ${formatDate(formData.startDate)} <span class="bold">and time</span> ${formData.startTime} for the purpose of <span class="bold">${formData.purpose}</span>. My <span class="bold">child/ward/son/ daughter</span> shall return on the <span class="bold">date</span> ${formatDate(formData.endDate)} <span class="bold">and time</span> ${formData.endTime}. (Signature below)
-        </div>
+            studentEmail: formData.studentEmail,
+            studentMobile: formData.studentMobile,
 
-        <!-- Footer Note -->
-        <div style="text-align: justify; margin-bottom: 20px;">
-            Outing & leave are permitted only during university leave declared for festivals, national holidays, and weekends.
-        </div>
-
-        <!-- Confirmation Header -->
-        <div class="center" style="margin: 20px 0;">
-            <h2 style="font-size: 16pt; text-decoration: underline; margin: 0;">The Parents/Guardian confirms the following,</h2>
-        </div>
-
-        <!-- List -->
-        <table class="main-layout">
-            <tr>
-                <td style="width: 30px;">1.</td>
-                <td>I assure you that it is my responsibility for my ward during the outgoings and have been informed of the same by the university officials.</td>
-            </tr>
-            <tr>
-                <td>2.</td>
-                <td>I firmly insist my ward not to deviate from the campus policy and adhere to the rules and regulations meticulously.</td>
-            </tr>
-        </table>
-
-        <!-- Signature Row (Using Table for alignment) -->
-        <table class="main-layout" style="margin-top: 40px; margin-bottom: 20px;">
-            <tr>
-                <td style="width: 50%; vertical-align: bottom;">
-                    <span class="bold">Date: ${formatDate(formData.todayDate)}</span>
-                </td>
-                <td style="width: 50%; text-align: right; vertical-align: bottom;">
-                    <div style="display: inline-block; text-align: center;">
-                        ${signatureImage ? `<img src="${signatureImage}" style="height: 50px; display: block; margin: 0 auto 5px auto;" />` : '<div style="height: 50px;"></div>'}
-                        <span class="bold">Parents Signature</span>
-                    </div>
-                </td>
-            </tr>
-        </table>
-
-        <!-- Details Table -->
-        <table class="data-table">
-            <tr style="height: 50px;">
-                <td style="width: 30%;">Father Name, Email & Mobile Number</td>
-                <td style="width: 25%;">${formData.fatherName || ''}</td>
-                <td style="width: 25%;">${formData.fatherEmail || ''}</td>
-                <td style="width: 20%;">${formData.fatherMobile || ''}</td>
-            </tr>
-            <tr style="height: 50px;">
-                <td>Mother Name, Email & Mobile Number</td>
-                <td>${formData.motherName || ''}</td>
-                <td>${formData.motherEmail || ''}</td>
-                <td>${formData.motherMobile || ''}</td>
-            </tr>
-            <tr style="height: 50px;">
-                <td>Student Name, Email & Mobile Number</td>
-                <td>${formData.studentName || ''}</td>
-                <td>${formData.studentEmail || ''}</td>
-                <td>${formData.studentMobile || ''}</td>
-            </tr>
-        </table>
-
-        <button class="no-print" onclick="window.print()">Print / Save as PDF</button>
-      </body></html>`;
-        printWindow.document.write(htmlContent);
-        printWindow.document.close();
+            signatureImage: signatureImage
+        });
     };
 
     const handleAutoSubmit = async () => {
