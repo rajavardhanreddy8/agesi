@@ -30,7 +30,7 @@ services:
       # - SMTP credentials
 
   # Frontend Service (React Static Site)
-  - type: static
+  - type: web
     name: outing-frontend
     env: static
     rootDir: doc_handle
