@@ -11,8 +11,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 import bcrypt
-import psycopg2
-import psycopg2.extras
+import mysql.connector
 from cryptography.fernet import Fernet
 from flask import Flask, request, jsonify
 from functools import wraps
@@ -35,16 +34,12 @@ JWT_SECRET = os.getenv('JWT_SECRET', 'your-secret-key-change-this')
 
 # Database connection
 def get_db_connection():
-    """Create database connection (PostgreSQL)"""
-    # Render provides DATABASE_URL
-    if os.getenv('DATABASE_URL'):
-        return psycopg2.connect(os.getenv('DATABASE_URL'))
-        
-    return psycopg2.connect(
+    """Create database connection"""
+    return mysql.connector.connect(
         host=os.getenv('DB_HOST', 'localhost'),
-        port=int(os.getenv('DB_PORT', 5432)),
-        dbname=os.getenv('DB_NAME', 'outing_automation'),
-        user=os.getenv('DB_USER', 'postgres'),
+        port=int(os.getenv('DB_PORT', 3306)),
+        database=os.getenv('DB_NAME', 'outing_automation'),
+        user=os.getenv('DB_USER', 'root'),
         password=os.getenv('DB_PASSWORD', 'password')
     )
 
@@ -136,7 +131,7 @@ def login_required(f):
 
 def register_user(data: dict) -> dict:
     conn = get_db_connection()
-    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cur = conn.cursor(dictionary=True)
     try:
         # Check existing
         cur.execute('SELECT id FROM users WHERE email = %s', (data['email'],))
@@ -192,7 +187,7 @@ def register_user(data: dict) -> dict:
 
 def login_user(email: str, password: str) -> dict:
     conn = get_db_connection()
-    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cur = conn.cursor(dictionary=True)
     try:
         cur.execute("""
             SELECT u.*, sp.full_name, sp.roll_number 
@@ -215,7 +210,7 @@ def login_user(email: str, password: str) -> dict:
 
 def verify_email_token(token: str) -> dict:
     conn = get_db_connection()
-    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cur = conn.cursor(dictionary=True)
     try:
         cur.execute("SELECT id FROM users WHERE verification_token = %s", (token,))
         user = cur.fetchone()
