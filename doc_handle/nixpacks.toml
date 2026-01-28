@@ -1,0 +1,12 @@
+# Nixpacks configuration for frontend
+[phases.setup]
+nixPkgs = ["nodejs_18"]
+
+[phases.install]
+cmds = ["npm ci"]
+
+[phases.build]
+cmds = ["npm run build"]
+
+[start]
+cmd = "npx serve -s dist -l ${PORT:-3000}"
