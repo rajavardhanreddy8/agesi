@@ -41,10 +41,9 @@ services:
         fromService:
           type: web
           name: outing-backend
-          property: url
+          property: host
 
 databases:
   - name: outing-db
     plan: free
     databaseName: outing_automation
-    user: postgres
