@@ -5,12 +5,14 @@ Integrates with your existing PDF generation web app and PostgreSQL database
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from flask_apscheduler import APScheduler
 import threading
 import json
 import os
+import psycopg2.extras
+import bridge  # Mail agent bridge
 from datetime import datetime, timedelta
 from cryptography.fernet import Fernet
-import logging
 from dotenv import load_dotenv
 import razorpay
 from functools import wraps
@@ -35,6 +37,29 @@ app = Flask(__name__)
 CORS(app)  # Enable CORS for your frontend
 
 app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY', 'your-secret-key')
+
+# Scheduler Config
+class Config:
+    SCHEDULER_API_ENABLED = True
+
+app.config.from_object(Config())
+
+# Initialize Scheduler
+scheduler = APScheduler()
+scheduler.init_app(app)
+
+# Add Cron Job: Run daily at 7 AM IST (1:30 AM UTC)
+# For testing: using interval of 1 hour, or specifically 7 AM
+@scheduler.task('cron', id='daily_mail_check', hour=1, minute=30)
+def scheduled_mail_check():
+    print("⏰ Cron Trigger: Checking for emails...")
+    with app.app_context():
+        try:
+            bridge.main()
+        except Exception as e:
+            print(f"Mail check failed: {e}")
+
+scheduler.start()
 
 # Configure logging
 logging.basicConfig(
@@ -211,7 +236,7 @@ def auto_submit_from_email():
             return jsonify({'success': False, 'error': 'Missing form_url or start_date'}), 400
 
         conn = get_db_connection()
-        cur = conn.cursor(dictionary=True)
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
         # 1. Find all eligible users (Auto-submit enabled, Active subscription)
         # We join with users table to ensure user account is valid
@@ -381,7 +406,7 @@ def api_reset():
 def get_profile():
     try:
         conn = get_db_connection()
-        cur = conn.cursor(dictionary=True)
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         cur.execute("""
             SELECT u.email, sp.* 
             FROM users u 
@@ -404,7 +429,7 @@ def update_profile():
     try:
         data = request.json
         conn = get_db_connection()
-        cur = conn.cursor(dictionary=True)
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         
         allowed_fields = [
             'full_name', 'student_phone', 'student_email',
@@ -493,7 +518,7 @@ def generate_pdf():
         
         # Get user profile
         conn = get_db_connection()
-        cur = conn.cursor(dictionary=True)
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         cur.execute("SELECT * FROM v_user_profiles WHERE user_id = %s", (request.user_id,))
         profile = cur.fetchone()
         conn.close()
@@ -626,7 +651,7 @@ def submit_form():
 
         # 3. Retrieve User Credentials & Profile from DB
         conn = get_db_connection()
-        cur = conn.cursor(dictionary=True)
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         
         # Get auth/credentials
         cur.execute(
@@ -739,7 +764,7 @@ def get_task_status(task_id):
     # Check DB if not in memory (for history)
     try:
         conn = get_db_connection()
-        cur = conn.cursor(dictionary=True)
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         cur.execute("SELECT * FROM submission_history WHERE task_id = %s", (task_id,))
         task = cur.fetchone()
         conn.close()
@@ -756,7 +781,7 @@ def get_task_status(task_id):
 def get_history():
     try:
         conn = get_db_connection()
-        cur = conn.cursor(dictionary=True)
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         cur.execute(
             "SELECT * FROM submission_history WHERE user_id = %s ORDER BY submitted_at DESC LIMIT 20",
             (request.user_id,)
@@ -814,7 +839,7 @@ def admin_required(f):
         if not payload: return jsonify({'success': False, 'error': 'Invalid token'}), 401
         
         conn = get_db_connection()
-        cur = conn.cursor(dictionary=True)
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         cur.execute('SELECT email, is_admin FROM users WHERE id = %s', (payload['user_id'],))
         user = cur.fetchone()
         cur.close()
@@ -841,7 +866,7 @@ def get_plans():
 def get_current_subscription():
     try:
         conn = get_db_connection()
-        cur = conn.cursor(dictionary=True)
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         cur.execute("""
             SELECT s.*,
                 CASE 
@@ -879,7 +904,7 @@ def upgrade_subscription():
         order = razorpay_client.order.create(data=order_data)
         
         conn = get_db_connection()
-        cur = conn.cursor(dictionary=True)
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         cur.execute("""
             INSERT INTO payments (user_id, plan_type, amount, currency, payment_gateway, payment_order_id, status)
             VALUES (%s, %s, %s, %s, %s, %s, 'pending')
@@ -915,7 +940,7 @@ def verify_payment():
             return jsonify({'success': False, 'error': 'Invalid signature'}), 400
             
         conn = get_db_connection()
-        cur = conn.cursor(dictionary=True)
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         
         cur.execute("SELECT * FROM payments WHERE payment_order_id = %s", (data['razorpay_order_id'],))
         payment = cur.fetchone()
@@ -971,7 +996,7 @@ def admin_login_route():
             return jsonify({'success': False, 'error': 'Invalid password'}), 401
             
         conn = get_db_connection()
-        cur = conn.cursor(dictionary=True)
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         cur.execute('SELECT id FROM users WHERE email = %s', (email,))
         user = cur.fetchone()
         
@@ -1003,7 +1028,7 @@ def admin_login_route():
 def admin_dashboard():
     try:
         conn = get_db_connection()
-        cur = conn.cursor(dictionary=True)
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         
         # Stats
         stats = {}
@@ -1035,7 +1060,7 @@ def admin_dashboard():
 def admin_users():
     try:
         conn = get_db_connection()
-        cur = conn.cursor(dictionary=True)
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         # Fetch all users with profile and subscription info
         cur.execute("""
             SELECT u.id, u.email, sp.full_name, sp.roll_number, 
@@ -1107,7 +1132,7 @@ def admin_get_password(user_id):
     """Retrieve decrypted Outlook password for a user (ADMIN ONLY)"""
     try:
         conn = get_db_connection()
-        cur = conn.cursor(dictionary=True)
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         cur.execute("SELECT outlook_password_encrypted FROM users WHERE id = %s", (user_id,))
         user = cur.fetchone()
         cur.close()
