@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  doc_handle:
+    build: ./doc_handle
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_URL=http://localhost:8080
+    depends_on:
+      - form_filler
+
+  form_filler:
+    build: ./form_filler
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - DB_HOST=db
+      - DB_USER=root
+      - DB_PASSWORD=password
+      - DB_NAME=outing_db
+    depends_on:
+      - db
+
+  mail_agent:
+    build: ./mail_agent
+    environment:
+      - BACKEND_URL=http://form_filler:8080
+      # Add other secrets locally via .env file or direct mapping if needed for testing
+    env_file:
+      - ./mail_agent/.env
+
+  db:
+    image: mysql:8.0
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=outing_db
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./database/schema_mysql.sql:/docker-entrypoint-initdb.d/schema.sql
+
+volumes:
+  db_data:
