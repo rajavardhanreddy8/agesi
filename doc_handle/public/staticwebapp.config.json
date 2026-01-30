@@ -1,0 +1,30 @@
+{
+    "navigationFallback": {
+        "rewrite": "/index.html",
+        "exclude": [
+            "/assets/*"
+        ]
+    },
+    "routes": [
+        {
+            "route": "/api/*",
+            "allowedRoles": [
+                "anonymous"
+            ]
+        }
+    ],
+    "responseOverrides": {
+        "404": {
+            "rewrite": "/index.html",
+            "statusCode": 200
+        }
+    },
+    "globalHeaders": {
+        "cache-control": "public, max-age=31536000, immutable"
+    },
+    "mimeTypes": {
+        ".json": "application/json",
+        ".js": "text/javascript",
+        ".css": "text/css"
+    }
+}
