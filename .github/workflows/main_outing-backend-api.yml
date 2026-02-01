@@ -40,11 +40,16 @@ jobs:
           cp Procfile dist/
           cp -r form_filler dist/
           
+          # Zip the dist folder
+          cd dist
+          zip -r ../python-app.zip .
+          cd ..
+          
       - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v4
         with:
           name: python-app
-          path: dist/
+          path: python-app.zip
 
   deploy:
     runs-on: ubuntu-latest
@@ -72,4 +77,5 @@ jobs:
         with:
           app-name: 'outing-backend-api'
           slot-name: 'Production'
+          package: python-app.zip
           
