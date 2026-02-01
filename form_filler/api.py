@@ -14,6 +14,18 @@ from cryptography.fernet import Fernet
 from dotenv import load_dotenv
 import razorpay
 from functools import wraps
+import psycopg2
+import psycopg2.extras
+
+def get_db_connection():
+    conn = psycopg2.connect(
+        host=os.getenv('DB_HOST'),
+        database=os.getenv('DB_NAME'),
+        user=os.getenv('DB_USER'),
+        password=os.getenv('DB_PASSWORD'),
+        port=os.getenv('DB_PORT', 5432)
+    )
+    return conn
 
 # Import the automation class
 from ms_form_automation import MSFormAutomation
