@@ -32,25 +32,19 @@ jobs:
           source antenv/bin/activate
           pip install -r requirements.txt
           
+          # Create a clean distribution folder
+          mkdir dist
+          cp app.py dist/
+          cp requirements.txt dist/
+          cp startup.sh dist/
+          cp Procfile dist/
+          cp -r form_filler dist/
+          
       - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v4
         with:
           name: python-app
-          path: |
-            .
-            !antenv/
-            !node_modules/
-            !**/node_modules/
-            !doc_handle/
-            !docs/
-            !*.exe
-            !form_filler/*.exe
-            !temp_uploads/
-            !screenshots/
-            !signatures/
-            !__pycache__/
-            !**/*.pyc
-            !.git/
+          path: dist/
 
   deploy:
     runs-on: ubuntu-latest
