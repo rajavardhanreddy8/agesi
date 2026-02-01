@@ -42,6 +42,7 @@ jobs:
             !node_modules/
             !**/node_modules/
             !doc_handle/
+            !docs/
             !*.exe
             !form_filler/*.exe
             !temp_uploads/
