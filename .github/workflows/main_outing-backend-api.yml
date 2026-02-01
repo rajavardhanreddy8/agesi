@@ -40,6 +40,8 @@ jobs:
             .
             !antenv/
             !node_modules/
+            !**/node_modules/
+            !doc_handle/
             !*.exe
             !form_filler/*.exe
             !temp_uploads/
