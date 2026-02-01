@@ -3,6 +3,10 @@ Flask API to trigger Microsoft Forms automation
 Integrates with your existing PDF generation web app and PostgreSQL database
 """
 
+"""
+
+print("DEBUG: API.PY MODULE LOADING...", flush=True)
+
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import threading
