@@ -28,10 +28,10 @@ def get_db_connection():
     return conn
 
 # Import the automation class
-from ms_form_automation import MSFormAutomation
+from form_filler.ms_form_automation import MSFormAutomation
 
 # Import authentication system (Supabase-based, no password required!)
-from auth_system_v2 import (
+from form_filler.auth_system_v2 import (
     register_user, login_user, verify_email_token,
     request_password_reset, reset_password,
     encrypt_outlook_password, decrypt_outlook_password,
