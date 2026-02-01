@@ -32,15 +32,16 @@ jobs:
           source antenv/bin/activate
           pip install -r requirements.txt
           
-          # Create a clean distribution folder
+      - name: Create deployment package with Vendored Dependencies
+        run: |
           mkdir dist
+          cp -r form_filler dist/
           cp app.py dist/
           cp requirements.txt dist/
-          cp startup.sh dist/
-          cp Procfile dist/
-          cp -r form_filler dist/
+          # Install dependencies directly into the package (Linux compatible)
+          pip install -r requirements.txt --target dist/.python_packages/lib/site-packages
           
-          # Zip the dist folder
+          # Zip the dist folder including dependencies
           cd dist
           zip -r ../python-app.zip .
           cd ..
