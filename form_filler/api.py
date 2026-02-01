@@ -27,8 +27,12 @@ def get_db_connection():
     )
     return conn
 
-# Import the automation class
-from form_filler.ms_form_automation import MSFormAutomation
+# Import the automation class (Optional for now)
+try:
+    from form_filler.ms_form_automation import MSFormAutomation
+except ImportError:
+    MSFormAutomation = None
+    logging.warning("Playwright not installed. Automation features disabled.")
 
 # Import authentication system (Supabase-based, no password required!)
 from form_filler.auth_system_v2 import (
