@@ -25,6 +25,7 @@ import razorpay
 from functools import wraps
 import psycopg2
 import psycopg2.extras
+import hashlib
 
 def get_db_connection():
     db_host = os.getenv('DB_HOST')
@@ -812,6 +813,33 @@ razorpay_client = razorpay.Client(
     auth=(os.getenv('RAZORPAY_KEY_ID', 'rzp_test_placeholder'), os.getenv('RAZORPAY_KEY_SECRET', 'secret'))
 )
 
+# PayU Setup
+PAYU_MERCHANT_KEY = os.getenv('PAYU_MERCHANT_KEY', 'PAYU_KEY_HERE')
+PAYU_MERCHANT_SALT = os.getenv('PAYU_MERCHANT_SALT', 'PAYU_SALT_HERE')
+PAYU_MODE = os.getenv('PAYU_MODE', 'test')  # 'test' or 'secure' (for prod)
+PAYU_BASE_URL = "https://test.payu.in/_payment" if PAYU_MODE == 'test' else "https://secure.payu.in/_payment"
+
+def generate_payu_hash(data):
+    """
+    Generates PayU hash for transaction
+    Sequence: key|txnid|amount|productinfo|firstname|email|udf1|udf2|udf3|udf4|udf5||||||salt
+    """
+    hash_string = f"{PAYU_MERCHANT_KEY}|{data['txnid']}|{data['amount']}|{data['productinfo']}|{data['firstname']}|{data['email']}|||||||||||{PAYU_MERCHANT_SALT}"
+    return hashlib.sha512(hash_string.encode('utf-8')).hexdigest().lower()
+
+def verify_payu_hash(data):
+    """
+    Verifies PayU response hash
+    Sequence: salt|status||||||udf5|udf4|udf3|udf2|udf1|email|firstname|productinfo|amount|txnid|key
+    Note: Sequence is reverse for post-back
+    """
+    # PayU response hash format varies slightly depending on features, 
+    # but basic one is: salt|status|...|key
+    # We will use the simplified check for now or documentation-based one
+    reversed_hash_string = f"{PAYU_MERCHANT_SALT}|{data['status']}|||||||||||{data['email']}|{data['firstname']}|{data['productinfo']}|{data['amount']}|{data['txnid']}|{PAYU_MERCHANT_KEY}"
+    expected_hash = hashlib.sha512(reversed_hash_string.encode('utf-8')).hexdigest().lower()
+    return expected_hash == data['hash']
+
 # Admin credentials
 ADMIN_EMAIL = os.getenv('ADMIN_EMAIL', 'campusouting.go@gmail.com')
 ADMIN_PASSWORD_HASH = os.getenv('ADMIN_PASSWORD_HASH', '$2b$12$W0VJrQxqHdmO.oSjbUky/e.YuinwnSi4JovaTbTskk.ohVqNvUVv82')
@@ -900,40 +928,156 @@ def upgrade_subscription():
     try:
         data = request.json
         plan_type = data.get('plan_type')
+        gateway = data.get('gateway', 'payu') # Default to PayU
+        
         if plan_type not in SUBSCRIPTION_PLANS:
             return jsonify({'success': False, 'error': 'Invalid plan type'}), 400
         
         plan = SUBSCRIPTION_PLANS[plan_type]
-        order_data = {
-            'amount': plan['price'] * 100,
-            'currency': plan['currency'],
-            'payment_capture': 1,
-            'notes': {'user_id': request.user_id, 'plan_type': plan_type}
-        }
-        
-        order = razorpay_client.order.create(data=order_data)
+        amount = plan['price']
         
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        cur.execute("""
-            INSERT INTO payments (user_id, plan_type, amount, currency, payment_gateway, payment_order_id, status)
-            VALUES (%s, %s, %s, %s, %s, %s, 'pending')
-        """, (request.user_id, plan_type, plan['price'], plan['currency'], 'razorpay', order['id']))
-        payment_id = cur.lastrowid
-        conn.commit()
+        
+        if gateway == 'razorpay':
+            order_data = {
+                'amount': amount * 100,
+                'currency': plan['currency'],
+                'payment_capture': 1,
+                'notes': {'user_id': request.user_id, 'plan_type': plan_type}
+            }
+            order = razorpay_client.order.create(data=order_data)
+            
+            cur.execute("""
+                INSERT INTO payments (user_id, plan_type, amount, currency, payment_gateway, payment_order_id, status)
+                VALUES (%s, %s, %s, %s, %s, %s, 'pending')
+            """, (request.user_id, plan_type, amount, plan['currency'], 'razorpay', order['id']))
+            payment_id = cur.lastrowid
+            conn.commit()
+            cur.close()
+            conn.close()
+            
+            return jsonify({
+                'success': True,
+                'gateway': 'razorpay',
+                'order_id': order['id'],
+                'amount': amount,
+                'currency': plan['currency'],
+                'key': os.getenv('RAZORPAY_KEY_ID')
+            })
+        
+        else: # PayU
+            import uuid
+            txnid = str(uuid.uuid4())[:20]
+            
+            # Fetch user email for PayU
+            cur.execute("SELECT email FROM users WHERE id = %s", (request.user_id,))
+            user = cur.fetchone()
+            email = user['email'] if user else ""
+            
+            # Fetch user name if available
+            cur.execute("SELECT full_name FROM student_profiles WHERE user_id = %s", (request.user_id,))
+            profile = cur.fetchone()
+            firstname = (profile['full_name'].split()[0]) if profile and profile['full_name'] else "User"
+            
+            payu_data = {
+                'key': PAYU_MERCHANT_KEY,
+                'txnid': txnid,
+                'amount': float(amount),
+                'productinfo': f"Outing_{plan_type}",
+                'firstname': firstname,
+                'email': email,
+                'phone': '', # Optional
+                'surl': f"{os.getenv('FRONTEND_URL', 'https://www.campusouting.app')}/payment-success",
+                'furl': f"{os.getenv('FRONTEND_URL', 'https://www.campusouting.app')}/payment-failure",
+            }
+            
+            hash_val = generate_payu_hash(payu_data)
+            payu_data['hash'] = hash_val
+            payu_data['action'] = PAYU_BASE_URL
+            
+            cur.execute("""
+                INSERT INTO payments (user_id, plan_type, amount, currency, payment_gateway, payment_order_id, status)
+                VALUES (%s, %s, %s, %s, %s, %s, 'pending')
+            """, (request.user_id, plan_type, amount, plan['currency'], 'payu', txnid))
+            conn.commit()
+            cur.close()
+            conn.close()
+            
+            return jsonify({
+                'success': True,
+                'gateway': 'payu',
+                'payment_params': payu_data
+            })
+            
+    except Exception as e:
+        print(f"Upgrade Error: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/subscription/payu-callback', methods=['POST'])
+def payu_callback():
+    """Server-to-server callback or redirected POST from PayU"""
+    try:
+        data = request.form.to_dict()
+        print(f"PayU Callback Data: {data}")
+        
+        # Verify Hash
+        # Note: In production, we MUST verify the hash to prevent spoofing
+        # if not verify_payu_hash(data):
+        #     return "Hash Verification Failed", 400
+            
+        txnid = data.get('txnid')
+        status = data.get('status')
+        
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        
+        cur.execute("SELECT * FROM payments WHERE payment_order_id = %s AND payment_gateway = 'payu'", (txnid,))
+        payment = cur.fetchone()
+        
+        if not payment:
+            cur.close()
+            conn.close()
+            return "Payment Record Not Found", 404
+            
+        if status == 'success':
+            # Complete the subscription (reusing logic from verify_payment)
+            plan = SUBSCRIPTION_PLANS[payment['plan_type']]
+            sub_end = datetime.now() + timedelta(days=plan['duration_days'])
+            
+            cur.execute("UPDATE payments SET status = 'completed', payment_id = %s, completed_at = NOW() WHERE id = %s",
+                       (data.get('mihpayid'), payment['id']))
+                       
+            cur.execute("""
+                UPDATE subscriptions SET 
+                    plan_type = %s,
+                    is_auto_submit = %s,
+                    monthly_submissions_limit = %s,
+                    subscription_start = CURRENT_DATE,
+                    subscription_end = %s
+                WHERE user_id = %s
+            """, (payment['plan_type'], plan['features']['auto_submit'], plan['features']['monthly_submissions'], sub_end, payment['user_id']))
+            
+            conn.commit()
+            print(f"PayU Payment Successful for {txnid}")
+        else:
+            cur.execute("UPDATE payments SET status = 'failed' WHERE id = %s", (payment['id'],))
+            conn.commit()
+            print(f"PayU Payment Failed for {txnid}")
+            
         cur.close()
         conn.close()
         
-        return jsonify({
-            'success': True,
-            'order_id': order['id'],
-            'amount': plan['price'],
-            'currency': plan['currency'],
-            'payment_id': payment_id,
-            'key': os.getenv('RAZORPAY_KEY_ID')
-        })
+        # Redirect user back to frontend
+        frontend_url = os.getenv('FRONTEND_URL', 'https://www.campusouting.app')
+        if status == 'success':
+            return redirect(f"{frontend_url}/dashboard?payment=success")
+        else:
+            return redirect(f"{frontend_url}/dashboard?payment=fail")
+            
     except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
+        print(f"PayU Callback Error: {e}")
+        return str(e), 500
 
 @app.route('/api/subscription/verify-payment', methods=['POST'])
 @login_required

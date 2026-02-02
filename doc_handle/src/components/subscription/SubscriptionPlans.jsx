@@ -39,40 +39,66 @@ const SubscriptionPlans = () => {
         }
     };
 
-    const handleUpgrade = async (planType) => {
+    const handleUpgrade = async (planType, gateway = 'payu') => {
         setIsLoading(true);
         try {
-            const response = await api.post('/subscription/upgrade', { plan_type: planType });
+            const response = await api.post('/subscription/upgrade', {
+                plan_type: planType,
+                gateway: gateway
+            });
 
-            const options = {
-                key: response.data.key,
-                amount: response.data.amount * 100,
-                currency: response.data.currency,
-                name: 'Outing Automation',
-                description: `${planType.charAt(0).toUpperCase() + planType.slice(1)} Plan`,
-                order_id: response.data.order_id,
-                handler: async function (paymentResponse) {
-                    try {
-                        await api.post('/subscription/verify-payment', {
-                            razorpay_order_id: paymentResponse.razorpay_order_id,
-                            razorpay_payment_id: paymentResponse.razorpay_payment_id,
-                            razorpay_signature: paymentResponse.razorpay_signature
-                        });
-                        alert('Payment Successful! Plan Upgraded.');
-                        window.location.reload();
-                    } catch (err) {
-                        alert('Payment Verification Failed');
+            if (response.data.gateway === 'razorpay') {
+                const options = {
+                    key: response.data.key,
+                    amount: response.data.amount * 100,
+                    currency: response.data.currency,
+                    name: 'Outing Automation',
+                    description: `${planType.charAt(0).toUpperCase() + planType.slice(1)} Plan`,
+                    order_id: response.data.order_id,
+                    handler: async function (paymentResponse) {
+                        try {
+                            await api.post('/subscription/verify-payment', {
+                                razorpay_order_id: paymentResponse.razorpay_order_id,
+                                razorpay_payment_id: paymentResponse.razorpay_payment_id,
+                                razorpay_signature: paymentResponse.razorpay_signature
+                            });
+                            alert('Payment Successful! Plan Upgraded.');
+                            window.location.reload();
+                        } catch (err) {
+                            alert('Payment Verification Failed');
+                        }
+                    },
+                    prefill: {
+                        email: currentPlan?.email || ''
+                    },
+                    theme: { color: '#6366f1' }
+                };
+
+                const rzp = new window.Razorpay(options);
+                rzp.open();
+            } else if (response.data.gateway === 'payu') {
+                const params = response.data.payment_params;
+
+                // Create a dynamic form to submit to PayU
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = params.action;
+
+                Object.entries(params).forEach(([key, value]) => {
+                    if (key !== 'action') {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = key;
+                        input.value = value;
+                        form.appendChild(input);
                     }
-                },
-                prefill: {
-                    email: currentPlan?.email || '' // We might need email from auth context or user profile
-                },
-                theme: { color: '#6366f1' }
-            };
+                });
 
-            const rzp = new window.Razorpay(options);
-            rzp.open();
+                document.body.appendChild(form);
+                form.submit();
+            }
         } catch (error) {
+            console.error('Upgrade Error:', error);
             alert(error.response?.data?.error || 'Upgrade failed');
         } finally {
             setIsLoading(false);
