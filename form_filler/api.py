@@ -3,9 +3,14 @@ Flask API to trigger Microsoft Forms automation
 Integrates with your existing PDF generation web app and PostgreSQL database
 """
 
-"""
-
 print("DEBUG: API.PY MODULE LOADING...", flush=True)
+
+import httpx
+import gotrue
+import supabase
+print(f"DEBUG: httpx version: {httpx.__version__}", flush=True)
+print(f"DEBUG: gotrue version: {gotrue.__version__}", flush=True)
+print(f"DEBUG: supabase version: {supabase.__version__}", flush=True)
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS
@@ -22,14 +27,30 @@ import psycopg2
 import psycopg2.extras
 
 def get_db_connection():
-    conn = psycopg2.connect(
-        host=os.getenv('DB_HOST'),
-        database=os.getenv('DB_NAME'),
-        user=os.getenv('DB_USER'),
-        password=os.getenv('DB_PASSWORD'),
-        port=os.getenv('DB_PORT', 5432)
-    )
-    return conn
+    db_host = os.getenv('DB_HOST')
+    print(f"DEBUG: Attempting DB Connection to {db_host}...", flush=True)
+    
+    # DEBUG ENV VARS
+    for k, v in os.environ.items():
+        if k.startswith("DB_"):
+            print(f"DEBUG ENV: {k}={v}", flush=True)
+
+    try:
+        # Standard connection using hostname (Pooler is IPv4)
+        conn = psycopg2.connect(
+            host=db_host,
+            database=os.getenv('DB_NAME'),
+            user=os.getenv('DB_USER', 'postgres.uehkqlamchtdzcusqmhi'), # HARDCODED FIX
+            password=os.getenv('DB_PASSWORD'),
+            port=os.getenv('DB_PORT', 5432),
+            connect_timeout=10,
+            sslmode='require'
+        )
+        print("DEBUG: DB Connection SUCCESS!", flush=True)
+        return conn
+    except Exception as e:
+        print(f"DEBUG: DB Connection FAILED: {e}", flush=True)
+        raise e
 
 # Import the automation class (Optional for now)
 try:
@@ -52,7 +73,6 @@ load_dotenv()
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}}) # Allow Vercel Frontend
-
 app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY', 'your-secret-key')
 
 # Configure logging
@@ -73,10 +93,6 @@ import queue
 automation_queue = queue.Queue()
 
 def automation_worker():
-    """
-    Worker thread to process automation tasks sequentially from the queue.
-    This ensures that we don't open 100 browsers at once if 100 users subscribe.
-    """
     while True:
         task_info = automation_queue.get()
         if task_info is None:
