@@ -1,5 +1,6 @@
 import React from 'react';
 import Navigation from '../components/Navigation';
+import Footer from '../components/Footer';
 
 const Landing = () => {
     const heroStyle = {
@@ -138,6 +139,7 @@ const Landing = () => {
                     ))}
                 </div>
             </div>
+            <Footer />
         </div>
     );
 };

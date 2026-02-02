@@ -10,6 +10,10 @@ import ProtectedRoute from './components/ProtectedRoute';
 import SubscriptionPlans from './components/subscription/SubscriptionPlans';
 import AdminLogin from './components/admin/AdminLogin';
 import AdminDashboard from './components/admin/AdminDashboard';
+import PrivacyPolicy from './pages/compliance/PrivacyPolicy';
+import TermsConditions from './pages/compliance/TermsConditions';
+import RefundPolicy from './pages/compliance/RefundPolicy';
+import ContactUs from './pages/compliance/ContactUs';
 import './App.css';
 
 function App() {
@@ -21,6 +25,10 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/terms" element={<TermsConditions />} />
+          <Route path="/refund-policy" element={<RefundPolicy />} />
+          <Route path="/contact" element={<ContactUs />} />
 
           {/* Protected Routes */}
           <Route
