@@ -23,6 +23,12 @@ const Dashboard = () => {
         progress: 0
     });
 
+    // Helper to get pure base URL (no /api suffix)
+    const getBaseUrl = () => {
+        const url = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+        return url.replace(/\/api$/, '');
+    };
+
     useEffect(() => {
         fetchProfile();
         fetchOutingData();
@@ -96,7 +102,7 @@ const Dashboard = () => {
             studentEmail: profile.email,
             studentMobile: profile.student_phone,
             signatureImage: (profile.signature_data?.startsWith('signatures/') || profile.signature_data?.startsWith('signatures\\')) ?
-                `http://localhost:5000/${profile.signature_data.replace(/\\/g, '/')}` :
+                `${getBaseUrl()}/${profile.signature_data.replace(/\\/g, '/')}` :
                 profile.signature_data
         });
     };
@@ -410,7 +416,7 @@ const Dashboard = () => {
                         {profile?.signature_data ? (
                             <div style={s.signatureBox}>
                                 <img
-                                    src={(profile.signature_data?.startsWith('signatures/') || profile.signature_data?.startsWith('signatures\\')) ? `http://localhost:5000/${profile.signature_data.replace(/\\/g, '/')}` : profile.signature_data}
+                                    src={(profile.signature_data?.startsWith('signatures/') || profile.signature_data?.startsWith('signatures\\')) ? `${getBaseUrl()}/${profile.signature_data.replace(/\\/g, '/')}` : profile.signature_data}
                                     alt="Sign"
                                     style={{ height: '40px' }}
                                 />
