@@ -242,6 +242,7 @@ def auto_submit_from_email():
         form_url = data.get('form_url')
         start_date = data.get('start_date')
         end_date = data.get('end_date')
+        reason = data.get('reason')
 
         if not form_url or not start_date:
             return jsonify({'success': False, 'error': 'Missing form_url or start_date'}), 400
@@ -274,31 +275,22 @@ def auto_submit_from_email():
                 except:
                     logging.error(f"Could not decrypt password for user {user['email']}, skipping.")
                     continue
+                # Determine Reason
+                out_reason = reason if reason else user.get('default_reason', 'Home Visit')
 
-                # Prepare PDF (Generic placeholder or generate one)
-                # For scalability, we should ideally generate a PDF. 
-                # For now, we will try to find a recent valid PDF or use a placeholder if the automation supports it.
-                # Assuming MSFormAutomation needs a VALID file path.
-                # We'll create a dummy 'generated' PDF for this specific outing request if needed, 
-                # or better, generate the real PDF. 
-                # LIMITATION: We are not generating the specific PDF here yet. 
-                # We will use a placeholder 'auto_generated.pdf' if it exists, or skipping PDF generation for now 
-                # if MSFormAutomation strictly needs it. 
-                # To be robust, let's create a directory for this task.
-                
-                # Simple fix: Reuse the logic from submit_form to save a placeholder
+                # Create Specific PDF with Reason
                 temp_dir = os.path.join(os.getcwd(), 'temp_uploads')
                 os.makedirs(temp_dir, exist_ok=True)
-                # We do NOT have the specific PDF from the user. 
-                # We will send a generic "Permission Request" PDF or allow the automation to generate one.
-                # Since the current `MSFormAutomation` takes `pdf_path` and uploads it, we need a file.
-                # Let's check for a 'template.pdf' or create a text file named .pdf as a placeholder if legitimate not available??
-                # No, that will fail upload validation likely.
-                # We will assume a 'standard_outing.pdf' exists in root for auto-submissions or use the user's last one?
-                # Let's try to use a standard file for now to unblock.
-                pdf_path = os.path.abspath("standard_outing.pdf")
-                if not os.path.exists(pdf_path):
-                    with open(pdf_path, 'w') as f: f.write("Dummy PDF content for automation") 
+                pdf_path = os.path.join(temp_dir, f"auto_{user_id}_{datetime.now().strftime('%Y%m%d%H%M%S')}.pdf")
+                
+                # Generate PDF using helper
+                pdf_buffer = create_outing_pdf(user, start_date, end_date, out_reason)
+                if pdf_buffer:
+                    with open(pdf_path, 'wb') as f:
+                        f.write(pdf_buffer.getvalue())
+                else:
+                    logging.error(f"Failed to generate PDF for user {user_id}, skipping automation.")
+                    continue
 
                 # Prepare Form Data
                 form_data = {
@@ -313,7 +305,9 @@ def auto_submit_from_email():
                     'parent_name': user['parent1_name'],
                     'parent_phone': user['parent1_phone'],
                     'parent_email': user['parent1_email'],
-                    'reason': user.get('default_reason', 'Home Visit'), # Use default reason
+                    'parent2_name': user.get('parent2_name'),
+                    'parent2_phone': user.get('parent2_phone'),
+                    'reason': out_reason,
                     'leave_start_date': start_date,
                     'leave_end_date': end_date
                 }
@@ -518,30 +512,15 @@ def serve_signature(filename):
 
 @app.route('/api/generate-pdf', methods=['POST'])
 @login_required
-def generate_pdf():
-    """Generate a PDF consent form with user's stored data"""
+def create_outing_pdf(profile, start_date, end_date, reason):
+    """Helper to generate PDF bytes with user details and signature"""
     try:
         from reportlab.lib.pagesizes import A4
         from reportlab.pdfgen import canvas
         from reportlab.lib.utils import ImageReader
         import io
         import base64
-        
-        # Get user profile
-        conn = get_db_connection()
-        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        cur.execute("SELECT * FROM v_user_profiles WHERE user_id = %s", (request.user_id,))
-        profile = cur.fetchone()
-        conn.close()
-        
-        if not profile:
-            return jsonify({'success': False, 'error': 'Profile not found'}), 404
-        
-        # Get latest dates from outing_data.json if available
-        start_date = request.json.get('start_date') if request.json else None
-        end_date = request.json.get('end_date') if request.json else None
-        
-        # Create PDF
+
         buffer = io.BytesIO()
         c = canvas.Canvas(buffer, pagesize=A4)
         width, height = A4
@@ -568,7 +547,7 @@ def generate_pdf():
             c.drawString(70, y, detail)
             y -= 18
         
-        # Date Details
+        # Date & Reason Details
         y -= 10
         c.setFont("Helvetica-Bold", 12)
         c.drawString(50, y, "Outing Details:")
@@ -577,8 +556,10 @@ def generate_pdf():
         c.drawString(70, y, f"Start Date: {start_date or 'To be filled'}")
         y -= 18
         c.drawString(70, y, f"End Date: {end_date or 'To be filled'}")
+        y -= 18
+        c.drawString(70, y, f"Reason: {reason or 'Home Visit'}")
         
-        # Father Details
+        # Parent Details
         y -= 30
         c.setFont("Helvetica-Bold", 12)
         c.drawString(50, y, "Father's Details:")
@@ -590,17 +571,18 @@ def generate_pdf():
         y -= 18
         c.drawString(70, y, f"Phone: {profile.get('parent1_phone', '')}")
         
-        # Mother Details
+        # Mother Details (if available)
         y -= 30
-        c.setFont("Helvetica-Bold", 12)
-        c.drawString(50, y, "Mother's Details:")
-        c.setFont("Helvetica", 11)
-        y -= 20
-        c.drawString(70, y, f"Name: {profile.get('parent2_name', '')}")
-        y -= 18
-        c.drawString(70, y, f"Email: {profile.get('parent2_email', '')}")
-        y -= 18
-        c.drawString(70, y, f"Phone: {profile.get('parent2_phone', '')}")
+        if profile.get('parent2_name'):
+            c.setFont("Helvetica-Bold", 12)
+            c.drawString(50, y, "Mother's Details:")
+            c.setFont("Helvetica", 11)
+            y -= 20
+            c.drawString(70, y, f"Name: {profile.get('parent2_name', '')}")
+            y -= 18
+            c.drawString(70, y, f"Email: {profile.get('parent2_email', '')}")
+            y -= 18
+            c.drawString(70, y, f"Phone: {profile.get('parent2_phone', '')}")
         
         # Signature
         y -= 40
@@ -616,23 +598,50 @@ def generate_pdf():
                 sig_image = ImageReader(io.BytesIO(sig_bytes))
                 c.drawImage(sig_image, 70, y - 60, width=100, height=50, preserveAspectRatio=True)
             except Exception as e:
-                c.drawString(70, y - 20, "[Signature could not be loaded]")
+                c.drawString(70, y - 20, "[Signature Error]")
         else:
             c.drawString(70, y - 20, "[No signature uploaded]")
         
         c.save()
         buffer.seek(0)
+        return buffer
+    except Exception as e:
+        logging.error(f"PDF Gen Helper Error: {e}")
+        return None
+
+@app.route('/api/generate-pdf', methods=['POST'])
+@login_required
+def generate_pdf():
+    """Generate a PDF consent form with user's stored data"""
+    try:
+        # Get user profile
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        cur.execute("SELECT * FROM v_user_profiles WHERE user_id = %s", (request.user_id,))
+        profile = cur.fetchone()
+        conn.close()
         
+        if not profile:
+            return jsonify({'success': False, 'error': 'Profile not found'}), 404
+        
+        start_date = request.json.get('start_date') if request.json else None
+        end_date = request.json.get('end_date') if request.json else None
+        reason = request.json.get('reason') if request.json else None
+        
+        pdf_buffer = create_outing_pdf(profile, start_date, end_date, reason)
+        if not pdf_buffer:
+             return jsonify({'success': False, 'error': 'Failed to generate PDF'}), 500
+
         from flask import send_file
         return send_file(
-            buffer,
+            pdf_buffer,
             mimetype='application/pdf',
             as_attachment=True,
             download_name=f"outing_consent_{profile.get('roll_number', 'form')}.pdf"
         )
         
     except Exception as e:
-        logging.error(f"PDF Generation Error: {e}")
+        logging.error(f"PDF Generation Route Error: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
@@ -707,6 +716,8 @@ def submit_form():
             'parent_name': profile['parent1_name'],
             'parent_phone': profile['parent1_phone'],
             'parent_email': profile['parent1_email'],
+            'parent2_name': profile.get('parent2_name'), # Include optional second parent if needed
+            'parent2_phone': profile.get('parent2_phone'),
             'reason': request_data.get('reason', profile.get('default_reason', 'home')),
             'leave_start_date': request_data.get('leave_start_date'),
             'leave_end_date': request_data.get('leave_end_date')

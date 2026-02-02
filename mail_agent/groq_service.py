@@ -13,8 +13,9 @@ def process_content_with_groq(email_content):
 
     prompt = f"""
     Analyze the following email content and extract:
-    1. The weekend start date (e.g. 30.01.2026). 
+    1. The outing target date (e.g. 30.01.2026). This could be a weekend or a special mid-week holiday/event.
     2. Any valid Microsoft Forms (forms.office.com) URL found.
+    3. The reason for the outing (e.g., "Home Visit", "Shopping", "Medical"). If not explicitly stated, infer it if possible, or return null.
 
     Email Subject: {email_content.get('subject')}
     Email Body Snippet:
@@ -23,7 +24,8 @@ def process_content_with_groq(email_content):
     Output PURE JSON ONLY:
     {{
         "start_date": "DD.MM.YYYY",
-        "form_link": "https://..."
+        "form_link": "https://...",
+        "reason": "Home Visit"
     }}
     If not found, return null values. do NOT wrap in markdown code blocks.
     """

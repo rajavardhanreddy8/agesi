@@ -43,6 +43,8 @@ def main():
         
         start_date = None
         end_date = None
+        reason = None
+        
         if start_date_str:
             try:
                 start_obj = datetime.strptime(start_date_str, "%d.%m.%Y")
@@ -75,6 +77,9 @@ def main():
                     
                     if not form_link and grok_result.get('form_link'):
                         form_link = grok_result['form_link']
+                        
+                    if not reason and grok_result.get('reason'):
+                        reason = grok_result['reason']
             except Exception as e:
                 print(f"Grok fallback failed: {e}")
 
@@ -90,7 +95,8 @@ def main():
         payload = {
             "form_url": form_link,
             "start_date": start_date,
-            "end_date": end_date
+            "end_date": end_date,
+            "reason": reason
         }
         
         print(f"Triggering backend automation at {BACKEND_TRIGGER_URL}...")
