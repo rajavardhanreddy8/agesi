@@ -90,16 +90,20 @@ def login_required(f):
     return decorated_function
 
 
-def verify_outlook_credentials(email: str, password: str) -> bool:
+def verify_outlook_credentials(email: str, password: str) -> tuple:
     """Verify Outlook credentials using Playwright"""
     try:
         from playwright.sync_api import sync_playwright
     except ImportError:
         print("Playwright not installed, skipping verification")
-        return True # Bypass verification if playwright missing
+        return True, None # Bypass verification if playwright missing
     try:
         with sync_playwright() as p:
-            browser = p.chromium.launch(headless=True)
+            # IMPORTANT: --no-sandbox is required for Docker environments
+            browser = p.chromium.launch(
+                headless=True,
+                args=['--no-sandbox', '--disable-setuid-sandbox']
+            )
             page = browser.new_page()
             page.goto('https://login.microsoftonline.com')
             page.fill('input[type="email"]', email)
@@ -114,10 +118,14 @@ def verify_outlook_credentials(email: str, password: str) -> bool:
                        'MFA' in page.content() or
                        'Stay signed in' in page.content())
             browser.close()
-            return success
+            
+            if success:
+                return True, None
+            else:
+                return False, "Invalid credentials or login failed"
     except Exception as e:
         print(f"Outlook verification failed: {e}")
-        return False
+        return False, f"Verification system error: {str(e)}"
 
 # ============================================================================
 # SUPABASE AUTH FUNCTIONS
@@ -132,8 +140,10 @@ def register_user(data: dict) -> dict:
             return {'success': False, 'error': 'Email already registered'}
         
         # Verify Outlook credentials
-        if not verify_outlook_credentials(data['email'], data['outlook_password']):
-            return {'success': False, 'error': 'Invalid Outlook credentials'}
+        is_valid, error_msg = verify_outlook_credentials(data['email'], data['outlook_password'])
+        if not is_valid:
+            # Use specific error message from verification system
+            return {'success': False, 'error': error_msg or 'Invalid Outlook credentials'}
 
         # Insert User
         token = generate_token()
