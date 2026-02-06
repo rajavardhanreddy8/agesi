@@ -216,8 +216,15 @@ def login_user(email: str, password: str) -> dict:
         if not verify_password(password, user['password_hash']):
             return {'success': False, 'error': 'Invalid credentials'}
         
-        # Get profile data
-        profile = user.get('student_profiles', [{}])[0] if user.get('student_profiles') else {}
+        
+        # Get profile data - handle both object and array formats from Supabase
+        sp = user.get('student_profiles')
+        if isinstance(sp, list):
+            profile = sp[0] if sp else {}
+        elif isinstance(sp, dict):
+            profile = sp
+        else:
+            profile = {}
         
         token = generate_jwt(user['id'], user['email'])
         return {
