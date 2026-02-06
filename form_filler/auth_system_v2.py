@@ -12,6 +12,7 @@ import bcrypt
 from cryptography.fernet import Fernet
 import jwt
 from dotenv import load_dotenv
+import logging
 
 load_dotenv()
 
