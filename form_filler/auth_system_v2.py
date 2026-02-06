@@ -230,7 +230,6 @@ def login_user(email: str, password: str) -> dict:
             }
         }
     except Exception as e:
-    except Exception as e:
         import traceback
         logging.error(f"Login Failed Traceback: {traceback.format_exc()}")
         return {'success': False, 'error': f"Login Error: {str(e)}"}
