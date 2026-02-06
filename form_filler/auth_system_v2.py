@@ -141,12 +141,12 @@ def register_user(data: dict) -> dict:
             return {'success': False, 'error': 'Email already registered'}
         
         # Verify Outlook credentials
-        # TEMPORARY: Disabled to unblock registration while fixing browser issues (Forced Update)
-        logging.info(f"Skipping Outlook verification for {data['email']} to unblock registration")
-        # is_valid, error_msg = verify_outlook_credentials(data['email'], data['outlook_password'])
-        # if not is_valid:
-        #     # Use specific error message from verification system
-        #     return {'success': False, 'error': error_msg or 'Invalid Outlook credentials'}
+        # Enabled: Docker container has Playwright installed
+        logging.info(f"Verifying Outlook credentials for {data['email']}")
+        is_valid, error_msg = verify_outlook_credentials(data['email'], data['outlook_password'])
+        if not is_valid:
+            # Use specific error message from verification system
+            return {'success': False, 'error': error_msg or 'Invalid Outlook credentials'}
 
         # Insert User
         token = generate_token()
