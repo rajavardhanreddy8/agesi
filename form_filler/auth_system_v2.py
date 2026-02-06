@@ -140,7 +140,8 @@ def register_user(data: dict) -> dict:
             return {'success': False, 'error': 'Email already registered'}
         
         # Verify Outlook credentials
-        # TEMPORARY: Disabled to unblock registration while fixing browser issues
+        # TEMPORARY: Disabled to unblock registration while fixing browser issues (Forced Update)
+        logging.info(f"Skipping Outlook verification for {data['email']} to unblock registration")
         # is_valid, error_msg = verify_outlook_credentials(data['email'], data['outlook_password'])
         # if not is_valid:
         #     # Use specific error message from verification system
