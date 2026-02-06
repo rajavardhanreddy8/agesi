@@ -31,26 +31,21 @@ jobs:
           python -m venv antenv
           source antenv/bin/activate
           pip install -r requirements.txt
-          
-      - name: Create deployment package with Vendored Dependencies
-        run: |
-          mkdir dist
-          cp -r form_filler dist/
-          cp app.py dist/
-          cp requirements.txt dist/
-          # Install dependencies directly into the package (Linux compatible)
-          pip install -r requirements.txt --target dist/.python_packages/lib/site-packages
-          
-          # Zip the dist folder including dependencies
-          cd dist
-          zip -r ../python-app.zip .
-          cd ..
-          
+                
+      # By default, when you enable GitHub CI/CD integration through the Azure portal, the platform automatically sets the SCM_DO_BUILD_DURING_DEPLOYMENT application setting to true. This triggers the use of Oryx, a build engine that handles application compilation and dependency installation (e.g., pip install) directly on the platform during deployment. Hence, we exclude the antenv virtual environment directory from the deployment artifact to reduce the payload size. 
       - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v4
         with:
           name: python-app
-          path: python-app.zip
+          path: |
+            .
+            !antenv/
+
+      # 🚫 Opting Out of Oryx Build
+      # If you prefer to disable the Oryx build process during deployment, follow these steps:
+      # 1. Remove the SCM_DO_BUILD_DURING_DEPLOYMENT app setting from your Azure App Service Environment variables.
+      # 2. Refer to sample workflows for alternative deployment strategies: https://github.com/Azure/actions-workflow-samples/tree/master/AppService
+      
 
   deploy:
     runs-on: ubuntu-latest
@@ -68,9 +63,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_844B39AB3C084A278481DCA2D9B6FDA2 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_E7AF4E37C2594470863FC6C493D78281 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_A58750220A354A1DA6E81CA1AFE499C8 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_B757DD365044444F83318D99DE5A2715 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_B8628FC187A64646B6ADAD74E0712CE8 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_A35E430E6BF944769F9FB594AF8D544A }}
 
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
@@ -78,5 +73,4 @@ jobs:
         with:
           app-name: 'outing-backend-api'
           slot-name: 'Production'
-          package: python-app.zip
           
