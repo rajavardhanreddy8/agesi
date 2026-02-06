@@ -230,8 +230,10 @@ def login_user(email: str, password: str) -> dict:
             }
         }
     except Exception as e:
-        print(f"Login Error: {e}")
-        return {'success': False, 'error': str(e)}
+    except Exception as e:
+        import traceback
+        logging.error(f"Login Failed Traceback: {traceback.format_exc()}")
+        return {'success': False, 'error': f"Login Error: {str(e)}"}
 
 def verify_email_token(token: str) -> dict:
     """Verify email token"""
