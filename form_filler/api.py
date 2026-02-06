@@ -167,8 +167,8 @@ def run_automation_async(task_id, form_url, email, password, form_data, pdf_path
         except Exception as e:
             logging.error(f"Failed to update DB status: {e}")
         
-        # Headless=False for better reliability with MFA, but consider Headless=True for scalability if MFA allows
-        automation = MSFormAutomation(headless=False) 
+        # Headless=True REQUIRED for Azure/Docker deployment (no UI available)
+        automation = MSFormAutomation(headless=True) 
         
         # Run the full workflow
         success = automation.run_automation(
