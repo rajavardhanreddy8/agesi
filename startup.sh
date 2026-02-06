@@ -2,6 +2,7 @@
 # Start Gunicorn with proper configuration
 # Install dependencies since we are using Zip Deploy (no build)
 pip install -r requirements.txt
+playwright install chromium
 
 # Create necessary directories
 mkdir -p signatures

@@ -1,0 +1,14 @@
+<step title="Incoming Request" date="2026-02-01T16:18:48.190" instance="125d80" url="/api/publish?type=zip" method="POST" type="request" pid="772,1,23" Accept="*/*" Host="outing-backend-api.scm.azurewebsites.net" User-Agent="AZURECLI/2.80.0 (MSI)" Accept-Encoding="gzip, deflate" Authorization="Bea..." Cache-Control="no-cache" Content-Type="application/octet-stream" Cookie="ARRAffinity=125d804e90e673bfa49d8e68a2a90aa16aea9c4b67d55f6491276c819c38847b; ARRAffinitySameSite=125d804e90e673bfa49d8e68a2a90aa16aea9c4b67d55f6491276c819c38847b" Content-Length="53772" x-ms-client-request-id="99f89eb5-ff89-11f0-bd40-c46516fda539" x-ms-artifact-checksum="b5a12f506a0c7255af381d64027b0b95a38f30621123deaecbd1620cbbcfd11e" X-ARR-LOG-ID="99f89eb5-ff89-11f0-bd40-c46516fda539" CLIENT-IP="152.57.170.227:56409" X-SITE-DEPLOYMENT-ID="outing-backend-api" WAS-DEFAULT-HOSTNAME="outing-backend-api.scm.azurewebsites.net" X-Forwarded-Proto="https" X-AppService-Proto="https" X-Forwarded-TlsVersion="1.3" X-WAWS-Unencoded-URL="/api/publish?type=zip" X-Client-IP="152.57.170.227" X-Client-Port="56409" >
+  <step title="Cleanup Xml Logs" date="2026-02-01T16:18:48.250" /><!-- duration: 191ms -->
+  <step title="OneDeploy" date="2026-02-01T16:18:50.736" >
+    <step title="Starting PushDeployAsync" date="2026-02-01T16:18:50.912" /><!-- duration: 186ms -->
+    <step title="Writing artifact to /tmp/zipdeploy/fe940ca8-5589-4806-8f16-0a2cc884c903.zip" date="2026-02-01T16:18:51.357" >
+      <step title="Writing multipart request body to /tmp/zipdeploy/fe940ca8-5589-4806-8f16-0a2cc884c903.zip" date="2026-02-01T16:18:51.486" /><!-- duration: 36ms -->
+    </step><!-- duration: 595ms -->
+    <step title="Attempting to fetch target branch HEAD" date="2026-02-01T16:18:52.419" /><!-- duration: 60ms -->
+    <step title="Acquiring Deployment Lock" date="2026-02-01T16:18:52.525" /><!-- duration: 136ms -->
+    <step title="Cannot Acquire Deployment Lock already held" date="2026-02-01T16:18:53.045" /><!-- duration: 128ms -->
+    <step title="There is a deployment currently in progress. Please try again when it completes." date="2026-02-01T16:18:53.193" /><!-- duration: 184ms -->
+  </step><!-- duration: 3434ms -->
+  <step title="Outgoing response" date="2026-02-01T16:18:54.466" type="response" statusCode="409" statusText="Conflict" /><!-- duration: 28ms -->
+</step><!-- duration: 6410ms -->
