@@ -1,4 +1,4 @@
-# Outing Automation Agent 4.0
+# Outing Automation Agent (Trigger Deploy 2026-02-06) 4.0
 
 An intelligent agent that automates the submission of outing permission forms using Playwright, React, and Flask, now with **Full Authentication**.
 
