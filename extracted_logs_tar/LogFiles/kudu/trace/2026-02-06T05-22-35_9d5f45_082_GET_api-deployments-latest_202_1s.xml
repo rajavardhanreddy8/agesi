@@ -1,0 +1,11 @@
+<step title="Incoming Request" date="2026-02-06T05:22:35.441" instance="9d5f45" url="/api/deployments/latest?deployer=OneDeploy&amp;time=2026-02-06_05-21-49Z" method="GET" type="request" pid="770,1,5" Host="outing-backend-api.scm.azurewebsites.net" User-Agent="GITHUBACTIONS_DeployWebAppToAzure_1cd51d1c1fe349e361c2ab93379d3c8cc18b164b0a18eb4480d27d12ac5c2cb6" Authorization="Bea..." Content-Type="application/json; charset=utf-8" Cookie="ARRAffinity=9d5f45b0f79333e643cadcb5aa89db4a1f3f4858a422c559aeaf07997d03f017;Path=/;HttpOnly;Secure;Domain=outing-backend-api.scm.azurewebsites.net; ARRAffinitySameSite=9d5f45b0f79333e643cadcb5aa89db4a1f3f4858a422c559aeaf07997d03f017;Path=/;HttpOnly;SameSite=None;Secure;Domain=outing-backend-api.scm.azurewebsites.net" Content-Length="0" X-ARR-LOG-ID="53599799-9edc-4d87-9b0d-6a22032de8e8" CLIENT-IP="64.236.133.193:22536" X-SITE-DEPLOYMENT-ID="outing-backend-api" WAS-DEFAULT-HOSTNAME="outing-backend-api.scm.azurewebsites.net" X-Forwarded-Proto="https" X-AppService-Proto="https" X-Forwarded-TlsVersion="1.3" X-WAWS-Unencoded-URL="/api/deployments/latest?deployer=OneDeploy&amp;time=2026-02-06_05-21-49Z" X-Client-IP="64.236.133.193" X-Client-Port="22536" >
+  <step title="Cleanup Xml Logs" date="2026-02-06T05:22:35.450" >
+    <step title="Cleanup Infos" date="2026-02-06T05:22:35.492" totalFiles="217" totalCleanup="57" /><!-- duration: 28ms -->
+  </step><!-- duration: 80ms -->
+  <step title="DeploymentService.GetResult" date="2026-02-06T05:22:35.552" >
+    <step title="DeploymentService.GetLatestDeployment" date="2026-02-06T05:22:35.562" >
+      <step title="DeploymentManager.GetResults" date="2026-02-06T05:22:35.597" /><!-- duration: 1175ms -->
+    </step><!-- duration: 1249ms -->
+  </step><!-- duration: 1270ms -->
+  <step title="Outgoing response" date="2026-02-06T05:22:36.832" type="response" statusCode="202" statusText="Accepted" /><!-- duration: 18ms -->
+</step><!-- duration: 1419ms -->

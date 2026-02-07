@@ -40,8 +40,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install Playwright and browsers (deps first, then browser)
-RUN playwright install-deps chromium && playwright install chromium
+# Install Playwright browsers (system deps already installed above)
+RUN python -m playwright install chromium
 
 # Copy application code
 COPY . .

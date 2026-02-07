@@ -39,7 +39,7 @@ const SubscriptionPlans = () => {
         }
     };
 
-    const handleUpgrade = async (planType, gateway = 'payu') => {
+    const handleUpgrade = async (planType, gateway = 'razorpay') => {
         setIsLoading(true);
         try {
             const response = await api.post('/subscription/upgrade', {
@@ -76,26 +76,6 @@ const SubscriptionPlans = () => {
 
                 const rzp = new window.Razorpay(options);
                 rzp.open();
-            } else if (response.data.gateway === 'payu') {
-                const params = response.data.payment_params;
-
-                // Create a dynamic form to submit to PayU
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = params.action;
-
-                Object.entries(params).forEach(([key, value]) => {
-                    if (key !== 'action') {
-                        const input = document.createElement('input');
-                        input.type = 'hidden';
-                        input.name = key;
-                        input.value = value;
-                        form.appendChild(input);
-                    }
-                });
-
-                document.body.appendChild(form);
-                form.submit();
             }
         } catch (error) {
             console.error('Upgrade Error:', error);

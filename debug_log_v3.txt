@@ -1,0 +1,1302 @@
+2026-02-06T03:17:14.1482441Z DEBUG: Attempting DB Connection to aws-1-ap-northeast-1.pooler.supabase.com...
+2026-02-06T03:17:14.1586083Z DEBUG ENV: DB_PORT=6543
+2026-02-06T03:17:14.1586284Z DEBUG ENV: DB_NAME=postgres
+2026-02-06T03:17:14.1876872Z DEBUG ENV: DB_PASSWORD=QStaR3Ac39V8SDuf
+2026-02-06T03:17:14.1876940Z DEBUG ENV: DB_HOST=aws-1-ap-northeast-1.pooler.supabase.com
+2026-02-06T03:17:14.1876958Z DEBUG ENV: DB_USER=postgres.uehkqlamchtdzcusqmhi
+2026-02-06T03:17:15.4684716Z DEBUG: DB Connection SUCCESS!
+2026-02-06T03:17:15.8475549Z 2026-02-06 03:17:15,786 - INFO - 169.254.130.1 - - [06/Feb/2026 03:17:15] "GET /health?t=check_parallel_3 HTTP/1.1" 200 -
+2026-02-06T03:17:20.1781916Z 2026-02-06 03:17:20,177 - INFO - 169.254.130.1 - - [06/Feb/2026 03:17:20] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-02-06T03:51:10.8086755Z DEBUG: Attempting DB Connection to aws-1-ap-northeast-1.pooler.supabase.com...
+2026-02-06T03:51:10.8092257Z DEBUG ENV: DB_PORT=6543
+2026-02-06T03:51:10.8092314Z DEBUG ENV: DB_NAME=postgres
+2026-02-06T03:51:10.8092349Z DEBUG ENV: DB_PASSWORD=QStaR3Ac39V8SDuf
+2026-02-06T03:51:10.8092387Z DEBUG ENV: DB_HOST=aws-1-ap-northeast-1.pooler.supabase.com
+2026-02-06T03:51:10.8092419Z DEBUG ENV: DB_USER=postgres.uehkqlamchtdzcusqmhi
+2026-02-06T03:51:11.4033616Z DEBUG: DB Connection SUCCESS!
+2026-02-06T03:51:11.5087064Z 2026-02-06 03:51:11,505 - INFO - 169.254.130.1 - - [06/Feb/2026 03:51:11] "GET /health?t=check_parallel_3 HTTP/1.1" 200 -
+2026-02-06T03:51:16.6086162Z DEBUG: Attempting DB Connection to aws-1-ap-northeast-1.pooler.supabase.com...
+2026-02-06T03:51:16.6195713Z DEBUG ENV: DB_PORT=6543
+2026-02-06T03:51:16.6195869Z DEBUG ENV: DB_NAME=postgres
+2026-02-06T03:51:16.6195888Z DEBUG ENV: DB_PASSWORD=QStaR3Ac39V8SDuf
+2026-02-06T03:51:16.6195903Z DEBUG ENV: DB_HOST=aws-1-ap-northeast-1.pooler.supabase.com
+2026-02-06T03:51:16.6195918Z DEBUG ENV: DB_USER=postgres.uehkqlamchtdzcusqmhi
+2026-02-06T03:51:17.1446905Z DEBUG: DB Connection SUCCESS!
+2026-02-06T03:51:17.2469603Z 2026-02-06 03:51:17,246 - INFO - 169.254.130.1 - - [06/Feb/2026 03:51:17] "GET /health?t=final_check HTTP/1.1" 200 -
+2026-02-06T03:51:23.1908876Z DEBUG: Attempting DB Connection to aws-1-ap-northeast-1.pooler.supabase.com...
+2026-02-06T03:51:23.1909180Z DEBUG ENV: DB_PORT=6543
+2026-02-06T03:51:23.1909200Z DEBUG ENV: DB_NAME=postgres
+2026-02-06T03:51:23.1909213Z DEBUG ENV: DB_PASSWORD=QStaR3Ac39V8SDuf
+2026-02-06T03:51:23.1912729Z DEBUG ENV: DB_HOST=aws-1-ap-northeast-1.pooler.supabase.com
+2026-02-06T03:51:23.1912750Z DEBUG ENV: DB_USER=postgres.uehkqlamchtdzcusqmhi
+2026-02-06T03:51:23.6503463Z DEBUG: DB Connection SUCCESS!
+2026-02-06T03:51:23.7541377Z 2026-02-06 03:51:23,753 - INFO - 169.254.130.1 - - [06/Feb/2026 03:51:23] "GET /health?t=final_v14 HTTP/1.1" 200 -
+2026-02-06T04:24:34.0102339Z 2026-02-06 04:24:34,008 - INFO - 169.254.130.1 - - [06/Feb/2026 04:24:34] "[33mGET / HTTP/1.1[0m" 404 -
+2026-02-06T04:24:35.0074104Z 2026-02-06 04:24:35,007 - INFO - 169.254.130.1 - - [06/Feb/2026 04:24:35] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-02-06T04:25:05.6213729Z DEBUG: Attempting DB Connection to aws-1-ap-northeast-1.pooler.supabase.com...
+2026-02-06T04:25:05.6214086Z DEBUG ENV: DB_PORT=6543
+2026-02-06T04:25:05.6214108Z DEBUG ENV: DB_NAME=postgres
+2026-02-06T04:25:05.6214122Z DEBUG ENV: DB_PASSWORD=QStaR3Ac39V8SDuf
+2026-02-06T04:25:05.6214137Z DEBUG ENV: DB_HOST=aws-1-ap-northeast-1.pooler.supabase.com
+2026-02-06T04:25:05.6214150Z DEBUG ENV: DB_USER=postgres.uehkqlamchtdzcusqmhi
+2026-02-06T04:25:06.1826764Z DEBUG: DB Connection SUCCESS!
+2026-02-06T04:25:06.2845956Z 2026-02-06 04:25:06,274 - INFO - 169.254.130.1 - - [06/Feb/2026 04:25:06] "GET /health HTTP/1.1" 200 -
+2026-02-06T04:25:20.3192713Z DEBUG: Attempting DB Connection to aws-1-ap-northeast-1.pooler.supabase.com...
+2026-02-06T04:25:20.3194671Z DEBUG ENV: DB_PORT=6543
+2026-02-06T04:25:20.3194716Z DEBUG ENV: DB_NAME=postgres
+2026-02-06T04:25:20.3194729Z DEBUG ENV: DB_PASSWORD=QStaR3Ac39V8SDuf
+2026-02-06T04:25:20.3194742Z DEBUG ENV: DB_HOST=aws-1-ap-northeast-1.pooler.supabase.com
+2026-02-06T04:25:20.3194754Z DEBUG ENV: DB_USER=postgres.uehkqlamchtdzcusqmhi
+2026-02-06T04:25:20.7711965Z DEBUG: DB Connection SUCCESS!
+2026-02-06T04:25:20.8740063Z 2026-02-06 04:25:20,873 - INFO - 169.254.130.1 - - [06/Feb/2026 04:25:20] "GET /health HTTP/1.1" 200 -
+2026-02-06T04:33:16.0309515Z 2026-02-06 04:33:16,030 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=id&email=eq.agent_test_a74f5ba1%40woxsen.edu.in "HTTP/2 200 OK"
+2026-02-06T04:33:18.1309161Z Outlook verification failed: Executable doesn't exist at /root/.cache/ms-playwright/chromium-1091/chrome-linux/chrome
+2026-02-06T04:33:18.1309541Z +------------------------------------------------------------+
+2026-02-06T04:33:18.1309564Z ¦ Looks like Playwright was just installed or updated.       ¦
+2026-02-06T04:33:18.1309579Z ¦ Please run the following command to download new browsers: ¦
+2026-02-06T04:33:18.1309592Z ¦                                                            ¦
+2026-02-06T04:33:18.1309606Z ¦     playwright install                                     ¦
+2026-02-06T04:33:18.1309618Z ¦                                                            ¦
+2026-02-06T04:33:18.1309631Z ¦ <3 Playwright Team                                         ¦
+2026-02-06T04:33:18.1377895Z +------------------------------------------------------------+
+2026-02-06T04:33:18.1383049Z 2026-02-06 04:33:18,138 - INFO - 169.254.130.1 - - [06/Feb/2026 04:33:18] "[31m[1mPOST /api/auth/register HTTP/1.1[0m" 400 -
+2026-02-06T04:33:28.6162346Z 2026-02-06 04:33:28,615 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=id&email=eq.agent_test_d557d689%40woxsen.edu.in "HTTP/2 200 OK"
+2026-02-06T04:33:29.6943500Z Outlook verification failed: Executable doesn't exist at /root/.cache/ms-playwright/chromium-1091/chrome-linux/chrome
+2026-02-06T04:33:29.6943825Z +------------------------------------------------------------+
+2026-02-06T04:33:29.6943847Z ¦ Looks like Playwright was just installed or updated.       ¦
+2026-02-06T04:33:29.6943862Z ¦ Please run the following command to download new browsers: ¦
+2026-02-06T04:33:29.6943875Z ¦                                                            ¦
+2026-02-06T04:33:29.6943887Z ¦     playwright install                                     ¦
+2026-02-06T04:33:29.6943900Z ¦                                                            ¦
+2026-02-06T04:33:29.6943912Z ¦ <3 Playwright Team                                         ¦
+2026-02-06T04:33:29.7053752Z 2026-02-06 04:33:29,703 - INFO - 169.254.130.1 - - [06/Feb/2026 04:33:29] "[31m[1mPOST /api/auth/register HTTP/1.1[0m" 400 -
+2026-02-06T04:33:29.7129642Z +------------------------------------------------------------+
+2026-02-06T04:35:26.3435568Z 2026-02-06 04:35:26,341 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=id&email=eq.guntaka.reddy_2028%40woxsen.edu.in "HTTP/2 200 OK"
+2026-02-06T04:35:27.5286121Z Outlook verification failed: Executable doesn't exist at /root/.cache/ms-playwright/chromium-1091/chrome-linux/chrome
+2026-02-06T04:35:27.5286432Z +------------------------------------------------------------+
+2026-02-06T04:35:27.5286509Z ¦ Looks like Playwright was just installed or updated.       ¦
+2026-02-06T04:35:27.5286525Z ¦ Please run the following command to download new browsers: ¦
+2026-02-06T04:35:27.5286538Z ¦                                                            ¦
+2026-02-06T04:35:27.5286551Z ¦     playwright install                                     ¦
+2026-02-06T04:35:27.5286564Z ¦                                                            ¦
+2026-02-06T04:35:27.5286577Z ¦ <3 Playwright Team                                         ¦
+2026-02-06T04:35:27.5379302Z +------------------------------------------------------------+
+2026-02-06T04:35:27.5512549Z 2026-02-06 04:35:27,551 - INFO - 169.254.130.1 - - [06/Feb/2026 04:35:27] "[31m[1mPOST /api/auth/register HTTP/1.1[0m" 400 -
+2026-02-06T04:36:37.7113370Z 2026-02-06 04:36:37,711 - INFO - 169.254.130.1 - - [06/Feb/2026 04:36:37] "[35m[1mPOST /api/auth/register HTTP/1.1[0m" 500 -
+2026-02-06T04:38:43.4884716Z DEBUG: Attempting DB Connection to aws-1-ap-northeast-1.pooler.supabase.com...
+2026-02-06T04:38:43.4884953Z DEBUG ENV: DB_PORT=6543
+2026-02-06T04:38:43.4884971Z DEBUG ENV: DB_NAME=postgres
+2026-02-06T04:38:43.4884985Z DEBUG ENV: DB_PASSWORD=QStaR3Ac39V8SDuf
+2026-02-06T04:38:43.4884998Z DEBUG ENV: DB_HOST=aws-1-ap-northeast-1.pooler.supabase.com
+2026-02-06T04:38:43.4885012Z DEBUG ENV: DB_USER=postgres.uehkqlamchtdzcusqmhi
+2026-02-06T04:38:43.8248292Z DEBUG: DB Connection SUCCESS!
+2026-02-06T04:38:43.8861560Z 2026-02-06 04:38:43,885 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=id&email=eq.guntaka.reddy_2028%40woxsen.edu.in "HTTP/2 200 OK"
+2026-02-06T04:38:43.9579803Z 2026-02-06 04:38:43,957 - INFO - 169.254.130.1 - - [06/Feb/2026 04:38:43] "GET /health HTTP/1.1" 200 -
+2026-02-06T04:38:44.9268622Z Outlook verification failed: Executable doesn't exist at /root/.cache/ms-playwright/chromium-1091/chrome-linux/chrome
+2026-02-06T04:38:44.9269025Z +------------------------------------------------------------+
+2026-02-06T04:38:44.9269050Z ¦ Looks like Playwright was just installed or updated.       ¦
+2026-02-06T04:38:44.9269113Z ¦ Please run the following command to download new browsers: ¦
+2026-02-06T04:38:44.9269127Z ¦                                                            ¦
+2026-02-06T04:38:44.9269140Z ¦     playwright install                                     ¦
+2026-02-06T04:38:44.9269153Z ¦                                                            ¦
+2026-02-06T04:38:44.9269165Z ¦ <3 Playwright Team                                         ¦
+2026-02-06T04:38:44.9273351Z +------------------------------------------------------------+
+2026-02-06T04:38:44.9281068Z 2026-02-06 04:38:44,927 - INFO - 169.254.130.1 - - [06/Feb/2026 04:38:44] "[31m[1mPOST /api/auth/register HTTP/1.1[0m" 400 -
+2026-02-06T04:43:53.3306960Z 2026-02-06 04:43:53,328 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=id&email=eq.verify_fix_f908fa%40woxsen.edu.in "HTTP/2 200 OK"
+2026-02-06T04:43:54.4499329Z Outlook verification failed: Executable doesn't exist at /root/.cache/ms-playwright/chromium-1091/chrome-linux/chrome
+2026-02-06T04:43:54.4502599Z +------------------------------------------------------------+
+2026-02-06T04:43:54.4502650Z ¦ Looks like Playwright was just installed or updated.       ¦
+2026-02-06T04:43:54.4502670Z ¦ Please run the following command to download new browsers: ¦
+2026-02-06T04:43:54.4502685Z ¦                                                            ¦
+2026-02-06T04:43:54.4502697Z ¦     playwright install                                     ¦
+2026-02-06T04:43:54.4502710Z ¦                                                            ¦
+2026-02-06T04:43:54.4502724Z ¦ <3 Playwright Team                                         ¦
+2026-02-06T04:43:54.4502876Z +------------------------------------------------------------+
+2026-02-06T04:43:54.4604799Z 2026-02-06 04:43:54,450 - INFO - 169.254.130.1 - - [06/Feb/2026 04:43:54] "[31m[1mPOST /api/auth/register HTTP/1.1[0m" 400 -
+2026-02-06T04:44:17.7562878Z 2026-02-06 04:44:17,756 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=id&email=eq.verify_fix_3b5bf7%40woxsen.edu.in "HTTP/2 200 OK"
+2026-02-06T04:44:18.7276524Z Outlook verification failed: Executable doesn't exist at /root/.cache/ms-playwright/chromium-1091/chrome-linux/chrome
+2026-02-06T04:44:18.7276847Z +------------------------------------------------------------+
+2026-02-06T04:44:18.7276869Z ¦ Looks like Playwright was just installed or updated.       ¦
+2026-02-06T04:44:18.7276883Z ¦ Please run the following command to download new browsers: ¦
+2026-02-06T04:44:18.7276895Z ¦                                                            ¦
+2026-02-06T04:44:18.7276908Z ¦     playwright install                                     ¦
+2026-02-06T04:44:18.7276920Z ¦                                                            ¦
+2026-02-06T04:44:18.7276933Z ¦ <3 Playwright Team                                         ¦
+2026-02-06T04:44:18.7368654Z +------------------------------------------------------------+
+2026-02-06T04:44:18.7369774Z 2026-02-06 04:44:18,735 - INFO - 169.254.130.1 - - [06/Feb/2026 04:44:18] "[31m[1mPOST /api/auth/register HTTP/1.1[0m" 400 -
+2026-02-06T04:47:23.9863190Z 2026-02-06 04:47:23,984 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=id&email=eq.verify_fix_a5f997%40woxsen.edu.in "HTTP/2 200 OK"
+2026-02-06T04:47:25.0597443Z Outlook verification failed: Executable doesn't exist at /root/.cache/ms-playwright/chromium-1091/chrome-linux/chrome
+2026-02-06T04:47:25.0597831Z +------------------------------------------------------------+
+2026-02-06T04:47:25.0597855Z ¦ Looks like Playwright was just installed or updated.       ¦
+2026-02-06T04:47:25.0597870Z ¦ Please run the following command to download new browsers: ¦
+2026-02-06T04:47:25.0597882Z ¦                                                            ¦
+2026-02-06T04:47:25.0597895Z ¦     playwright install                                     ¦
+2026-02-06T04:47:25.0597908Z ¦                                                            ¦
+2026-02-06T04:47:25.0597920Z ¦ <3 Playwright Team                                         ¦
+2026-02-06T04:47:25.0602884Z +------------------------------------------------------------+
+2026-02-06T04:47:25.0611426Z 2026-02-06 04:47:25,061 - INFO - 169.254.130.1 - - [06/Feb/2026 04:47:25] "[31m[1mPOST /api/auth/register HTTP/1.1[0m" 400 -
+2026-02-06T04:50:34.9777482Z    _____                               
+2026-02-06T04:50:35.0871835Z   /  _  \ __________ _________   ____  
+2026-02-06T04:50:35.0872110Z  /  /_\  \\___   /  |  \_  __ \_/ __ \ 
+2026-02-06T04:50:35.0872134Z /    |    \/    /|  |  /|  | \/\  ___/ 
+2026-02-06T04:50:35.0872159Z \____|__  /_____ \____/ |__|    \___  >
+2026-02-06T04:50:35.0872179Z         \/      \/                  \/ 
+2026-02-06T04:50:35.0872267Z A P P   S E R V I C E   O N   L I N U X
+2026-02-06T04:50:35.0872287Z 
+2026-02-06T04:50:35.0872311Z Documentation    : http://aka.ms/webapp-linux
+2026-02-06T04:50:35.0872331Z Python quickstart: https://aka.ms/python-qs
+2026-02-06T04:50:35.0872356Z Python version   : 3.11.14
+2026-02-06T04:50:35.0872375Z Instance Name    : lw0sdlwk00098M
+2026-02-06T04:50:35.0872420Z Instance Id      : 9d5f45b0f79333e643cadcb5aa89db4a1f3f4858a422c559aeaf07997d03f017
+2026-02-06T04:50:35.0872449Z 
+2026-02-06T04:50:35.0872467Z Note: Any data outside '/home' is not persisted
+2026-02-06T04:50:38.1324912Z Starting OpenBSD Secure Shell server: sshd.
+2026-02-06T04:50:38.1749903Z WEBSITES_INCLUDE_CLOUD_CERTS is not set to true.
+2026-02-06T04:50:38.3411161Z Updating certificates in /etc/ssl/certs...
+2026-02-06T04:50:44.6986758Z 2026-02-06 04:50:44,697 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=id&email=eq.verify_fix_10b635%40woxsen.edu.in "HTTP/2 200 OK"
+2026-02-06T04:50:53.3279359Z 2026-02-06 04:50:53,300 - INFO - 169.254.130.1 - - [06/Feb/2026 04:50:53] "[31m[1mPOST /api/auth/register HTTP/1.1[0m" 400 -
+2026-02-06T04:50:53.3279822Z Outlook verification failed: Executable doesn't exist at /root/.cache/ms-playwright/chromium-1091/chrome-linux/chrome
+2026-02-06T04:50:53.3279857Z +------------------------------------------------------------+
+2026-02-06T04:50:53.3279873Z ¦ Looks like Playwright was just installed or updated.       ¦
+2026-02-06T04:50:53.3279886Z ¦ Please run the following command to download new browsers: ¦
+2026-02-06T04:50:53.3279900Z ¦                                                            ¦
+2026-02-06T04:50:53.3279913Z ¦     playwright install                                     ¦
+2026-02-06T04:50:53.3279926Z ¦                                                            ¦
+2026-02-06T04:50:53.3279939Z ¦ <3 Playwright Team                                         ¦
+2026-02-06T04:50:53.3279991Z +------------------------------------------------------------+
+2026-02-06T04:50:59.7059433Z rehash: warning: skipping duplicate certificate in azl_SSL.com_TLS_RSA_Root_CA_2022.pem
+2026-02-06T04:50:59.7268720Z rehash: warning: skipping duplicate certificate in azl_Sectigo_Public_Server_Authentication_Root_E46.pem
+2026-02-06T04:50:59.7656449Z rehash: warning: skipping duplicate certificate in azl_SSL.com_TLS_ECC_Root_CA_2022.pem
+2026-02-06T04:50:59.8263354Z rehash: warning: skipping duplicate certificate in azl_Sectigo_Public_Server_Authentication_Root_R46.pem
+2026-02-06T04:51:00.0256871Z 4 added, 0 removed; done.
+2026-02-06T04:51:00.0362244Z Running hooks in /etc/ca-certificates/update.d...
+2026-02-06T04:51:00.0450125Z done.
+2026-02-06T04:51:00.0650345Z CA certificates copied and updated successfully.
+2026-02-06T04:51:00.7109134Z Site's appCommandLine: python -u app.py
+2026-02-06T04:51:01.3405364Z Starting periodic command scheduler: cron.
+2026-02-06T04:51:01.3416679Z Launching oryx with: create-script -appPath /home/site/wwwroot -output /opt/startup/startup.sh -virtualEnvName antenv -defaultApp /opt/defaultsite -userStartupCommand 'python -u app.py'
+2026-02-06T04:51:02.0104242Z Found build manifest file at '/home/site/wwwroot/oryx-manifest.toml'. Deserializing it...
+2026-02-06T04:51:02.0500112Z Build Operation ID: 5c6b9aeaaf0a0cd5
+2026-02-06T04:51:02.0510443Z Oryx Version: 0.2.20260112.1, Commit: da7d752b5a9eaff8f6f06e0e37df55a14ef5705b, ReleaseTagName: 20260112.1
+2026-02-06T04:51:02.0515155Z Output is compressed. Extracting it...
+2026-02-06T04:51:02.0905660Z Found zstd-compressed tarball.
+2026-02-06T04:51:02.0905966Z Extracting '/home/site/wwwroot/output.tar.zst' to directory '/tmp/8de623c82482721'...
+2026-02-06T04:51:02.0905997Z Using zstd for decompression of file: /home/site/wwwroot/output.tar.zst
+2026-02-06T04:51:19.9987409Z App path is set to '/tmp/8de623c82482721'
+2026-02-06T04:51:20.1373516Z Writing output script to '/opt/startup/startup.sh'
+2026-02-06T04:51:20.9056667Z Using packages from virtual environment antenv located at /tmp/8de623c82482721/antenv.
+2026-02-06T04:51:20.9065341Z Updated PYTHONPATH to '/opt/startup/app_logs:/tmp/8de623c82482721/antenv/lib/python3.11/site-packages'
+2026-02-06T04:51:21.2345157Z DEBUG: API.PY MODULE LOADING...
+2026-02-06T04:51:26.6571689Z DEBUG: httpx version: 0.28.1
+2026-02-06T04:51:26.6646541Z DEBUG: gotrue version: 2.12.3
+2026-02-06T04:51:26.6655552Z DEBUG: supabase version: 2.11.0
+2026-02-06T04:51:28.0242654Z  * Serving Flask app 'form_filler.api'
+2026-02-06T04:51:28.0335723Z  * Debug mode: off
+2026-02-06T04:51:28.4806514Z 2026-02-06 04:51:28,480 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+2026-02-06T04:51:28.4809712Z  * Running on all addresses (0.0.0.0)
+2026-02-06T04:51:28.4809818Z  * Running on http://127.0.0.1:8000
+2026-02-06T04:51:28.4809841Z  * Running on http://169.254.130.4:8000
+2026-02-06T04:51:28.4809980Z 2026-02-06 04:51:28,480 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-06T04:51:28.6201963Z 2026-02-06 04:51:28,619 - INFO - 169.254.130.1 - - [06/Feb/2026 04:51:28] "[33mGET /robots933456.txt HTTP/1.1[0m" 404 -
+2026-02-06T04:53:43.7592396Z    _____                               
+2026-02-06T04:53:43.7692802Z   /  _  \ __________ _________   ____  
+2026-02-06T04:53:43.7695941Z  /  /_\  \\___   /  |  \_  __ \_/ __ \ 
+2026-02-06T04:53:43.7696012Z /    |    \/    /|  |  /|  | \/\  ___/ 
+2026-02-06T04:53:43.7696046Z \____|__  /_____ \____/ |__|    \___  >
+2026-02-06T04:53:43.7696087Z         \/      \/                  \/ 
+2026-02-06T04:53:43.7696115Z A P P   S E R V I C E   O N   L I N U X
+2026-02-06T04:53:43.7696131Z 
+2026-02-06T04:53:43.7696150Z Documentation    : http://aka.ms/webapp-linux
+2026-02-06T04:53:43.7696168Z Python quickstart: https://aka.ms/python-qs
+2026-02-06T04:53:43.7696190Z Python version   : 3.11.14
+2026-02-06T04:53:43.7696207Z Instance Name    : lw0sdlwk00098M
+2026-02-06T04:53:43.7696248Z Instance Id      : 9d5f45b0f79333e643cadcb5aa89db4a1f3f4858a422c559aeaf07997d03f017
+2026-02-06T04:53:43.7696265Z 
+2026-02-06T04:53:43.7696281Z Note: Any data outside '/home' is not persisted
+2026-02-06T04:53:45.0290684Z Starting OpenBSD Secure Shell server: sshd.
+2026-02-06T04:53:45.0417165Z WEBSITES_INCLUDE_CLOUD_CERTS is not set to true.
+2026-02-06T04:53:45.1100433Z Updating certificates in /etc/ssl/certs...
+2026-02-06T04:53:58.2279186Z rehash: warning: skipping duplicate certificate in azl_SSL.com_TLS_RSA_Root_CA_2022.pem
+2026-02-06T04:53:58.2469947Z rehash: warning: skipping duplicate certificate in azl_Sectigo_Public_Server_Authentication_Root_E46.pem
+2026-02-06T04:53:58.2490140Z rehash: warning: skipping duplicate certificate in azl_SSL.com_TLS_ECC_Root_CA_2022.pem
+2026-02-06T04:53:58.2967196Z rehash: warning: skipping duplicate certificate in azl_Sectigo_Public_Server_Authentication_Root_R46.pem
+2026-02-06T04:53:58.3183462Z 4 added, 0 removed; done.
+2026-02-06T04:53:58.3194149Z Running hooks in /etc/ca-certificates/update.d...
+2026-02-06T04:53:58.3290972Z done.
+2026-02-06T04:53:58.3490886Z CA certificates copied and updated successfully.
+2026-02-06T04:53:58.7272203Z Site's appCommandLine: python -u app.py
+2026-02-06T04:53:59.2486722Z Starting periodic command scheduler: cron.
+2026-02-06T04:53:59.2491909Z Launching oryx with: create-script -appPath /home/site/wwwroot -output /opt/startup/startup.sh -virtualEnvName antenv -defaultApp /opt/defaultsite -userStartupCommand 'python -u app.py'
+2026-02-06T04:53:59.4365501Z Could not find build manifest file at '/home/site/wwwroot/oryx-manifest.toml'
+2026-02-06T04:53:59.4366152Z Could not find operation ID in manifest. Generating an operation id...
+2026-02-06T04:53:59.4366186Z Build Operation ID: ae298233-85eb-413e-a2b0-3ca00c05de2c
+2026-02-06T04:54:00.2664120Z Oryx Version: 0.2.20260112.1, Commit: da7d752b5a9eaff8f6f06e0e37df55a14ef5705b, ReleaseTagName: 20260112.1
+2026-02-06T04:54:00.4155413Z Writing output script to '/opt/startup/startup.sh'
+2026-02-06T04:54:00.6842779Z WARNING: Could not find virtual environment directory /home/site/wwwroot/antenv.
+2026-02-06T04:54:00.6852707Z WARNING: Could not find package directory /home/site/wwwroot/__oryx_packages__.
+2026-02-06T04:54:01.0450667Z python: can't open file '/home/site/wwwroot/app.py': [Errno 2] No such file or directory
+2026-02-06T04:55:39.7685350Z    _____                               
+2026-02-06T04:55:39.7685728Z   /  _  \ __________ _________   ____  
+2026-02-06T04:55:39.7685745Z  /  /_\  \\___   /  |  \_  __ \_/ __ \ 
+2026-02-06T04:55:39.7685757Z /    |    \/    /|  |  /|  | \/\  ___/ 
+2026-02-06T04:55:39.7685769Z \____|__  /_____ \____/ |__|    \___  >
+2026-02-06T04:55:39.7685781Z         \/      \/                  \/ 
+2026-02-06T04:55:39.7685794Z A P P   S E R V I C E   O N   L I N U X
+2026-02-06T04:55:39.7685805Z 
+2026-02-06T04:55:39.7685818Z Documentation    : http://aka.ms/webapp-linux
+2026-02-06T04:55:39.7685831Z Python quickstart: https://aka.ms/python-qs
+2026-02-06T04:55:39.7685844Z Python version   : 3.11.14
+2026-02-06T04:55:39.7685878Z Instance Name    : lw0sdlwk00098M
+2026-02-06T04:55:39.7685895Z Instance Id      : 9d5f45b0f79333e643cadcb5aa89db4a1f3f4858a422c559aeaf07997d03f017
+2026-02-06T04:55:39.7685906Z 
+2026-02-06T04:55:39.7685918Z Note: Any data outside '/home' is not persisted
+2026-02-06T04:55:40.7209506Z Starting OpenBSD Secure Shell server: sshd.
+2026-02-06T04:55:40.7406720Z WEBSITES_INCLUDE_CLOUD_CERTS is not set to true.
+2026-02-06T04:55:40.7813995Z Updating certificates in /etc/ssl/certs...
+2026-02-06T04:55:52.7093962Z rehash: warning: skipping duplicate certificate in azl_SSL.com_TLS_RSA_Root_CA_2022.pem
+2026-02-06T04:55:52.7696280Z rehash: warning: skipping duplicate certificate in azl_Sectigo_Public_Server_Authentication_Root_E46.pem
+2026-02-06T04:55:52.7696624Z rehash: warning: skipping duplicate certificate in azl_SSL.com_TLS_ECC_Root_CA_2022.pem
+2026-02-06T04:55:52.7799908Z rehash: warning: skipping duplicate certificate in azl_Sectigo_Public_Server_Authentication_Root_R46.pem
+2026-02-06T04:55:52.8277617Z 4 added, 0 removed; done.
+2026-02-06T04:55:52.8290283Z Running hooks in /etc/ca-certificates/update.d...
+2026-02-06T04:55:52.8372092Z done.
+2026-02-06T04:55:52.8495033Z CA certificates copied and updated successfully.
+2026-02-06T04:55:53.0191321Z Site's appCommandLine: python -u app.py
+2026-02-06T04:55:53.6329546Z Starting periodic command scheduler: cron.
+2026-02-06T04:55:53.6434928Z Launching oryx with: create-script -appPath /home/site/wwwroot -output /opt/startup/startup.sh -virtualEnvName antenv -defaultApp /opt/defaultsite -userStartupCommand 'python -u app.py'
+2026-02-06T04:55:53.8128669Z Found build manifest file at '/home/site/wwwroot/oryx-manifest.toml'. Deserializing it...
+2026-02-06T04:55:53.8332245Z Build Operation ID: 35c7738b94a234d1
+2026-02-06T04:55:53.8439834Z Oryx Version: 0.2.20260112.1, Commit: da7d752b5a9eaff8f6f06e0e37df55a14ef5705b, ReleaseTagName: 20260112.1
+2026-02-06T04:55:53.8444955Z Output is compressed. Extracting it...
+2026-02-06T04:55:53.8528638Z Found zstd-compressed tarball.
+2026-02-06T04:55:53.8540386Z Extracting '/home/site/wwwroot/output.tar.zst' to directory '/tmp/8de653bc214ba66'...
+2026-02-06T04:55:53.8546305Z Using zstd for decompression of file: /home/site/wwwroot/output.tar.zst
+2026-02-06T04:56:05.7083672Z App path is set to '/tmp/8de653bc214ba66'
+2026-02-06T04:56:05.8363214Z Writing output script to '/opt/startup/startup.sh'
+2026-02-06T04:56:06.3136946Z Using packages from virtual environment antenv located at /tmp/8de653bc214ba66/antenv.
+2026-02-06T04:56:06.3137244Z Updated PYTHONPATH to '/opt/startup/app_logs:/tmp/8de653bc214ba66/antenv/lib/python3.11/site-packages'
+2026-02-06T04:56:06.5664352Z DEBUG: API.PY MODULE LOADING...
+2026-02-06T04:56:09.5231935Z DEBUG: httpx version: 0.28.1
+2026-02-06T04:56:09.5308960Z DEBUG: gotrue version: 2.12.3
+2026-02-06T04:56:09.5309128Z DEBUG: supabase version: 2.11.0
+2026-02-06T04:56:10.5710134Z  * Serving Flask app 'form_filler.api'
+2026-02-06T04:56:10.5715318Z  * Debug mode: off
+2026-02-06T04:56:10.5817224Z 2026-02-06 04:56:10,581 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+2026-02-06T04:56:10.5817442Z  * Running on all addresses (0.0.0.0)
+2026-02-06T04:56:10.5817456Z  * Running on http://127.0.0.1:8000
+2026-02-06T04:56:10.5817469Z  * Running on http://169.254.130.3:8000
+2026-02-06T04:56:10.5820859Z 2026-02-06 04:56:10,582 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-06T04:56:10.6611925Z 2026-02-06 04:56:10,661 - INFO - 169.254.130.1 - - [06/Feb/2026 04:56:10] "[33mGET /robots933456.txt HTTP/1.1[0m" 404 -
+2026-02-06T04:56:11.1222181Z DEBUG: Attempting DB Connection to aws-1-ap-northeast-1.pooler.supabase.com...
+2026-02-06T04:56:11.1222380Z DEBUG ENV: DB_PORT=6543
+2026-02-06T04:56:11.1222399Z DEBUG ENV: DB_NAME=postgres
+2026-02-06T04:56:11.1222413Z DEBUG ENV: DB_PASSWORD=QStaR3Ac39V8SDuf
+2026-02-06T04:56:11.1222427Z DEBUG ENV: DB_HOST=aws-1-ap-northeast-1.pooler.supabase.com
+2026-02-06T04:56:11.1222445Z DEBUG ENV: DB_USER=postgres.uehkqlamchtdzcusqmhi
+2026-02-06T04:56:11.7427443Z DEBUG: DB Connection SUCCESS!
+2026-02-06T04:56:11.8463105Z 2026-02-06 04:56:11,845 - INFO - 169.254.130.1 - - [06/Feb/2026 04:56:11] "GET /health HTTP/1.1" 200 -
+2026-02-06T05:00:24.2735178Z 2026-02-06 05:00:24,258 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=id&email=eq.verify_fix_f0924a%40woxsen.edu.in "HTTP/2 200 OK"
+2026-02-06T05:00:24.2810535Z Registration Error: name 'logging' is not defined
+2026-02-06T05:00:24.2816363Z 2026-02-06 05:00:24,281 - INFO - 169.254.130.1 - - [06/Feb/2026 05:00:24] "[31m[1mPOST /api/auth/register HTTP/1.1[0m" 400 -
+2026-02-06T05:05:31.3714132Z    _____                               
+2026-02-06T05:05:31.3811355Z   /  _  \ __________ _________   ____  
+2026-02-06T05:05:31.3811530Z  /  /_\  \\___   /  |  \_  __ \_/ __ \ 
+2026-02-06T05:05:31.3811552Z /    |    \/    /|  |  /|  | \/\  ___/ 
+2026-02-06T05:05:31.3811571Z \____|__  /_____ \____/ |__|    \___  >
+2026-02-06T05:05:31.3811617Z         \/      \/                  \/ 
+2026-02-06T05:05:31.3811649Z A P P   S E R V I C E   O N   L I N U X
+2026-02-06T05:05:31.3811665Z 
+2026-02-06T05:05:31.3811685Z Documentation    : http://aka.ms/webapp-linux
+2026-02-06T05:05:31.3811705Z Python quickstart: https://aka.ms/python-qs
+2026-02-06T05:05:31.3811723Z Python version   : 3.11.14
+2026-02-06T05:05:31.3811740Z Instance Name    : lw0sdlwk00098M
+2026-02-06T05:05:31.3811775Z Instance Id      : 9d5f45b0f79333e643cadcb5aa89db4a1f3f4858a422c559aeaf07997d03f017
+2026-02-06T05:05:31.3811791Z 
+2026-02-06T05:05:31.3811808Z Note: Any data outside '/home' is not persisted
+2026-02-06T05:05:31.9312183Z Starting OpenBSD Secure Shell server: sshd.
+2026-02-06T05:05:31.9439376Z WEBSITES_INCLUDE_CLOUD_CERTS is not set to true.
+2026-02-06T05:05:32.0285695Z Updating certificates in /etc/ssl/certs...
+2026-02-06T05:05:44.7109109Z rehash: warning: skipping duplicate certificate in azl_SSL.com_TLS_RSA_Root_CA_2022.pem
+2026-02-06T05:05:44.7287241Z rehash: warning: skipping duplicate certificate in azl_Sectigo_Public_Server_Authentication_Root_E46.pem
+2026-02-06T05:05:44.7302460Z rehash: warning: skipping duplicate certificate in azl_SSL.com_TLS_ECC_Root_CA_2022.pem
+2026-02-06T05:05:44.7598107Z rehash: warning: skipping duplicate certificate in azl_Sectigo_Public_Server_Authentication_Root_R46.pem
+2026-02-06T05:05:44.9491996Z 4 added, 0 removed; done.
+2026-02-06T05:05:44.9706610Z Running hooks in /etc/ca-certificates/update.d...
+2026-02-06T05:05:45.0373447Z done.
+2026-02-06T05:05:45.0381309Z CA certificates copied and updated successfully.
+2026-02-06T05:05:45.2153267Z Site's appCommandLine: python -u app.py
+2026-02-06T05:05:46.0314245Z Starting periodic command scheduler: cron.
+2026-02-06T05:05:46.0321487Z Launching oryx with: create-script -appPath /home/site/wwwroot -output /opt/startup/startup.sh -virtualEnvName antenv -defaultApp /opt/defaultsite -userStartupCommand 'python -u app.py'
+2026-02-06T05:05:46.2523454Z Found build manifest file at '/home/site/wwwroot/oryx-manifest.toml'. Deserializing it...
+2026-02-06T05:05:46.3017227Z Build Operation ID: 671ba6092cb8efcf
+2026-02-06T05:05:46.3040032Z Oryx Version: 0.2.20260112.1, Commit: da7d752b5a9eaff8f6f06e0e37df55a14ef5705b, ReleaseTagName: 20260112.1
+2026-02-06T05:05:46.3040848Z Output is compressed. Extracting it...
+2026-02-06T05:05:46.3078904Z Found zstd-compressed tarball.
+2026-02-06T05:05:46.3079418Z Extracting '/home/site/wwwroot/output.tar.zst' to directory '/tmp/8de653d316f5207'...
+2026-02-06T05:05:46.3079761Z Using zstd for decompression of file: /home/site/wwwroot/output.tar.zst
+2026-02-06T05:05:54.6033603Z App path is set to '/tmp/8de653d316f5207'
+2026-02-06T05:05:55.7896309Z Writing output script to '/opt/startup/startup.sh'
+2026-02-06T05:05:56.3012901Z Using packages from virtual environment antenv located at /tmp/8de653d316f5207/antenv.
+2026-02-06T05:05:56.3018909Z Updated PYTHONPATH to '/opt/startup/app_logs:/tmp/8de653d316f5207/antenv/lib/python3.11/site-packages'
+2026-02-06T05:05:56.3828842Z DEBUG: API.PY MODULE LOADING...
+2026-02-06T05:05:57.8704076Z DEBUG: httpx version: 0.28.1
+2026-02-06T05:05:57.8711432Z DEBUG: gotrue version: 2.12.3
+2026-02-06T05:05:57.8714108Z DEBUG: supabase version: 2.11.0
+2026-02-06T05:05:58.9177821Z  * Serving Flask app 'form_filler.api'
+2026-02-06T05:05:58.9179194Z  * Debug mode: off
+2026-02-06T05:05:58.9279484Z 2026-02-06 05:05:58,927 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+2026-02-06T05:05:58.9279723Z  * Running on all addresses (0.0.0.0)
+2026-02-06T05:05:58.9279744Z  * Running on http://127.0.0.1:8000
+2026-02-06T05:05:58.9279762Z  * Running on http://169.254.130.4:8000
+2026-02-06T05:05:58.9280793Z 2026-02-06 05:05:58,928 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-06T05:05:59.4215224Z 2026-02-06 05:05:59,415 - INFO - 169.254.130.1 - - [06/Feb/2026 05:05:59] "[33mGET /robots933456.txt HTTP/1.1[0m" 404 -
+2026-02-06T05:06:04.3351060Z 2026-02-06 05:06:04,329 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=id&email=eq.verify_fix_1ed66f%40woxsen.edu.in "HTTP/2 200 OK"
+2026-02-06T05:06:04.3363591Z 2026-02-06 05:06:04,336 - INFO - Skipping Outlook verification for verify_fix_1ed66f@woxsen.edu.in to unblock registration
+2026-02-06T05:06:05.4588400Z 2026-02-06 05:06:05,458 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users "HTTP/2 201 Created"
+2026-02-06T05:06:05.6580320Z 2026-02-06 05:06:05,657 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/student_profiles "HTTP/2 201 Created"
+2026-02-06T05:06:05.7578013Z 2026-02-06 05:06:05,757 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/subscriptions "HTTP/2 201 Created"
+2026-02-06T05:06:05.7585408Z DEBUG: Email Verification Link: None/verify-email?token=uViBc7jINSQ2zgNe0gHA7GozPHvqG6VXh4fiwmOKPA0
+2026-02-06T05:06:05.7591929Z 2026-02-06 05:06:05,759 - INFO - 169.254.130.1 - - [06/Feb/2026 05:06:05] "[35m[1mPOST /api/auth/register HTTP/1.1[0m" 201 -
+2026-02-06T05:07:40.8719268Z 2026-02-06 05:07:40,870 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=id&email=eq.guntaka.reddy_2028%40woxsen.edu.in "HTTP/2 200 OK"
+2026-02-06T05:07:40.8868922Z 2026-02-06 05:07:40,886 - INFO - Skipping Outlook verification for guntaka.reddy_2028@woxsen.edu.in to unblock registration
+2026-02-06T05:07:41.8740225Z 2026-02-06 05:07:41,872 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users "HTTP/2 201 Created"
+2026-02-06T05:07:42.0127932Z 2026-02-06 05:07:42,011 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/student_profiles "HTTP/2 201 Created"
+2026-02-06T05:07:42.1233852Z 2026-02-06 05:07:42,123 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/subscriptions "HTTP/2 201 Created"
+2026-02-06T05:07:42.1248036Z DEBUG: Email Verification Link: None/verify-email?token=XsmJuElZtim27TwVEApiCKz1Ch-WcijHPUbmf7vB-l4
+2026-02-06T05:07:42.1256786Z 2026-02-06 05:07:42,125 - INFO - 169.254.130.1 - - [06/Feb/2026 05:07:42] "[35m[1mPOST /api/auth/register HTTP/1.1[0m" 201 -
+2026-02-06T05:12:04.3381474Z 2026-02-06 05:12:04,330 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=%2A%2Cstudent_profiles%28full_name%2Croll_number%29&email=eq.guntaka.reddy_2028%40woxsen.edu.in "HTTP/2 200 OK"
+2026-02-06T05:12:05.2000491Z Login Error: 0
+2026-02-06T05:12:05.2096006Z 2026-02-06 05:12:05,208 - INFO - 169.254.130.1 - - [06/Feb/2026 05:12:05] "[31m[1mPOST /api/auth/login HTTP/1.1[0m" 401 -
+2026-02-06T05:16:01.9463100Z 2026-02-06 05:16:01,945 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=%2A%2Cstudent_profiles%28full_name%2Croll_number%29&email=eq.guntaka.reddy_2028%40woxsen.edu.in "HTTP/2 200 OK"
+2026-02-06T05:16:04.7897947Z Login Error: 0
+2026-02-06T05:16:04.8207866Z 2026-02-06 05:16:04,820 - INFO - 169.254.130.1 - - [06/Feb/2026 05:16:04] "[31m[1mPOST /api/auth/login HTTP/1.1[0m" 401 -
+2026-02-06T05:16:32.4601229Z    _____                               
+2026-02-06T05:16:32.5180230Z   /  _  \ __________ _________   ____  
+2026-02-06T05:16:32.5190217Z  /  /_\  \\___   /  |  \_  __ \_/ __ \ 
+2026-02-06T05:16:32.5198964Z /    |    \/    /|  |  /|  | \/\  ___/ 
+2026-02-06T05:16:32.5498189Z \____|__  /_____ \____/ |__|    \___  >
+2026-02-06T05:16:32.5498261Z         \/      \/                  \/ 
+2026-02-06T05:16:32.5498279Z A P P   S E R V I C E   O N   L I N U X
+2026-02-06T05:16:32.5498300Z 
+2026-02-06T05:16:32.5498372Z Documentation    : http://aka.ms/webapp-linux
+2026-02-06T05:16:32.5498395Z Python quickstart: https://aka.ms/python-qs
+2026-02-06T05:16:32.5498412Z Python version   : 3.11.14
+2026-02-06T05:16:32.5498430Z Instance Name    : lw0sdlwk00098M
+2026-02-06T05:16:32.5498457Z Instance Id      : 9d5f45b0f79333e643cadcb5aa89db4a1f3f4858a422c559aeaf07997d03f017
+2026-02-06T05:16:32.5498475Z 
+2026-02-06T05:16:32.5498503Z Note: Any data outside '/home' is not persisted
+2026-02-06T05:16:33.7171013Z Starting OpenBSD Secure Shell server: sshd.
+2026-02-06T05:16:33.7276060Z WEBSITES_INCLUDE_CLOUD_CERTS is not set to true.
+2026-02-06T05:16:33.7952408Z Updating certificates in /etc/ssl/certs...
+2026-02-06T05:16:46.2270547Z rehash: warning: skipping duplicate certificate in azl_SSL.com_TLS_RSA_Root_CA_2022.pem
+2026-02-06T05:16:46.2295110Z rehash: warning: skipping duplicate certificate in azl_Sectigo_Public_Server_Authentication_Root_E46.pem
+2026-02-06T05:16:46.2382289Z rehash: warning: skipping duplicate certificate in azl_SSL.com_TLS_ECC_Root_CA_2022.pem
+2026-02-06T05:16:46.2481883Z rehash: warning: skipping duplicate certificate in azl_Sectigo_Public_Server_Authentication_Root_R46.pem
+2026-02-06T05:16:46.2788834Z 4 added, 0 removed; done.
+2026-02-06T05:16:46.2789168Z Running hooks in /etc/ca-certificates/update.d...
+2026-02-06T05:16:46.3092213Z done.
+2026-02-06T05:16:46.3092482Z CA certificates copied and updated successfully.
+2026-02-06T05:16:46.4196119Z Site's appCommandLine: python -u app.py
+2026-02-06T05:16:46.7764124Z Starting periodic command scheduler: cron.
+2026-02-06T05:16:46.7772128Z Launching oryx with: create-script -appPath /home/site/wwwroot -output /opt/startup/startup.sh -virtualEnvName antenv -defaultApp /opt/defaultsite -userStartupCommand 'python -u app.py'
+2026-02-06T05:16:46.9076675Z Found build manifest file at '/home/site/wwwroot/oryx-manifest.toml'. Deserializing it...
+2026-02-06T05:16:46.9101942Z Build Operation ID: 0b9d3e5c9816f552
+2026-02-06T05:16:46.9111022Z Oryx Version: 0.2.20260112.1, Commit: da7d752b5a9eaff8f6f06e0e37df55a14ef5705b, ReleaseTagName: 20260112.1
+2026-02-06T05:16:46.9111462Z Output is compressed. Extracting it...
+2026-02-06T05:16:46.9132281Z Found zstd-compressed tarball.
+2026-02-06T05:16:46.9132416Z Extracting '/home/site/wwwroot/output.tar.zst' to directory '/tmp/8de653ebb928d36'...
+2026-02-06T05:16:46.9132444Z Using zstd for decompression of file: /home/site/wwwroot/output.tar.zst
+2026-02-06T05:16:55.1498420Z App path is set to '/tmp/8de653ebb928d36'
+2026-02-06T05:16:56.3426213Z Writing output script to '/opt/startup/startup.sh'
+2026-02-06T05:16:56.6055637Z Using packages from virtual environment antenv located at /tmp/8de653ebb928d36/antenv.
+2026-02-06T05:16:56.6062805Z Updated PYTHONPATH to '/opt/startup/app_logs:/tmp/8de653ebb928d36/antenv/lib/python3.11/site-packages'
+2026-02-06T05:16:56.6753678Z DEBUG: API.PY MODULE LOADING...
+2026-02-06T05:16:58.0237244Z DEBUG: httpx version: 0.28.1
+2026-02-06T05:16:58.0239101Z DEBUG: gotrue version: 2.12.3
+2026-02-06T05:16:58.0239590Z DEBUG: supabase version: 2.11.0
+2026-02-06T05:16:58.8831556Z Traceback (most recent call last):
+2026-02-06T05:16:58.8831830Z   File "/tmp/8de653ebb928d36/app.py", line 2, in <module>
+2026-02-06T05:16:58.8831872Z     from form_filler.api import app
+2026-02-06T05:16:58.8831892Z   File "/tmp/8de653ebb928d36/form_filler/api.py", line 64, in <module>
+2026-02-06T05:16:58.8831910Z     from form_filler.auth_system_v2 import (
+2026-02-06T05:16:58.8831929Z   File "/tmp/8de653ebb928d36/form_filler/auth_system_v2.py", line 233
+2026-02-06T05:16:58.8831947Z     except Exception as e:
+2026-02-06T05:16:58.8831970Z     ^
+2026-02-06T05:16:58.8831998Z IndentationError: expected an indented block after 'except' statement on line 232
+2026-02-06T05:21:05.4132074Z    _____                               
+2026-02-06T05:21:05.4132200Z   /  _  \ __________ _________   ____  
+2026-02-06T05:21:05.4132218Z  /  /_\  \\___   /  |  \_  __ \_/ __ \ 
+2026-02-06T05:21:05.4132231Z /    |    \/    /|  |  /|  | \/\  ___/ 
+2026-02-06T05:21:05.4132247Z \____|__  /_____ \____/ |__|    \___  >
+2026-02-06T05:21:05.4132282Z         \/      \/                  \/ 
+2026-02-06T05:21:05.4132297Z A P P   S E R V I C E   O N   L I N U X
+2026-02-06T05:21:05.4133211Z 
+2026-02-06T05:21:05.4133229Z Documentation    : http://aka.ms/webapp-linux
+2026-02-06T05:21:05.4133244Z Python quickstart: https://aka.ms/python-qs
+2026-02-06T05:21:05.4133257Z Python version   : 3.11.14
+2026-02-06T05:21:05.4133269Z Instance Name    : lw0sdlwk00098M
+2026-02-06T05:21:05.4133285Z Instance Id      : 9d5f45b0f79333e643cadcb5aa89db4a1f3f4858a422c559aeaf07997d03f017
+2026-02-06T05:21:05.4133296Z 
+2026-02-06T05:21:05.4133311Z Note: Any data outside '/home' is not persisted
+2026-02-06T05:21:06.7022575Z Starting OpenBSD Secure Shell server: sshd.
+2026-02-06T05:21:06.7130126Z WEBSITES_INCLUDE_CLOUD_CERTS is not set to true.
+2026-02-06T05:21:06.7724205Z Updating certificates in /etc/ssl/certs...
+2026-02-06T05:21:17.4968079Z rehash: warning: skipping duplicate certificate in azl_SSL.com_TLS_RSA_Root_CA_2022.pem
+2026-02-06T05:21:17.5077203Z rehash: warning: skipping duplicate certificate in azl_Sectigo_Public_Server_Authentication_Root_E46.pem
+2026-02-06T05:21:17.5176198Z rehash: warning: skipping duplicate certificate in azl_SSL.com_TLS_ECC_Root_CA_2022.pem
+2026-02-06T05:21:17.5275531Z rehash: warning: skipping duplicate certificate in azl_Sectigo_Public_Server_Authentication_Root_R46.pem
+2026-02-06T05:21:17.6063462Z 4 added, 0 removed; done.
+2026-02-06T05:21:17.6072637Z Running hooks in /etc/ca-certificates/update.d...
+2026-02-06T05:21:17.6357699Z done.
+2026-02-06T05:21:17.6477158Z CA certificates copied and updated successfully.
+2026-02-06T05:21:17.7280088Z Site's appCommandLine: python -u app.py
+2026-02-06T05:21:17.9977443Z Starting periodic command scheduler: cron.
+2026-02-06T05:21:17.9977863Z Launching oryx with: create-script -appPath /home/site/wwwroot -output /opt/startup/startup.sh -virtualEnvName antenv -defaultApp /opt/defaultsite -userStartupCommand 'python -u app.py'
+2026-02-06T05:21:18.0946081Z Found build manifest file at '/home/site/wwwroot/oryx-manifest.toml'. Deserializing it...
+2026-02-06T05:21:18.1169925Z Build Operation ID: 0b9d3e5c9816f552
+2026-02-06T05:21:18.1358685Z Oryx Version: 0.2.20260112.1, Commit: da7d752b5a9eaff8f6f06e0e37df55a14ef5705b, ReleaseTagName: 20260112.1
+2026-02-06T05:21:18.1359106Z Output is compressed. Extracting it...
+2026-02-06T05:21:18.1359131Z Found zstd-compressed tarball.
+2026-02-06T05:21:18.1359147Z Extracting '/home/site/wwwroot/output.tar.zst' to directory '/tmp/8de653ebb928d36'...
+2026-02-06T05:21:18.1359160Z Using zstd for decompression of file: /home/site/wwwroot/output.tar.zst
+2026-02-06T05:21:26.4199893Z App path is set to '/tmp/8de653ebb928d36'
+2026-02-06T05:21:27.2479760Z Writing output script to '/opt/startup/startup.sh'
+2026-02-06T05:21:27.7967473Z Using packages from virtual environment antenv located at /tmp/8de653ebb928d36/antenv.
+2026-02-06T05:21:27.7973961Z Updated PYTHONPATH to '/opt/startup/app_logs:/tmp/8de653ebb928d36/antenv/lib/python3.11/site-packages'
+2026-02-06T05:21:27.9767853Z DEBUG: API.PY MODULE LOADING...
+2026-02-06T05:21:29.3241414Z DEBUG: httpx version: 0.28.1
+2026-02-06T05:21:29.3244906Z DEBUG: gotrue version: 2.12.3
+2026-02-06T05:21:29.3244942Z DEBUG: supabase version: 2.11.0
+2026-02-06T05:21:30.0332514Z Traceback (most recent call last):
+2026-02-06T05:21:30.0332914Z   File "/tmp/8de653ebb928d36/app.py", line 2, in <module>
+2026-02-06T05:21:30.0332935Z     from form_filler.api import app
+2026-02-06T05:21:30.0332950Z   File "/tmp/8de653ebb928d36/form_filler/api.py", line 64, in <module>
+2026-02-06T05:21:30.0332964Z     from form_filler.auth_system_v2 import (
+2026-02-06T05:21:30.0332978Z   File "/tmp/8de653ebb928d36/form_filler/auth_system_v2.py", line 233
+2026-02-06T05:21:30.0332990Z     except Exception as e:
+2026-02-06T05:21:30.0333006Z     ^
+2026-02-06T05:21:30.0333023Z IndentationError: expected an indented block after 'except' statement on line 232
+2026-02-06T05:22:54.8479265Z    _____                               
+2026-02-06T05:22:54.8479621Z   /  _  \ __________ _________   ____  
+2026-02-06T05:22:54.8479687Z  /  /_\  \\___   /  |  \_  __ \_/ __ \ 
+2026-02-06T05:22:54.8479701Z /    |    \/    /|  |  /|  | \/\  ___/ 
+2026-02-06T05:22:54.8479713Z \____|__  /_____ \____/ |__|    \___  >
+2026-02-06T05:22:54.8479726Z         \/      \/                  \/ 
+2026-02-06T05:22:54.8479737Z A P P   S E R V I C E   O N   L I N U X
+2026-02-06T05:22:54.8479747Z 
+2026-02-06T05:22:54.8479760Z Documentation    : http://aka.ms/webapp-linux
+2026-02-06T05:22:54.8479774Z Python quickstart: https://aka.ms/python-qs
+2026-02-06T05:22:54.8479787Z Python version   : 3.11.14
+2026-02-06T05:22:54.8479799Z Instance Name    : lw0sdlwk00098M
+2026-02-06T05:22:54.8479813Z Instance Id      : 9d5f45b0f79333e643cadcb5aa89db4a1f3f4858a422c559aeaf07997d03f017
+2026-02-06T05:22:54.8479834Z 
+2026-02-06T05:22:54.8479847Z Note: Any data outside '/home' is not persisted
+2026-02-06T05:22:56.8753559Z Starting OpenBSD Secure Shell server: sshd.
+2026-02-06T05:22:56.9140230Z WEBSITES_INCLUDE_CLOUD_CERTS is not set to true.
+2026-02-06T05:22:56.9937504Z Updating certificates in /etc/ssl/certs...
+2026-02-06T05:23:14.2635334Z rehash: warning: skipping duplicate certificate in azl_SSL.com_TLS_RSA_Root_CA_2022.pem
+2026-02-06T05:23:14.2907739Z rehash: warning: skipping duplicate certificate in azl_Sectigo_Public_Server_Authentication_Root_E46.pem
+2026-02-06T05:23:14.2925649Z rehash: warning: skipping duplicate certificate in azl_SSL.com_TLS_ECC_Root_CA_2022.pem
+2026-02-06T05:23:14.3124556Z rehash: warning: skipping duplicate certificate in azl_Sectigo_Public_Server_Authentication_Root_R46.pem
+2026-02-06T05:23:14.3519917Z 4 added, 0 removed; done.
+2026-02-06T05:23:14.3529523Z Running hooks in /etc/ca-certificates/update.d...
+2026-02-06T05:23:14.3706214Z done.
+2026-02-06T05:23:14.4128396Z CA certificates copied and updated successfully.
+2026-02-06T05:23:14.5412406Z Site's appCommandLine: python -u app.py
+2026-02-06T05:23:14.9415330Z Starting periodic command scheduler: cron.
+2026-02-06T05:23:14.9415585Z Launching oryx with: create-script -appPath /home/site/wwwroot -output /opt/startup/startup.sh -virtualEnvName antenv -defaultApp /opt/defaultsite -userStartupCommand 'python -u app.py'
+2026-02-06T05:23:15.1230363Z Could not find build manifest file at '/home/site/wwwroot/oryx-manifest.toml'
+2026-02-06T05:23:15.1322587Z Could not find operation ID in manifest. Generating an operation id...
+2026-02-06T05:23:15.1322713Z Build Operation ID: 563e7537-3f0f-4414-86ad-04c7b3eccd80
+2026-02-06T05:23:15.9199864Z Oryx Version: 0.2.20260112.1, Commit: da7d752b5a9eaff8f6f06e0e37df55a14ef5705b, ReleaseTagName: 20260112.1
+2026-02-06T05:23:16.0492497Z Writing output script to '/opt/startup/startup.sh'
+2026-02-06T05:23:16.2296622Z WARNING: Could not find virtual environment directory /home/site/wwwroot/antenv.
+2026-02-06T05:23:16.2299929Z WARNING: Could not find package directory /home/site/wwwroot/__oryx_packages__.
+2026-02-06T05:23:16.3984373Z python: can't open file '/home/site/wwwroot/app.py': [Errno 2] No such file or directory
+2026-02-06T05:26:23.1039816Z    _____                               
+2026-02-06T05:26:23.1041007Z   /  _  \ __________ _________   ____  
+2026-02-06T05:26:23.1041040Z  /  /_\  \\___   /  |  \_  __ \_/ __ \ 
+2026-02-06T05:26:23.1041088Z /    |    \/    /|  |  /|  | \/\  ___/ 
+2026-02-06T05:26:23.1041106Z \____|__  /_____ \____/ |__|    \___  >
+2026-02-06T05:26:23.1041128Z         \/      \/                  \/ 
+2026-02-06T05:26:23.1041145Z A P P   S E R V I C E   O N   L I N U X
+2026-02-06T05:26:23.1041161Z 
+2026-02-06T05:26:23.1041183Z Documentation    : http://aka.ms/webapp-linux
+2026-02-06T05:26:23.1041213Z Python quickstart: https://aka.ms/python-qs
+2026-02-06T05:26:23.1041231Z Python version   : 3.11.14
+2026-02-06T05:26:23.1041250Z Instance Name    : lw0sdlwk00098M
+2026-02-06T05:26:23.1041271Z Instance Id      : 9d5f45b0f79333e643cadcb5aa89db4a1f3f4858a422c559aeaf07997d03f017
+2026-02-06T05:26:23.1041287Z 
+2026-02-06T05:26:23.1041305Z Note: Any data outside '/home' is not persisted
+2026-02-06T05:26:24.3035676Z Starting OpenBSD Secure Shell server: sshd.
+2026-02-06T05:26:24.3221870Z WEBSITES_INCLUDE_CLOUD_CERTS is not set to true.
+2026-02-06T05:26:24.3634880Z Updating certificates in /etc/ssl/certs...
+2026-02-06T05:26:35.0780147Z rehash: warning: skipping duplicate certificate in azl_SSL.com_TLS_RSA_Root_CA_2022.pem
+2026-02-06T05:26:35.1061135Z rehash: warning: skipping duplicate certificate in azl_Sectigo_Public_Server_Authentication_Root_E46.pem
+2026-02-06T05:26:35.1279681Z rehash: warning: skipping duplicate certificate in azl_SSL.com_TLS_ECC_Root_CA_2022.pem
+2026-02-06T05:26:35.1561314Z rehash: warning: skipping duplicate certificate in azl_Sectigo_Public_Server_Authentication_Root_R46.pem
+2026-02-06T05:26:35.1779636Z 4 added, 0 removed; done.
+2026-02-06T05:26:35.2058693Z Running hooks in /etc/ca-certificates/update.d...
+2026-02-06T05:26:35.2058957Z done.
+2026-02-06T05:26:35.2058985Z CA certificates copied and updated successfully.
+2026-02-06T05:26:35.2870284Z Site's appCommandLine: python -u app.py
+2026-02-06T05:26:35.6058025Z Starting periodic command scheduler: cron.
+2026-02-06T05:26:35.6058575Z Launching oryx with: create-script -appPath /home/site/wwwroot -output /opt/startup/startup.sh -virtualEnvName antenv -defaultApp /opt/defaultsite -userStartupCommand 'python -u app.py'
+2026-02-06T05:26:35.9755924Z Found build manifest file at '/home/site/wwwroot/oryx-manifest.toml'. Deserializing it...
+2026-02-06T05:26:35.9967551Z Build Operation ID: af0a49674680a4b2
+2026-02-06T05:26:36.0270010Z Output is compressed. Extracting it...
+2026-02-06T05:26:36.0270256Z Found zstd-compressed tarball.
+2026-02-06T05:26:36.0270285Z Extracting '/home/site/wwwroot/output.tar.zst' to directory '/tmp/8de653fa4b76d96'...
+2026-02-06T05:26:36.0270304Z Using zstd for decompression of file: /home/site/wwwroot/output.tar.zst
+2026-02-06T05:26:36.0284337Z Oryx Version: 0.2.20260112.1, Commit: da7d752b5a9eaff8f6f06e0e37df55a14ef5705b, ReleaseTagName: 20260112.1
+2026-02-06T05:26:44.2806303Z App path is set to '/tmp/8de653fa4b76d96'
+2026-02-06T05:26:45.3689029Z Writing output script to '/opt/startup/startup.sh'
+2026-02-06T05:26:45.8080109Z Using packages from virtual environment antenv located at /tmp/8de653fa4b76d96/antenv.
+2026-02-06T05:26:45.8090068Z Updated PYTHONPATH to '/opt/startup/app_logs:/tmp/8de653fa4b76d96/antenv/lib/python3.11/site-packages'
+2026-02-06T05:26:45.9608531Z DEBUG: API.PY MODULE LOADING...
+2026-02-06T05:26:47.3277782Z DEBUG: httpx version: 0.28.1
+2026-02-06T05:26:47.3284612Z DEBUG: gotrue version: 2.12.3
+2026-02-06T05:26:47.3284728Z DEBUG: supabase version: 2.11.0
+2026-02-06T05:26:48.3781748Z  * Serving Flask app 'form_filler.api'
+2026-02-06T05:26:48.3790224Z  * Debug mode: off
+2026-02-06T05:26:48.3893022Z 2026-02-06 05:26:48,388 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+2026-02-06T05:26:48.3893246Z  * Running on all addresses (0.0.0.0)
+2026-02-06T05:26:48.3893310Z  * Running on http://127.0.0.1:8000
+2026-02-06T05:26:48.3893329Z  * Running on http://169.254.130.2:8000
+2026-02-06T05:26:48.3961642Z 2026-02-06 05:26:48,389 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-06T05:26:49.0131388Z 2026-02-06 05:26:49,010 - INFO - 169.254.130.1 - - [06/Feb/2026 05:26:49] "[33mGET /robots933456.txt HTTP/1.1[0m" 404 -
+2026-02-06T05:26:49.8502117Z 2026-02-06 05:26:49,849 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=%2A%2Cstudent_profiles%28full_name%2Croll_number%29&email=eq.guntaka.reddy_2028%40woxsen.edu.in "HTTP/2 200 OK"
+2026-02-06T05:26:51.0183692Z 2026-02-06 05:26:51,018 - ERROR - Login Failed Traceback: Traceback (most recent call last):
+2026-02-06T05:26:51.0183973Z   File "/tmp/8de653fa4b76d96/form_filler/auth_system_v2.py", line 220, in login_user
+2026-02-06T05:26:51.0183993Z     profile = user.get('student_profiles', [{}])[0] if user.get('student_profiles') else {}
+2026-02-06T05:26:51.0184008Z               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^
+2026-02-06T05:26:51.0184026Z KeyError: 0
+2026-02-06T05:26:51.0184040Z 
+2026-02-06T05:26:51.0259634Z 2026-02-06 05:26:51,025 - INFO - 169.254.130.1 - - [06/Feb/2026 05:26:51] "[31m[1mPOST /api/auth/login HTTP/1.1[0m" 401 -
+2026-02-06T05:28:18.2039282Z 2026-02-06 05:28:18,200 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=%2A%2Cstudent_profiles%28full_name%2Croll_number%29&email=eq.guntaka.reddy_2028%40woxsen.edu.in "HTTP/2 200 OK"
+2026-02-06T05:28:19.0427041Z 2026-02-06 05:28:19,042 - ERROR - Login Failed Traceback: Traceback (most recent call last):
+2026-02-06T05:28:19.0427364Z   File "/tmp/8de653fa4b76d96/form_filler/auth_system_v2.py", line 220, in login_user
+2026-02-06T05:28:19.0427386Z     profile = user.get('student_profiles', [{}])[0] if user.get('student_profiles') else {}
+2026-02-06T05:28:19.0427399Z               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^
+2026-02-06T05:28:19.0427412Z KeyError: 0
+2026-02-06T05:28:19.0427424Z 
+2026-02-06T05:28:19.0435232Z 2026-02-06 05:28:19,043 - INFO - 169.254.130.1 - - [06/Feb/2026 05:28:19] "[31m[1mPOST /api/auth/login HTTP/1.1[0m" 401 -
+2026-02-06T05:29:39.6182568Z 2026-02-06 05:29:39,489 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=%2A%2Cstudent_profiles%28full_name%2Croll_number%29&email=eq.guntaka.reddy_2028%40woxsen.edu.in "HTTP/2 200 OK"
+2026-02-06T05:29:41.6656683Z 2026-02-06 05:29:41,665 - ERROR - Login Failed Traceback: Traceback (most recent call last):
+2026-02-06T05:29:41.6656999Z   File "/tmp/8de653fa4b76d96/form_filler/auth_system_v2.py", line 220, in login_user
+2026-02-06T05:29:41.6657021Z     profile = user.get('student_profiles', [{}])[0] if user.get('student_profiles') else {}
+2026-02-06T05:29:41.6657035Z               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^
+2026-02-06T05:29:41.6657047Z KeyError: 0
+2026-02-06T05:29:41.6657115Z 
+2026-02-06T05:29:41.6670628Z 2026-02-06 05:29:41,666 - INFO - 169.254.130.1 - - [06/Feb/2026 05:29:41] "[31m[1mPOST /api/auth/login HTTP/1.1[0m" 401 -
+2026-02-06T05:30:56.7657800Z    _____                               
+2026-02-06T05:30:56.7658811Z   /  _  \ __________ _________   ____  
+2026-02-06T05:30:56.7658843Z  /  /_\  \\___   /  |  \_  __ \_/ __ \ 
+2026-02-06T05:30:56.7658887Z /    |    \/    /|  |  /|  | \/\  ___/ 
+2026-02-06T05:30:56.7658904Z \____|__  /_____ \____/ |__|    \___  >
+2026-02-06T05:30:56.7658928Z         \/      \/                  \/ 
+2026-02-06T05:30:56.7658945Z A P P   S E R V I C E   O N   L I N U X
+2026-02-06T05:30:56.7658960Z 
+2026-02-06T05:30:56.7658979Z Documentation    : http://aka.ms/webapp-linux
+2026-02-06T05:30:56.7659008Z Python quickstart: https://aka.ms/python-qs
+2026-02-06T05:30:56.7659026Z Python version   : 3.11.14
+2026-02-06T05:30:56.7659087Z Instance Name    : lw0sdlwk00098M
+2026-02-06T05:30:56.7659109Z Instance Id      : 9d5f45b0f79333e643cadcb5aa89db4a1f3f4858a422c559aeaf07997d03f017
+2026-02-06T05:30:56.7659125Z 
+2026-02-06T05:30:56.7659142Z Note: Any data outside '/home' is not persisted
+2026-02-06T05:31:00.0585028Z Starting OpenBSD Secure Shell server: sshd.
+2026-02-06T05:31:00.0788381Z WEBSITES_INCLUDE_CLOUD_CERTS is not set to true.
+2026-02-06T05:31:00.2305442Z Updating certificates in /etc/ssl/certs...
+2026-02-06T05:31:27.4572316Z rehash: warning: skipping duplicate certificate in azl_SSL.com_TLS_RSA_Root_CA_2022.pem
+2026-02-06T05:31:27.5370916Z rehash: warning: skipping duplicate certificate in azl_Sectigo_Public_Server_Authentication_Root_E46.pem
+2026-02-06T05:31:27.5551183Z rehash: warning: skipping duplicate certificate in azl_SSL.com_TLS_ECC_Root_CA_2022.pem
+2026-02-06T05:31:27.5763031Z rehash: warning: skipping duplicate certificate in azl_Sectigo_Public_Server_Authentication_Root_R46.pem
+2026-02-06T05:31:27.7747199Z 4 added, 0 removed; done.
+2026-02-06T05:31:27.7761236Z Running hooks in /etc/ca-certificates/update.d...
+2026-02-06T05:31:27.8250914Z done.
+2026-02-06T05:31:27.9355627Z CA certificates copied and updated successfully.
+2026-02-06T05:31:28.2740026Z Site's appCommandLine: python -u app.py
+2026-02-06T05:31:29.6808004Z Starting periodic command scheduler: cron.
+2026-02-06T05:31:29.6808431Z Launching oryx with: create-script -appPath /home/site/wwwroot -output /opt/startup/startup.sh -virtualEnvName antenv -defaultApp /opt/defaultsite -userStartupCommand 'python -u app.py'
+2026-02-06T05:31:30.0143302Z Could not find build manifest file at '/home/site/wwwroot/oryx-manifest.toml'
+2026-02-06T05:31:30.0148925Z Could not find operation ID in manifest. Generating an operation id...
+2026-02-06T05:31:30.0423641Z Build Operation ID: 07ac5591-712e-4667-9d57-0d1ae3033051
+2026-02-06T05:31:31.6096149Z Oryx Version: 0.2.20260112.1, Commit: da7d752b5a9eaff8f6f06e0e37df55a14ef5705b, ReleaseTagName: 20260112.1
+2026-02-06T05:31:31.8111913Z Writing output script to '/opt/startup/startup.sh'
+2026-02-06T05:31:32.1107155Z WARNING: Could not find virtual environment directory /home/site/wwwroot/antenv.
+2026-02-06T05:31:32.1109512Z WARNING: Could not find package directory /home/site/wwwroot/__oryx_packages__.
+2026-02-06T05:31:32.4390450Z python: can't open file '/home/site/wwwroot/app.py': [Errno 2] No such file or directory
+2026-02-06T05:32:20.2527047Z    _____                               
+2026-02-06T05:32:20.2527367Z   /  _  \ __________ _________   ____  
+2026-02-06T05:32:20.2527385Z  /  /_\  \\___   /  |  \_  __ \_/ __ \ 
+2026-02-06T05:32:20.2527397Z /    |    \/    /|  |  /|  | \/\  ___/ 
+2026-02-06T05:32:20.2527411Z \____|__  /_____ \____/ |__|    \___  >
+2026-02-06T05:32:20.2527425Z         \/      \/                  \/ 
+2026-02-06T05:32:20.2527440Z A P P   S E R V I C E   O N   L I N U X
+2026-02-06T05:32:20.2527451Z 
+2026-02-06T05:32:20.2527465Z Documentation    : http://aka.ms/webapp-linux
+2026-02-06T05:32:20.2527477Z Python quickstart: https://aka.ms/python-qs
+2026-02-06T05:32:20.2527519Z Python version   : 3.11.14
+2026-02-06T05:32:20.2527534Z Instance Name    : lw0sdlwk00098M
+2026-02-06T05:32:20.2527550Z Instance Id      : 9d5f45b0f79333e643cadcb5aa89db4a1f3f4858a422c559aeaf07997d03f017
+2026-02-06T05:32:20.2527561Z 
+2026-02-06T05:32:20.2527574Z Note: Any data outside '/home' is not persisted
+2026-02-06T05:32:22.6395909Z Starting OpenBSD Secure Shell server: sshd.
+2026-02-06T05:32:22.6587714Z WEBSITES_INCLUDE_CLOUD_CERTS is not set to true.
+2026-02-06T05:32:22.7580465Z Updating certificates in /etc/ssl/certs...
+2026-02-06T05:32:37.4973074Z rehash: warning: skipping duplicate certificate in azl_SSL.com_TLS_RSA_Root_CA_2022.pem
+2026-02-06T05:32:37.5273015Z rehash: warning: skipping duplicate certificate in azl_Sectigo_Public_Server_Authentication_Root_E46.pem
+2026-02-06T05:32:37.5360856Z rehash: warning: skipping duplicate certificate in azl_SSL.com_TLS_ECC_Root_CA_2022.pem
+2026-02-06T05:32:37.5377244Z rehash: warning: skipping duplicate certificate in azl_Sectigo_Public_Server_Authentication_Root_R46.pem
+2026-02-06T05:32:37.5765103Z 4 added, 0 removed; done.
+2026-02-06T05:32:37.5771743Z Running hooks in /etc/ca-certificates/update.d...
+2026-02-06T05:32:37.5968163Z done.
+2026-02-06T05:32:37.6351617Z CA certificates copied and updated successfully.
+2026-02-06T05:32:37.9564689Z Site's appCommandLine: python -u app.py
+2026-02-06T05:32:38.4264498Z Starting periodic command scheduler: cron.
+2026-02-06T05:32:38.4264815Z Launching oryx with: create-script -appPath /home/site/wwwroot -output /opt/startup/startup.sh -virtualEnvName antenv -defaultApp /opt/defaultsite -userStartupCommand 'python -u app.py'
+2026-02-06T05:32:38.8263897Z Found build manifest file at '/home/site/wwwroot/oryx-manifest.toml'. Deserializing it...
+2026-02-06T05:32:38.8379599Z Build Operation ID: 870e9629170522de
+2026-02-06T05:32:38.8574113Z Oryx Version: 0.2.20260112.1, Commit: da7d752b5a9eaff8f6f06e0e37df55a14ef5705b, ReleaseTagName: 20260112.1
+2026-02-06T05:32:38.8579655Z Output is compressed. Extracting it...
+2026-02-06T05:32:38.8667216Z Found zstd-compressed tarball.
+2026-02-06T05:32:38.8677018Z Extracting '/home/site/wwwroot/output.tar.zst' to directory '/tmp/8de6540ab629993'...
+2026-02-06T05:32:38.8682395Z Using zstd for decompression of file: /home/site/wwwroot/output.tar.zst
+2026-02-06T05:32:48.0699977Z App path is set to '/tmp/8de6540ab629993'
+2026-02-06T05:32:49.4767320Z Writing output script to '/opt/startup/startup.sh'
+2026-02-06T05:32:49.8152990Z Using packages from virtual environment antenv located at /tmp/8de6540ab629993/antenv.
+2026-02-06T05:32:49.8155530Z Updated PYTHONPATH to '/opt/startup/app_logs:/tmp/8de6540ab629993/antenv/lib/python3.11/site-packages'
+2026-02-06T05:32:49.9268827Z DEBUG: API.PY MODULE LOADING...
+2026-02-06T05:32:51.4186488Z DEBUG: httpx version: 0.28.1
+2026-02-06T05:32:51.4187167Z DEBUG: gotrue version: 2.12.3
+2026-02-06T05:32:51.4187185Z DEBUG: supabase version: 2.11.0
+2026-02-06T05:32:52.4378594Z  * Serving Flask app 'form_filler.api'
+2026-02-06T05:32:52.4387675Z  * Debug mode: off
+2026-02-06T05:32:52.4481489Z 2026-02-06 05:32:52,447 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+2026-02-06T05:32:52.4481747Z  * Running on all addresses (0.0.0.0)
+2026-02-06T05:32:52.4481764Z  * Running on http://127.0.0.1:8000
+2026-02-06T05:32:52.4481777Z  * Running on http://169.254.130.2:8000
+2026-02-06T05:32:52.4497636Z 2026-02-06 05:32:52,449 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-06T05:32:53.1950650Z 2026-02-06 05:32:53,194 - INFO - 169.254.130.1 - - [06/Feb/2026 05:32:53] "[33mGET /robots933456.txt HTTP/1.1[0m" 404 -
+2026-02-06T05:32:54.0730895Z 2026-02-06 05:32:54,072 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=%2A%2Cstudent_profiles%28full_name%2Croll_number%29&email=eq.guntaka.reddy_2028%40woxsen.edu.in "HTTP/2 200 OK"
+2026-02-06T05:32:55.1616503Z 2026-02-06 05:32:55,161 - INFO - 169.254.130.1 - - [06/Feb/2026 05:32:55] "POST /api/auth/login HTTP/1.1" 200 -
+2026-02-06T05:43:13.8439618Z 2026-02-06 05:43:13,830 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=%2A%2Cstudent_profiles%28full_name%2Croll_number%29&email=eq.guntaka.reddy_2028%40woxsen.edu.in "HTTP/2 200 OK"
+2026-02-06T05:43:14.6809559Z 2026-02-06 05:43:14,680 - INFO - 169.254.130.1 - - [06/Feb/2026 05:43:14] "POST /api/auth/login HTTP/1.1" 200 -
+2026-02-06T09:22:05.5481028Z DEBUG: Attempting DB Connection to aws-1-ap-northeast-1.pooler.supabase.com...
+2026-02-06T09:22:05.5490775Z DEBUG ENV: DB_PORT=6543
+2026-02-06T09:22:05.5492527Z DEBUG ENV: DB_NAME=postgres
+2026-02-06T09:22:05.5492548Z DEBUG ENV: DB_PASSWORD=QStaR3Ac39V8SDuf
+2026-02-06T09:22:05.5492564Z DEBUG ENV: DB_HOST=aws-1-ap-northeast-1.pooler.supabase.com
+2026-02-06T09:22:05.5492578Z DEBUG ENV: DB_USER=postgres.uehkqlamchtdzcusqmhi
+2026-02-06T09:22:06.2210353Z DEBUG: DB Connection SUCCESS!
+2026-02-06T09:22:06.3721803Z 2026-02-06 09:22:06,359 - INFO - 169.254.130.1 - - [06/Feb/2026 09:22:06] "GET /health HTTP/1.1" 200 -
+2026-02-06T09:29:26.8924155Z    _____                               
+2026-02-06T09:29:26.8925481Z   /  _  \ __________ _________   ____  
+2026-02-06T09:29:26.8925525Z  /  /_\  \\___   /  |  \_  __ \_/ __ \ 
+2026-02-06T09:29:26.8925543Z /    |    \/    /|  |  /|  | \/\  ___/ 
+2026-02-06T09:29:26.8925561Z \____|__  /_____ \____/ |__|    \___  >
+2026-02-06T09:29:26.8925582Z         \/      \/                  \/ 
+2026-02-06T09:29:26.8925609Z A P P   S E R V I C E   O N   L I N U X
+2026-02-06T09:29:26.8925624Z 
+2026-02-06T09:29:26.8925645Z Documentation    : http://aka.ms/webapp-linux
+2026-02-06T09:29:26.8925665Z Python quickstart: https://aka.ms/python-qs
+2026-02-06T09:29:26.8925682Z Python version   : 3.11.14
+2026-02-06T09:29:26.8925699Z Instance Name    : lw0sdlwk00098M
+2026-02-06T09:29:26.8925729Z Instance Id      : 9d5f45b0f79333e643cadcb5aa89db4a1f3f4858a422c559aeaf07997d03f017
+2026-02-06T09:29:26.8925745Z 
+2026-02-06T09:29:26.8925762Z Note: Any data outside '/home' is not persisted
+2026-02-06T09:29:30.4393612Z Starting OpenBSD Secure Shell server: sshd.
+2026-02-06T09:29:30.4488492Z WEBSITES_INCLUDE_CLOUD_CERTS is not set to true.
+2026-02-06T09:29:30.7393827Z Updating certificates in /etc/ssl/certs...
+2026-02-06T09:29:50.8323073Z rehash: warning: skipping duplicate certificate in azl_SSL.com_TLS_RSA_Root_CA_2022.pem
+2026-02-06T09:29:50.8501250Z rehash: warning: skipping duplicate certificate in azl_Sectigo_Public_Server_Authentication_Root_E46.pem
+2026-02-06T09:29:50.8515499Z rehash: warning: skipping duplicate certificate in azl_SSL.com_TLS_ECC_Root_CA_2022.pem
+2026-02-06T09:29:50.8709725Z rehash: warning: skipping duplicate certificate in azl_Sectigo_Public_Server_Authentication_Root_R46.pem
+2026-02-06T09:29:50.9512489Z 4 added, 0 removed; done.
+2026-02-06T09:29:50.9628564Z Running hooks in /etc/ca-certificates/update.d...
+2026-02-06T09:29:50.9808139Z done.
+2026-02-06T09:29:51.0114479Z CA certificates copied and updated successfully.
+2026-02-06T09:29:51.1799023Z Site's appCommandLine: python -u app.py
+2026-02-06T09:29:51.6905728Z Starting periodic command scheduler: cron.
+2026-02-06T09:29:51.7002506Z Launching oryx with: create-script -appPath /home/site/wwwroot -output /opt/startup/startup.sh -virtualEnvName antenv -defaultApp /opt/defaultsite -userStartupCommand 'python -u app.py'
+2026-02-06T09:29:52.1184899Z Found build manifest file at '/home/site/wwwroot/oryx-manifest.toml'. Deserializing it...
+2026-02-06T09:29:52.1185629Z Output is compressed. Extracting it...
+2026-02-06T09:29:52.1191058Z Found zstd-compressed tarball.
+2026-02-06T09:29:52.1193325Z Extracting '/home/site/wwwroot/output.tar.zst' to directory '/tmp/8de6540ab629993'...
+2026-02-06T09:29:52.1195308Z Using zstd for decompression of file: /home/site/wwwroot/output.tar.zst
+2026-02-06T09:29:52.1197966Z Build Operation ID: 870e9629170522de
+2026-02-06T09:29:52.1198015Z Oryx Version: 0.2.20260112.1, Commit: da7d752b5a9eaff8f6f06e0e37df55a14ef5705b, ReleaseTagName: 20260112.1
+2026-02-06T09:30:01.6989025Z App path is set to '/tmp/8de6540ab629993'
+2026-02-06T09:30:04.0113148Z Writing output script to '/opt/startup/startup.sh'
+2026-02-06T09:30:04.4687355Z Using packages from virtual environment antenv located at /tmp/8de6540ab629993/antenv.
+2026-02-06T09:30:04.4687828Z Updated PYTHONPATH to '/opt/startup/app_logs:/tmp/8de6540ab629993/antenv/lib/python3.11/site-packages'
+2026-02-06T09:30:05.0593684Z DEBUG: API.PY MODULE LOADING...
+2026-02-06T09:30:09.5193878Z DEBUG: httpx version: 0.28.1
+2026-02-06T09:30:09.5201658Z DEBUG: gotrue version: 2.12.3
+2026-02-06T09:30:09.5204397Z DEBUG: supabase version: 2.11.0
+2026-02-06T09:30:10.5655153Z  * Serving Flask app 'form_filler.api'
+2026-02-06T09:30:10.5735316Z  * Debug mode: off
+2026-02-06T09:30:10.5753041Z 2026-02-06 09:30:10,575 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+2026-02-06T09:30:10.5753236Z  * Running on all addresses (0.0.0.0)
+2026-02-06T09:30:10.5753261Z  * Running on http://127.0.0.1:8000
+2026-02-06T09:30:10.5753285Z  * Running on http://169.254.130.4:8000
+2026-02-06T09:30:10.5757752Z 2026-02-06 09:30:10,575 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-06T09:30:10.6281673Z 2026-02-06 09:30:10,627 - INFO - 169.254.130.1 - - [06/Feb/2026 09:30:10] "[33mGET /robots933456.txt HTTP/1.1[0m" 404 -
+2026-02-06T09:36:58.6252603Z    _____                               
+2026-02-06T09:36:58.6257402Z   /  _  \ __________ _________   ____  
+2026-02-06T09:36:58.6257479Z  /  /_\  \\___   /  |  \_  __ \_/ __ \ 
+2026-02-06T09:36:58.6257498Z /    |    \/    /|  |  /|  | \/\  ___/ 
+2026-02-06T09:36:58.6257515Z \____|__  /_____ \____/ |__|    \___  >
+2026-02-06T09:36:58.6257540Z         \/      \/                  \/ 
+2026-02-06T09:36:58.6257576Z A P P   S E R V I C E   O N   L I N U X
+2026-02-06T09:36:58.6257592Z 
+2026-02-06T09:36:58.6257613Z Documentation    : http://aka.ms/webapp-linux
+2026-02-06T09:36:58.6257634Z Python quickstart: https://aka.ms/python-qs
+2026-02-06T09:36:58.6257650Z Python version   : 3.11.14
+2026-02-06T09:36:58.6257667Z Instance Name    : lw0sdlwk00098M
+2026-02-06T09:36:58.6257698Z Instance Id      : 9d5f45b0f79333e643cadcb5aa89db4a1f3f4858a422c559aeaf07997d03f017
+2026-02-06T09:36:58.6257714Z 
+2026-02-06T09:36:58.6257731Z Note: Any data outside '/home' is not persisted
+2026-02-06T09:37:02.9514052Z Starting OpenBSD Secure Shell server: sshd.
+2026-02-06T09:37:02.9809687Z WEBSITES_INCLUDE_CLOUD_CERTS is not set to true.
+2026-02-06T09:37:03.1712899Z Updating certificates in /etc/ssl/certs...
+2026-02-06T09:38:26.7443728Z    _____                               
+2026-02-06T09:38:26.7444921Z   /  _  \ __________ _________   ____  
+2026-02-06T09:38:26.7444952Z  /  /_\  \\___   /  |  \_  __ \_/ __ \ 
+2026-02-06T09:38:26.7445009Z /    |    \/    /|  |  /|  | \/\  ___/ 
+2026-02-06T09:38:26.7445027Z \____|__  /_____ \____/ |__|    \___  >
+2026-02-06T09:38:26.7445050Z         \/      \/                  \/ 
+2026-02-06T09:38:26.7445067Z A P P   S E R V I C E   O N   L I N U X
+2026-02-06T09:38:26.7445082Z 
+2026-02-06T09:38:26.7445102Z Documentation    : http://aka.ms/webapp-linux
+2026-02-06T09:38:26.7445132Z Python quickstart: https://aka.ms/python-qs
+2026-02-06T09:38:26.7445149Z Python version   : 3.11.14
+2026-02-06T09:38:26.7445166Z Instance Name    : lw0sdlwk00098M
+2026-02-06T09:38:26.7445187Z Instance Id      : 9d5f45b0f79333e643cadcb5aa89db4a1f3f4858a422c559aeaf07997d03f017
+2026-02-06T09:38:26.7445204Z 
+2026-02-06T09:38:26.7445220Z Note: Any data outside '/home' is not persisted
+2026-02-06T09:38:27.8645007Z Starting OpenBSD Secure Shell server: sshd.
+2026-02-06T09:38:27.8758721Z WEBSITES_INCLUDE_CLOUD_CERTS is not set to true.
+2026-02-06T09:38:27.9160581Z Updating certificates in /etc/ssl/certs...
+2026-02-06T09:38:38.7039186Z rehash: warning: skipping duplicate certificate in azl_SSL.com_TLS_RSA_Root_CA_2022.pem
+2026-02-06T09:38:38.7132092Z rehash: warning: skipping duplicate certificate in azl_Sectigo_Public_Server_Authentication_Root_E46.pem
+2026-02-06T09:38:38.7242292Z rehash: warning: skipping duplicate certificate in azl_SSL.com_TLS_ECC_Root_CA_2022.pem
+2026-02-06T09:38:38.7345036Z rehash: warning: skipping duplicate certificate in azl_Sectigo_Public_Server_Authentication_Root_R46.pem
+2026-02-06T09:38:38.7741719Z 4 added, 0 removed; done.
+2026-02-06T09:38:38.7835852Z Running hooks in /etc/ca-certificates/update.d...
+2026-02-06T09:38:38.7858459Z done.
+2026-02-06T09:38:38.8042163Z CA certificates copied and updated successfully.
+2026-02-06T09:38:38.8650570Z Site's appCommandLine: python -u app.py
+2026-02-06T09:38:39.0759518Z Starting periodic command scheduler: cron.
+2026-02-06T09:38:39.0934781Z Launching oryx with: create-script -appPath /home/site/wwwroot -output /opt/startup/startup.sh -virtualEnvName antenv -defaultApp /opt/defaultsite -userStartupCommand 'python -u app.py'
+2026-02-06T09:38:39.1930689Z Found build manifest file at '/home/site/wwwroot/oryx-manifest.toml'. Deserializing it...
+2026-02-06T09:38:39.2033243Z Build Operation ID: 870e9629170522de
+2026-02-06T09:38:39.2053362Z Oryx Version: 0.2.20260112.1, Commit: da7d752b5a9eaff8f6f06e0e37df55a14ef5705b, ReleaseTagName: 20260112.1
+2026-02-06T09:38:39.2057417Z Output is compressed. Extracting it...
+2026-02-06T09:38:39.2130563Z Found zstd-compressed tarball.
+2026-02-06T09:38:39.2135219Z Extracting '/home/site/wwwroot/output.tar.zst' to directory '/tmp/8de6540ab629993'...
+2026-02-06T09:38:39.2137860Z Using zstd for decompression of file: /home/site/wwwroot/output.tar.zst
+2026-02-06T09:38:46.8486142Z App path is set to '/tmp/8de6540ab629993'
+2026-02-06T09:38:48.5448401Z Writing output script to '/opt/startup/startup.sh'
+2026-02-06T09:38:49.4760076Z Using packages from virtual environment antenv located at /tmp/8de6540ab629993/antenv.
+2026-02-06T09:38:49.4959355Z Updated PYTHONPATH to '/opt/startup/app_logs:/tmp/8de6540ab629993/antenv/lib/python3.11/site-packages'
+2026-02-06T09:38:49.8639100Z DEBUG: API.PY MODULE LOADING...
+2026-02-06T09:38:51.6954090Z DEBUG: httpx version: 0.28.1
+2026-02-06T09:38:51.7033138Z DEBUG: gotrue version: 2.12.3
+2026-02-06T09:38:51.7033326Z DEBUG: supabase version: 2.11.0
+2026-02-06T09:38:53.2031575Z  * Serving Flask app 'form_filler.api'
+2026-02-06T09:38:53.2115076Z  * Debug mode: off
+2026-02-06T09:38:53.2141465Z 2026-02-06 09:38:53,213 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+2026-02-06T09:38:53.2141730Z  * Running on all addresses (0.0.0.0)
+2026-02-06T09:38:53.2141753Z  * Running on http://127.0.0.1:8000
+2026-02-06T09:38:53.2141773Z  * Running on http://169.254.130.2:8000
+2026-02-06T09:38:53.2141791Z 2026-02-06 09:38:53,214 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-06T09:38:53.6057402Z 2026-02-06 09:38:53,605 - INFO - 169.254.130.1 - - [06/Feb/2026 09:38:53] "[33mGET /robots933456.txt HTTP/1.1[0m" 404 -
+2026-02-06T09:38:53.8643095Z DEBUG: Attempting DB Connection to aws-1-ap-northeast-1.pooler.supabase.com...
+2026-02-06T09:38:53.8643335Z DEBUG ENV: DB_PORT=6543
+2026-02-06T09:38:53.8643383Z DEBUG ENV: DB_NAME=postgres
+2026-02-06T09:38:53.8643397Z DEBUG ENV: DB_PASSWORD=QStaR3Ac39V8SDuf
+2026-02-06T09:38:53.8643411Z DEBUG ENV: DB_HOST=aws-1-ap-northeast-1.pooler.supabase.com
+2026-02-06T09:38:53.8643425Z DEBUG ENV: DB_USER=postgres.uehkqlamchtdzcusqmhi
+2026-02-06T09:38:54.4650184Z DEBUG: DB Connection SUCCESS!
+2026-02-06T09:38:54.5678927Z 2026-02-06 09:38:54,567 - INFO - 169.254.130.1 - - [06/Feb/2026 09:38:54] "GET /health HTTP/1.1" 200 -
+2026-02-06T09:50:34.6777180Z    _____                               
+2026-02-06T09:50:34.6782135Z   /  _  \ __________ _________   ____  
+2026-02-06T09:50:34.6782234Z  /  /_\  \\___   /  |  \_  __ \_/ __ \ 
+2026-02-06T09:50:34.6782253Z /    |    \/    /|  |  /|  | \/\  ___/ 
+2026-02-06T09:50:34.6782284Z \____|__  /_____ \____/ |__|    \___  >
+2026-02-06T09:50:34.6782301Z         \/      \/                  \/ 
+2026-02-06T09:50:34.6782321Z A P P   S E R V I C E   O N   L I N U X
+2026-02-06T09:50:34.6782337Z 
+2026-02-06T09:50:34.6782355Z Documentation    : http://aka.ms/webapp-linux
+2026-02-06T09:50:34.6782375Z Python quickstart: https://aka.ms/python-qs
+2026-02-06T09:50:34.6782410Z Python version   : 3.11.14
+2026-02-06T09:50:34.6782427Z Instance Name    : lw0sdlwk00098M
+2026-02-06T09:50:34.6782452Z Instance Id      : 9d5f45b0f79333e643cadcb5aa89db4a1f3f4858a422c559aeaf07997d03f017
+2026-02-06T09:50:34.6782468Z 
+2026-02-06T09:50:34.6782485Z Note: Any data outside '/home' is not persisted
+2026-02-06T09:50:35.5162719Z Starting OpenBSD Secure Shell server: sshd.
+2026-02-06T09:50:35.5281731Z WEBSITES_INCLUDE_CLOUD_CERTS is not set to true.
+2026-02-06T09:50:35.5777951Z Updating certificates in /etc/ssl/certs...
+2026-02-06T09:50:46.7644214Z rehash: warning: skipping duplicate certificate in azl_SSL.com_TLS_RSA_Root_CA_2022.pem
+2026-02-06T09:50:46.7661177Z rehash: warning: skipping duplicate certificate in azl_Sectigo_Public_Server_Authentication_Root_E46.pem
+2026-02-06T09:50:46.7739972Z rehash: warning: skipping duplicate certificate in azl_SSL.com_TLS_ECC_Root_CA_2022.pem
+2026-02-06T09:50:46.7765538Z rehash: warning: skipping duplicate certificate in azl_Sectigo_Public_Server_Authentication_Root_R46.pem
+2026-02-06T09:50:46.8263680Z 4 added, 0 removed; done.
+2026-02-06T09:50:46.8458079Z Running hooks in /etc/ca-certificates/update.d...
+2026-02-06T09:50:46.8651123Z done.
+2026-02-06T09:50:46.8851321Z CA certificates copied and updated successfully.
+2026-02-06T09:50:46.9942583Z Site's appCommandLine: bash startup.sh
+2026-02-06T09:50:47.1938838Z Starting periodic command scheduler: cron.
+2026-02-06T09:50:47.2041042Z Launching oryx with: create-script -appPath /home/site/wwwroot -output /opt/startup/startup.sh -virtualEnvName antenv -defaultApp /opt/defaultsite -userStartupCommand 'bash startup.sh'
+2026-02-06T09:50:47.3164035Z Found build manifest file at '/home/site/wwwroot/oryx-manifest.toml'. Deserializing it...
+2026-02-06T09:50:47.3360125Z Build Operation ID: 870e9629170522de
+2026-02-06T09:50:47.3537689Z Oryx Version: 0.2.20260112.1, Commit: da7d752b5a9eaff8f6f06e0e37df55a14ef5705b, ReleaseTagName: 20260112.1
+2026-02-06T09:50:47.3542541Z Output is compressed. Extracting it...
+2026-02-06T09:50:47.3555635Z Found zstd-compressed tarball.
+2026-02-06T09:50:47.3647719Z Extracting '/home/site/wwwroot/output.tar.zst' to directory '/tmp/8de6540ab629993'...
+2026-02-06T09:50:47.3656705Z Using zstd for decompression of file: /home/site/wwwroot/output.tar.zst
+2026-02-06T09:50:55.2293344Z App path is set to '/tmp/8de6540ab629993'
+2026-02-06T09:50:56.6369820Z Writing output script to '/opt/startup/startup.sh'
+2026-02-06T09:50:56.8993737Z Using packages from virtual environment antenv located at /tmp/8de6540ab629993/antenv.
+2026-02-06T09:50:56.8994436Z Updated PYTHONPATH to '/opt/startup/app_logs:/tmp/8de6540ab629993/antenv/lib/python3.11/site-packages'
+2026-02-06T09:50:58.4767417Z Requirement already satisfied: flask==3.0.0 in ./antenv/lib/python3.11/site-packages (from -r requirements.txt (line 1)) (3.0.0)
+2026-02-06T09:50:58.4791340Z Requirement already satisfied: flask-cors==4.0.0 in ./antenv/lib/python3.11/site-packages (from -r requirements.txt (line 2)) (4.0.0)
+2026-02-06T09:50:58.4879457Z Requirement already satisfied: psycopg2-binary==2.9.9 in ./antenv/lib/python3.11/site-packages (from -r requirements.txt (line 3)) (2.9.9)
+2026-02-06T09:50:58.5166977Z Requirement already satisfied: bcrypt==4.1.2 in ./antenv/lib/python3.11/site-packages (from -r requirements.txt (line 4)) (4.1.2)
+2026-02-06T09:50:58.5167255Z Requirement already satisfied: cryptography==41.0.7 in ./antenv/lib/python3.11/site-packages (from -r requirements.txt (line 5)) (41.0.7)
+2026-02-06T09:50:58.5167287Z Requirement already satisfied: PyJWT==2.10.1 in ./antenv/lib/python3.11/site-packages (from -r requirements.txt (line 6)) (2.10.1)
+2026-02-06T09:50:58.5167313Z Requirement already satisfied: python-dotenv==1.0.0 in ./antenv/lib/python3.11/site-packages (from -r requirements.txt (line 7)) (1.0.0)
+2026-02-06T09:50:58.5183747Z Requirement already satisfied: playwright==1.40.0 in ./antenv/lib/python3.11/site-packages (from -r requirements.txt (line 8)) (1.40.0)
+2026-02-06T09:50:58.5287353Z Requirement already satisfied: reportlab==4.0.8 in ./antenv/lib/python3.11/site-packages (from -r requirements.txt (line 9)) (4.0.8)
+2026-02-06T09:50:58.5287611Z Requirement already satisfied: Pillow==10.1.0 in ./antenv/lib/python3.11/site-packages (from -r requirements.txt (line 10)) (10.1.0)
+2026-02-06T09:50:58.5287641Z Requirement already satisfied: gunicorn==21.2.0 in ./antenv/lib/python3.11/site-packages (from -r requirements.txt (line 11)) (21.2.0)
+2026-02-06T09:50:58.5369895Z Requirement already satisfied: requests==2.31.0 in ./antenv/lib/python3.11/site-packages (from -r requirements.txt (line 12)) (2.31.0)
+2026-02-06T09:50:58.5388077Z Requirement already satisfied: supabase==2.11.0 in ./antenv/lib/python3.11/site-packages (from -r requirements.txt (line 13)) (2.11.0)
+2026-02-06T09:50:58.5472950Z Requirement already satisfied: httpx==0.28.1 in ./antenv/lib/python3.11/site-packages (from -r requirements.txt (line 14)) (0.28.1)
+2026-02-06T09:50:58.5487339Z Requirement already satisfied: gotrue==2.12.4 in ./antenv/lib/python3.11/site-packages (from -r requirements.txt (line 15)) (2.12.4)
+2026-02-06T09:50:58.5575092Z Requirement already satisfied: razorpay==1.4.1 in ./antenv/lib/python3.11/site-packages (from -r requirements.txt (line 16)) (1.4.1)
+2026-02-06T09:50:58.5790615Z Requirement already satisfied: Werkzeug>=3.0.0 in ./antenv/lib/python3.11/site-packages (from flask==3.0.0->-r requirements.txt (line 1)) (3.1.5)
+2026-02-06T09:50:58.5877869Z Requirement already satisfied: Jinja2>=3.1.2 in ./antenv/lib/python3.11/site-packages (from flask==3.0.0->-r requirements.txt (line 1)) (3.1.6)
+2026-02-06T09:50:58.5893330Z Requirement already satisfied: itsdangerous>=2.1.2 in ./antenv/lib/python3.11/site-packages (from flask==3.0.0->-r requirements.txt (line 1)) (2.2.0)
+2026-02-06T09:50:58.5973349Z Requirement already satisfied: click>=8.1.3 in ./antenv/lib/python3.11/site-packages (from flask==3.0.0->-r requirements.txt (line 1)) (8.3.1)
+2026-02-06T09:50:58.5985057Z Requirement already satisfied: blinker>=1.6.2 in ./antenv/lib/python3.11/site-packages (from flask==3.0.0->-r requirements.txt (line 1)) (1.9.0)
+2026-02-06T09:50:58.6486700Z Requirement already satisfied: cffi>=1.12 in ./antenv/lib/python3.11/site-packages (from cryptography==41.0.7->-r requirements.txt (line 5)) (2.0.0)
+2026-02-06T09:50:58.6885590Z Requirement already satisfied: greenlet==3.0.1 in ./antenv/lib/python3.11/site-packages (from playwright==1.40.0->-r requirements.txt (line 8)) (3.0.1)
+2026-02-06T09:50:58.6968056Z Requirement already satisfied: pyee==11.0.1 in ./antenv/lib/python3.11/site-packages (from playwright==1.40.0->-r requirements.txt (line 8)) (11.0.1)
+2026-02-06T09:50:58.7086322Z Requirement already satisfied: chardet in ./antenv/lib/python3.11/site-packages (from reportlab==4.0.8->-r requirements.txt (line 9)) (5.2.0)
+2026-02-06T09:50:58.7567251Z Requirement already satisfied: packaging in ./antenv/lib/python3.11/site-packages (from gunicorn==21.2.0->-r requirements.txt (line 11)) (26.0)
+2026-02-06T09:50:58.7779222Z Requirement already satisfied: charset-normalizer<4,>=2 in ./antenv/lib/python3.11/site-packages (from requests==2.31.0->-r requirements.txt (line 12)) (3.4.4)
+2026-02-06T09:50:58.7878636Z Requirement already satisfied: idna<4,>=2.5 in ./antenv/lib/python3.11/site-packages (from requests==2.31.0->-r requirements.txt (line 12)) (3.11)
+2026-02-06T09:50:58.7878769Z Requirement already satisfied: urllib3<3,>=1.21.1 in ./antenv/lib/python3.11/site-packages (from requests==2.31.0->-r requirements.txt (line 12)) (2.6.3)
+2026-02-06T09:50:58.7952648Z Requirement already satisfied: certifi>=2017.4.17 in ./antenv/lib/python3.11/site-packages (from requests==2.31.0->-r requirements.txt (line 12)) (2026.1.4)
+2026-02-06T09:50:58.8470869Z Requirement already satisfied: postgrest<0.20,>=0.19 in ./antenv/lib/python3.11/site-packages (from supabase==2.11.0->-r requirements.txt (line 13)) (0.19.3)
+2026-02-06T09:50:58.8555849Z Requirement already satisfied: realtime<3.0.0,>=2.0.0 in ./antenv/lib/python3.11/site-packages (from supabase==2.11.0->-r requirements.txt (line 13)) (2.27.3)
+2026-02-06T09:50:58.8569723Z Requirement already satisfied: storage3<0.12,>=0.10 in ./antenv/lib/python3.11/site-packages (from supabase==2.11.0->-r requirements.txt (line 13)) (0.11.3)
+2026-02-06T09:50:58.8653305Z Requirement already satisfied: supafunc<0.10,>=0.9 in ./antenv/lib/python3.11/site-packages (from supabase==2.11.0->-r requirements.txt (line 13)) (0.9.4)
+2026-02-06T09:50:58.8870363Z Requirement already satisfied: anyio in ./antenv/lib/python3.11/site-packages (from httpx==0.28.1->-r requirements.txt (line 14)) (4.12.1)
+2026-02-06T09:50:58.8960843Z Requirement already satisfied: httpcore==1.* in ./antenv/lib/python3.11/site-packages (from httpx==0.28.1->-r requirements.txt (line 14)) (1.0.9)
+2026-02-06T09:50:58.9272996Z Requirement already satisfied: pydantic<3,>=1.10 in ./antenv/lib/python3.11/site-packages (from gotrue==2.12.4->-r requirements.txt (line 15)) (2.12.5)
+2026-02-06T09:50:59.0069463Z Requirement already satisfied: h11>=0.16 in ./antenv/lib/python3.11/site-packages (from httpcore==1.*->httpx==0.28.1->-r requirements.txt (line 14)) (0.16.0)
+2026-02-06T09:50:59.0656250Z Requirement already satisfied: typing-extensions in ./antenv/lib/python3.11/site-packages (from pyee==11.0.1->playwright==1.40.0->-r requirements.txt (line 8)) (4.15.0)
+2026-02-06T09:50:59.0950705Z Requirement already satisfied: pycparser in ./antenv/lib/python3.11/site-packages (from cffi>=1.12->cryptography==41.0.7->-r requirements.txt (line 5)) (3.0)
+2026-02-06T09:50:59.1461756Z Requirement already satisfied: h2<5,>=3 in ./antenv/lib/python3.11/site-packages (from httpx[http2]<0.29,>=0.26->gotrue==2.12.4->-r requirements.txt (line 15)) (4.3.0)
+2026-02-06T09:50:59.1770798Z Requirement already satisfied: MarkupSafe>=2.0 in ./antenv/lib/python3.11/site-packages (from Jinja2>=3.1.2->flask==3.0.0->-r requirements.txt (line 1)) (3.0.3)
+2026-02-06T09:50:59.1967554Z Requirement already satisfied: deprecation<3.0.0,>=2.1.0 in ./antenv/lib/python3.11/site-packages (from postgrest<0.20,>=0.19->supabase==2.11.0->-r requirements.txt (line 13)) (2.1.0)
+2026-02-06T09:50:59.2264191Z Requirement already satisfied: annotated-types>=0.6.0 in ./antenv/lib/python3.11/site-packages (from pydantic<3,>=1.10->gotrue==2.12.4->-r requirements.txt (line 15)) (0.7.0)
+2026-02-06T09:50:59.2349381Z Requirement already satisfied: pydantic-core==2.41.5 in ./antenv/lib/python3.11/site-packages (from pydantic<3,>=1.10->gotrue==2.12.4->-r requirements.txt (line 15)) (2.41.5)
+2026-02-06T09:50:59.2362883Z Requirement already satisfied: typing-inspection>=0.4.2 in ./antenv/lib/python3.11/site-packages (from pydantic<3,>=1.10->gotrue==2.12.4->-r requirements.txt (line 15)) (0.4.2)
+2026-02-06T09:50:59.2754870Z Requirement already satisfied: websockets<16,>=11 in ./antenv/lib/python3.11/site-packages (from realtime<3.0.0,>=2.0.0->supabase==2.11.0->-r requirements.txt (line 13)) (15.0.1)
+2026-02-06T09:50:59.2956558Z Requirement already satisfied: python-dateutil<3.0.0,>=2.8.2 in ./antenv/lib/python3.11/site-packages (from storage3<0.12,>=0.10->supabase==2.11.0->-r requirements.txt (line 13)) (2.9.0.post0)
+2026-02-06T09:50:59.3153391Z Requirement already satisfied: strenum<0.5.0,>=0.4.15 in ./antenv/lib/python3.11/site-packages (from supafunc<0.10,>=0.9->supabase==2.11.0->-r requirements.txt (line 13)) (0.4.15)
+2026-02-06T09:50:59.4564683Z Requirement already satisfied: hyperframe<7,>=6.1 in ./antenv/lib/python3.11/site-packages (from h2<5,>=3->httpx[http2]<0.29,>=0.26->gotrue==2.12.4->-r requirements.txt (line 15)) (6.1.0)
+2026-02-06T09:50:59.4660167Z Requirement already satisfied: hpack<5,>=4.1 in ./antenv/lib/python3.11/site-packages (from h2<5,>=3->httpx[http2]<0.29,>=0.26->gotrue==2.12.4->-r requirements.txt (line 15)) (4.1.0)
+2026-02-06T09:50:59.4949078Z Requirement already satisfied: six>=1.5 in ./antenv/lib/python3.11/site-packages (from python-dateutil<3.0.0,>=2.8.2->storage3<0.12,>=0.10->supabase==2.11.0->-r requirements.txt (line 13)) (1.17.0)
+2026-02-06T09:51:00.8807473Z 
+2026-02-06T09:51:00.8807985Z [notice] A new release of pip is available: 24.0 -> 26.0.1
+2026-02-06T09:51:00.8808027Z [notice] To update, run: pip install --upgrade pip
+2026-02-06T09:51:02.8405909Z Downloading Chromium 120.0.6099.28 (playwright build v1091) from https://playwright.azureedge.net/builds/chromium/1091/chromium-linux.zip
+2026-02-06T09:51:03.4608209Z |                                                                                |   0% of 153.1 Mb
+2026-02-06T09:51:05.1003821Z |¦¦¦¦¦¦¦¦                                                                        |  10% of 153.1 Mb
+2026-02-06T09:51:06.5126937Z |¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦                                                                |  20% of 153.1 Mb
+2026-02-06T09:51:07.4614519Z |¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦                                                        |  30% of 153.1 Mb
+2026-02-06T09:51:08.3613781Z |¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦                                                |  40% of 153.1 Mb
+2026-02-06T09:51:09.3780021Z |¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦                                        |  50% of 153.1 Mb
+2026-02-06T09:51:10.0971966Z |¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦                                |  60% of 153.1 Mb
+2026-02-06T09:51:10.8760048Z |¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦                        |  70% of 153.1 Mb
+2026-02-06T09:51:11.5629916Z |¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦                |  80% of 153.1 Mb
+2026-02-06T09:51:12.3532356Z |¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦        |  90% of 153.1 Mb
+2026-02-06T09:51:13.0848197Z |¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦| 100% of 153.1 Mb
+2026-02-06T09:51:42.6136760Z Chromium 120.0.6099.28 (playwright build v1091) downloaded to /home/site/playwright-browsers/chromium-1091
+2026-02-06T09:51:42.6221938Z Downloading FFMPEG playwright build v1009 from https://playwright.azureedge.net/builds/ffmpeg/1009/ffmpeg-linux.zip
+2026-02-06T09:51:43.2452276Z |                                                                                |   0% of 2.6 Mb
+2026-02-06T09:51:43.3043002Z |¦¦¦¦¦¦¦¦                                                                        |  10% of 2.6 Mb
+2026-02-06T09:51:43.3341628Z |¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦                                                                |  20% of 2.6 Mb
+2026-02-06T09:51:43.3639080Z |¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦                                                        |  30% of 2.6 Mb
+2026-02-06T09:51:43.3928830Z |¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦                                                |  40% of 2.6 Mb
+2026-02-06T09:51:43.4223745Z |¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦                                        |  50% of 2.6 Mb
+2026-02-06T09:51:43.4330992Z |¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦                                |  60% of 2.6 Mb
+2026-02-06T09:51:43.4539349Z |¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦                        |  70% of 2.6 Mb
+2026-02-06T09:51:43.4748701Z |¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦                |  80% of 2.6 Mb
+2026-02-06T09:51:43.5032200Z |¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦        |  90% of 2.6 Mb
+2026-02-06T09:51:43.5324478Z |¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦¦| 100% of 2.6 Mb
+2026-02-06T09:51:44.4460137Z FFMPEG playwright build v1009 downloaded to /home/site/playwright-browsers/ffmpeg-1009
+2026-02-06T09:51:44.9267865Z [2026-02-06 09:51:44 +0000] [1967] [INFO] Starting gunicorn 21.2.0
+2026-02-06T09:51:44.9365618Z [2026-02-06 09:51:44 +0000] [1967] [INFO] Listening at: http://0.0.0.0:8000 (1967)
+2026-02-06T09:51:44.9365820Z [2026-02-06 09:51:44 +0000] [1967] [INFO] Using worker: sync
+2026-02-06T09:51:44.9366089Z [2026-02-06 09:51:44 +0000] [1968] [INFO] Booting worker with pid: 1968
+2026-02-06T09:51:44.9962237Z DEBUG: API.PY MODULE LOADING...
+2026-02-06T09:51:45.9407850Z DEBUG: httpx version: 0.28.1
+2026-02-06T09:51:45.9412029Z DEBUG: gotrue version: 2.12.3
+2026-02-06T09:51:45.9412196Z DEBUG: supabase version: 2.11.0
+2026-02-06T09:54:36.3822346Z    _____                               
+2026-02-06T09:54:36.3910967Z   /  _  \ __________ _________   ____  
+2026-02-06T09:54:36.3911089Z  /  /_\  \\___   /  |  \_  __ \_/ __ \ 
+2026-02-06T09:54:36.3911112Z /    |    \/    /|  |  /|  | \/\  ___/ 
+2026-02-06T09:54:36.3911128Z \____|__  /_____ \____/ |__|    \___  >
+2026-02-06T09:54:36.3911156Z         \/      \/                  \/ 
+2026-02-06T09:54:36.3911201Z A P P   S E R V I C E   O N   L I N U X
+2026-02-06T09:54:36.3911217Z 
+2026-02-06T09:54:36.3911237Z Documentation    : http://aka.ms/webapp-linux
+2026-02-06T09:54:36.3911257Z Python quickstart: https://aka.ms/python-qs
+2026-02-06T09:54:36.3911273Z Python version   : 3.11.14
+2026-02-06T09:54:36.3911291Z Instance Name    : lw0sdlwk00098M
+2026-02-06T09:54:36.3911324Z Instance Id      : 9d5f45b0f79333e643cadcb5aa89db4a1f3f4858a422c559aeaf07997d03f017
+2026-02-06T09:54:36.3911341Z 
+2026-02-06T09:54:36.3911357Z Note: Any data outside '/home' is not persisted
+2026-02-06T09:54:37.5299766Z Starting OpenBSD Secure Shell server: sshd.
+2026-02-06T09:54:37.5503013Z WEBSITES_INCLUDE_CLOUD_CERTS is not set to true.
+2026-02-06T09:54:37.5920842Z Updating certificates in /etc/ssl/certs...
+2026-02-06T09:54:49.1694706Z rehash: warning: skipping duplicate certificate in azl_SSL.com_TLS_RSA_Root_CA_2022.pem
+2026-02-06T09:54:49.1978058Z rehash: warning: skipping duplicate certificate in azl_Sectigo_Public_Server_Authentication_Root_E46.pem
+2026-02-06T09:54:49.1978303Z rehash: warning: skipping duplicate certificate in azl_SSL.com_TLS_ECC_Root_CA_2022.pem
+2026-02-06T09:54:49.2486533Z rehash: warning: skipping duplicate certificate in azl_Sectigo_Public_Server_Authentication_Root_R46.pem
+2026-02-06T09:54:49.3296658Z 4 added, 0 removed; done.
+2026-02-06T09:54:49.3480271Z Running hooks in /etc/ca-certificates/update.d...
+2026-02-06T09:54:49.3500787Z done.
+2026-02-06T09:54:49.3682949Z CA certificates copied and updated successfully.
+2026-02-06T09:54:49.5794931Z Site's appCommandLine: bash startup.sh
+2026-02-06T09:54:49.9788929Z Starting periodic command scheduler: cron.
+2026-02-06T09:54:49.9872279Z Launching oryx with: create-script -appPath /home/site/wwwroot -output /opt/startup/startup.sh -virtualEnvName antenv -defaultApp /opt/defaultsite -userStartupCommand 'bash startup.sh'
+2026-02-06T09:54:50.1285395Z Found build manifest file at '/home/site/wwwroot/oryx-manifest.toml'. Deserializing it...
+2026-02-06T09:54:50.1307596Z Build Operation ID: aa91231490ef4c0e
+2026-02-06T09:54:50.1325391Z Oryx Version: 0.2.20260112.1, Commit: da7d752b5a9eaff8f6f06e0e37df55a14ef5705b, ReleaseTagName: 20260112.1
+2026-02-06T09:54:50.1331210Z Output is compressed. Extracting it...
+2026-02-06T09:54:50.1485260Z Found zstd-compressed tarball.
+2026-02-06T09:54:50.1485391Z Extracting '/home/site/wwwroot/output.tar.zst' to directory '/tmp/8de656585c8e9ed'...
+2026-02-06T09:54:50.1485422Z Using zstd for decompression of file: /home/site/wwwroot/output.tar.zst
+2026-02-06T09:54:58.3154553Z App path is set to '/tmp/8de656585c8e9ed'
+2026-02-06T09:54:59.8816344Z Writing output script to '/opt/startup/startup.sh'
+2026-02-06T09:55:00.0988525Z Using packages from virtual environment antenv located at /tmp/8de656585c8e9ed/antenv.
+2026-02-06T09:55:00.0989000Z Updated PYTHONPATH to '/opt/startup/app_logs:/tmp/8de656585c8e9ed/antenv/lib/python3.11/site-packages'
+2026-02-06T09:55:00.1089962Z === Starting Azure App Service Startup Script ===
+2026-02-06T09:55:00.1098072Z Installing Python dependencies...
+2026-02-06T09:55:01.9362077Z Requirement already satisfied: pip in /tmp/8de656585c8e9ed/antenv/lib/python3.11/site-packages (24.0)
+2026-02-06T09:55:02.5554976Z Collecting pip
+2026-02-06T09:55:02.7660610Z   Downloading pip-26.0.1-py3-none-any.whl.metadata (4.7 kB)
+2026-02-06T09:55:02.8965181Z Downloading pip-26.0.1-py3-none-any.whl (1.8 MB)
+2026-02-06T09:55:03.0891140Z    ???????????????????????????????????????? 1.8/1.8 MB 10.1 MB/s eta 0:00:00
+2026-02-06T09:55:03.8229084Z Installing collected packages: pip
+2026-02-06T09:55:03.8280328Z   Attempting uninstall: pip
+2026-02-06T09:55:03.8496244Z     Found existing installation: pip 24.0
+2026-02-06T09:55:03.9508767Z     Uninstalling pip-24.0:
+2026-02-06T09:55:03.9896671Z       Successfully uninstalled pip-24.0
+2026-02-06T09:55:07.1541722Z Successfully installed pip-26.0.1
+2026-02-06T09:55:08.6142187Z ERROR: Could not open requirements file: [Errno 2] No such file or directory: 'requirements.txt'
+2026-02-06T09:56:16.7846581Z    _____                               
+2026-02-06T09:56:16.7846738Z   /  _  \ __________ _________   ____  
+2026-02-06T09:56:16.7846757Z  /  /_\  \\___   /  |  \_  __ \_/ __ \ 
+2026-02-06T09:56:16.7846769Z /    |    \/    /|  |  /|  | \/\  ___/ 
+2026-02-06T09:56:16.7846806Z \____|__  /_____ \____/ |__|    \___  >
+2026-02-06T09:56:16.7846818Z         \/      \/                  \/ 
+2026-02-06T09:56:16.7846830Z A P P   S E R V I C E   O N   L I N U X
+2026-02-06T09:56:16.7846840Z 
+2026-02-06T09:56:16.7846853Z Documentation    : http://aka.ms/webapp-linux
+2026-02-06T09:56:16.7846865Z Python quickstart: https://aka.ms/python-qs
+2026-02-06T09:56:16.7846878Z Python version   : 3.11.14
+2026-02-06T09:56:16.7846890Z Instance Name    : lw0sdlwk00098M
+2026-02-06T09:56:16.7846906Z Instance Id      : 9d5f45b0f79333e643cadcb5aa89db4a1f3f4858a422c559aeaf07997d03f017
+2026-02-06T09:56:16.7846916Z 
+2026-02-06T09:56:16.7846929Z Note: Any data outside '/home' is not persisted
+2026-02-06T09:56:17.5454220Z Starting OpenBSD Secure Shell server: sshd.
+2026-02-06T09:56:17.5673344Z WEBSITES_INCLUDE_CLOUD_CERTS is not set to true.
+2026-02-06T09:56:17.5999027Z Updating certificates in /etc/ssl/certs...
+2026-02-06T09:56:28.2446505Z rehash: warning: skipping duplicate certificate in azl_SSL.com_TLS_RSA_Root_CA_2022.pem
+2026-02-06T09:56:28.2534045Z rehash: warning: skipping duplicate certificate in azl_Sectigo_Public_Server_Authentication_Root_E46.pem
+2026-02-06T09:56:28.2545543Z rehash: warning: skipping duplicate certificate in azl_SSL.com_TLS_ECC_Root_CA_2022.pem
+2026-02-06T09:56:28.2743845Z rehash: warning: skipping duplicate certificate in azl_Sectigo_Public_Server_Authentication_Root_R46.pem
+2026-02-06T09:56:28.3037194Z 4 added, 0 removed; done.
+2026-02-06T09:56:28.3038574Z Running hooks in /etc/ca-certificates/update.d...
+2026-02-06T09:56:28.3124004Z done.
+2026-02-06T09:56:28.3228526Z CA certificates copied and updated successfully.
+2026-02-06T09:56:28.3938984Z Site's appCommandLine: bash startup.sh
+2026-02-06T09:56:28.6124863Z Starting periodic command scheduler: cron.
+2026-02-06T09:56:28.6129294Z Launching oryx with: create-script -appPath /home/site/wwwroot -output /opt/startup/startup.sh -virtualEnvName antenv -defaultApp /opt/defaultsite -userStartupCommand 'bash startup.sh'
+2026-02-06T09:56:28.6529887Z Found build manifest file at '/home/site/wwwroot/oryx-manifest.toml'. Deserializing it...
+2026-02-06T09:56:28.6623163Z Build Operation ID: aa91231490ef4c0e
+2026-02-06T09:56:28.6713793Z Oryx Version: 0.2.20260112.1, Commit: da7d752b5a9eaff8f6f06e0e37df55a14ef5705b, ReleaseTagName: 20260112.1
+2026-02-06T09:56:28.6714764Z Output is compressed. Extracting it...
+2026-02-06T09:56:28.6733058Z Found zstd-compressed tarball.
+2026-02-06T09:56:28.6906416Z Extracting '/home/site/wwwroot/output.tar.zst' to directory '/tmp/8de656585c8e9ed'...
+2026-02-06T09:56:28.6906526Z Using zstd for decompression of file: /home/site/wwwroot/output.tar.zst
+2026-02-06T09:56:36.6779130Z App path is set to '/tmp/8de656585c8e9ed'
+2026-02-06T09:56:37.9353650Z Writing output script to '/opt/startup/startup.sh'
+2026-02-06T09:56:38.3059310Z Using packages from virtual environment antenv located at /tmp/8de656585c8e9ed/antenv.
+2026-02-06T09:56:38.3059819Z Updated PYTHONPATH to '/opt/startup/app_logs:/tmp/8de656585c8e9ed/antenv/lib/python3.11/site-packages'
+2026-02-06T09:56:38.3351243Z === Starting Azure App Service Startup Script ===
+2026-02-06T09:56:38.3543813Z Installing Python dependencies...
+2026-02-06T09:56:40.0238503Z Requirement already satisfied: pip in /tmp/8de656585c8e9ed/antenv/lib/python3.11/site-packages (24.0)
+2026-02-06T09:56:40.3667362Z Collecting pip
+2026-02-06T09:56:40.4936148Z   Downloading pip-26.0.1-py3-none-any.whl.metadata (4.7 kB)
+2026-02-06T09:56:40.5325061Z Downloading pip-26.0.1-py3-none-any.whl (1.8 MB)
+2026-02-06T09:56:40.7202883Z    ???????????????????????????????????????? 1.8/1.8 MB 10.0 MB/s eta 0:00:00
+2026-02-06T09:56:41.5030504Z Installing collected packages: pip
+2026-02-06T09:56:41.5203757Z   Attempting uninstall: pip
+2026-02-06T09:56:41.5406035Z     Found existing installation: pip 24.0
+2026-02-06T09:56:41.6912110Z     Uninstalling pip-24.0:
+2026-02-06T09:56:41.7119304Z       Successfully uninstalled pip-24.0
+2026-02-06T09:56:44.4017471Z Successfully installed pip-26.0.1
+2026-02-06T09:56:45.7868946Z ERROR: Could not open requirements file: [Errno 2] No such file or directory: 'requirements.txt'
+2026-02-06T10:05:01.6022972Z    _____                               
+2026-02-06T10:05:01.6093484Z   /  _  \ __________ _________   ____  
+2026-02-06T10:05:01.6093574Z  /  /_\  \\___   /  |  \_  __ \_/ __ \ 
+2026-02-06T10:05:01.6093609Z /    |    \/    /|  |  /|  | \/\  ___/ 
+2026-02-06T10:05:01.6093630Z \____|__  /_____ \____/ |__|    \___  >
+2026-02-06T10:05:01.6093651Z         \/      \/                  \/ 
+2026-02-06T10:05:01.6093672Z A P P   S E R V I C E   O N   L I N U X
+2026-02-06T10:05:01.6093688Z 
+2026-02-06T10:05:01.6093710Z Documentation    : http://aka.ms/webapp-linux
+2026-02-06T10:05:01.6093730Z Python quickstart: https://aka.ms/python-qs
+2026-02-06T10:05:01.6093764Z Python version   : 3.11.14
+2026-02-06T10:05:01.6093781Z Instance Name    : lw0sdlwk00098M
+2026-02-06T10:05:01.6093803Z Instance Id      : 9d5f45b0f79333e643cadcb5aa89db4a1f3f4858a422c559aeaf07997d03f017
+2026-02-06T10:05:01.6093852Z 
+2026-02-06T10:05:01.6093869Z Note: Any data outside '/home' is not persisted
+2026-02-06T10:05:04.0733740Z Starting OpenBSD Secure Shell server: sshd.
+2026-02-06T10:05:04.1123661Z WEBSITES_INCLUDE_CLOUD_CERTS is not set to true.
+2026-02-06T10:05:04.2382419Z Updating certificates in /etc/ssl/certs...
+2026-02-06T10:05:22.4704444Z rehash: warning: skipping duplicate certificate in azl_SSL.com_TLS_RSA_Root_CA_2022.pem
+2026-02-06T10:05:22.4889079Z rehash: warning: skipping duplicate certificate in azl_Sectigo_Public_Server_Authentication_Root_E46.pem
+2026-02-06T10:05:22.5006641Z rehash: warning: skipping duplicate certificate in azl_SSL.com_TLS_ECC_Root_CA_2022.pem
+2026-02-06T10:05:22.5302197Z rehash: warning: skipping duplicate certificate in azl_Sectigo_Public_Server_Authentication_Root_R46.pem
+2026-02-06T10:05:22.5979813Z 4 added, 0 removed; done.
+2026-02-06T10:05:22.5988736Z Running hooks in /etc/ca-certificates/update.d...
+2026-02-06T10:05:22.6190488Z done.
+2026-02-06T10:05:22.6300491Z CA certificates copied and updated successfully.
+2026-02-06T10:05:22.7677961Z Site's appCommandLine: python -u app.py
+2026-02-06T10:05:23.1991210Z Starting periodic command scheduler: cron.
+2026-02-06T10:05:23.2005534Z Launching oryx with: create-script -appPath /home/site/wwwroot -output /opt/startup/startup.sh -virtualEnvName antenv -defaultApp /opt/defaultsite -userStartupCommand 'python -u app.py'
+2026-02-06T10:05:23.3575195Z Could not find build manifest file at '/home/site/wwwroot/oryx-manifest.toml'
+2026-02-06T10:05:23.3787594Z Could not find operation ID in manifest. Generating an operation id...
+2026-02-06T10:05:23.3787872Z Build Operation ID: 8a65ca35-2cf5-423e-8177-064ea5c88899
+2026-02-06T10:05:24.3386714Z Oryx Version: 0.2.20260112.1, Commit: da7d752b5a9eaff8f6f06e0e37df55a14ef5705b, ReleaseTagName: 20260112.1
+2026-02-06T10:05:24.5168257Z Writing output script to '/opt/startup/startup.sh'
+2026-02-06T10:05:24.7168609Z WARNING: Could not find virtual environment directory /home/site/wwwroot/antenv.
+2026-02-06T10:05:24.7171077Z WARNING: Could not find package directory /home/site/wwwroot/__oryx_packages__.
+2026-02-06T10:05:24.8766334Z python: can't open file '/home/site/wwwroot/app.py': [Errno 2] No such file or directory
+2026-02-06T10:06:51.0248432Z    _____                               
+2026-02-06T10:06:51.0249485Z   /  _  \ __________ _________   ____  
+2026-02-06T10:06:51.0249518Z  /  /_\  \\___   /  |  \_  __ \_/ __ \ 
+2026-02-06T10:06:51.0249535Z /    |    \/    /|  |  /|  | \/\  ___/ 
+2026-02-06T10:06:51.0249552Z \____|__  /_____ \____/ |__|    \___  >
+2026-02-06T10:06:51.0249603Z         \/      \/                  \/ 
+2026-02-06T10:06:51.0249620Z A P P   S E R V I C E   O N   L I N U X
+2026-02-06T10:06:51.0249636Z 
+2026-02-06T10:06:51.0249656Z Documentation    : http://aka.ms/webapp-linux
+2026-02-06T10:06:51.0249676Z Python quickstart: https://aka.ms/python-qs
+2026-02-06T10:06:51.0249692Z Python version   : 3.11.14
+2026-02-06T10:06:51.0249710Z Instance Name    : lw0sdlwk00098M
+2026-02-06T10:06:51.0249742Z Instance Id      : 9d5f45b0f79333e643cadcb5aa89db4a1f3f4858a422c559aeaf07997d03f017
+2026-02-06T10:06:51.0249758Z 
+2026-02-06T10:06:51.0249774Z Note: Any data outside '/home' is not persisted
+2026-02-06T10:06:51.5461223Z Starting OpenBSD Secure Shell server: sshd.
+2026-02-06T10:06:51.5585893Z WEBSITES_INCLUDE_CLOUD_CERTS is not set to true.
+2026-02-06T10:06:51.5979487Z Updating certificates in /etc/ssl/certs...
+2026-02-06T10:07:02.3418254Z rehash: warning: skipping duplicate certificate in azl_SSL.com_TLS_RSA_Root_CA_2022.pem
+2026-02-06T10:07:02.3914222Z rehash: warning: skipping duplicate certificate in azl_Sectigo_Public_Server_Authentication_Root_E46.pem
+2026-02-06T10:07:02.4006458Z rehash: warning: skipping duplicate certificate in azl_SSL.com_TLS_ECC_Root_CA_2022.pem
+2026-02-06T10:07:02.4104248Z rehash: warning: skipping duplicate certificate in azl_Sectigo_Public_Server_Authentication_Root_R46.pem
+2026-02-06T10:07:02.4519144Z 4 added, 0 removed; done.
+2026-02-06T10:07:02.4519549Z Running hooks in /etc/ca-certificates/update.d...
+2026-02-06T10:07:02.4914603Z done.
+2026-02-06T10:07:02.4914787Z CA certificates copied and updated successfully.
+2026-02-06T10:07:02.6118921Z Site's appCommandLine: python -u app.py
+2026-02-06T10:07:03.1195887Z Starting periodic command scheduler: cron.
+2026-02-06T10:07:03.1196566Z Launching oryx with: create-script -appPath /home/site/wwwroot -output /opt/startup/startup.sh -virtualEnvName antenv -defaultApp /opt/defaultsite -userStartupCommand 'python -u app.py'
+2026-02-06T10:07:03.2097947Z Found build manifest file at '/home/site/wwwroot/oryx-manifest.toml'. Deserializing it...
+2026-02-06T10:07:03.2208256Z Build Operation ID: b6ef8cc0dacff204
+2026-02-06T10:07:03.2311922Z Oryx Version: 0.2.20260112.1, Commit: da7d752b5a9eaff8f6f06e0e37df55a14ef5705b, ReleaseTagName: 20260112.1
+2026-02-06T10:07:03.2400326Z Output is compressed. Extracting it...
+2026-02-06T10:07:03.2412549Z Found zstd-compressed tarball.
+2026-02-06T10:07:03.2412855Z Extracting '/home/site/wwwroot/output.tar.zst' to directory '/tmp/8de65670ee011e4'...
+2026-02-06T10:07:03.2412923Z Using zstd for decompression of file: /home/site/wwwroot/output.tar.zst
+2026-02-06T10:07:13.3023019Z App path is set to '/tmp/8de65670ee011e4'
+2026-02-06T10:07:14.4007612Z Writing output script to '/opt/startup/startup.sh'
+2026-02-06T10:07:14.8398416Z Using packages from virtual environment antenv located at /tmp/8de65670ee011e4/antenv.
+2026-02-06T10:07:14.8401557Z Updated PYTHONPATH to '/opt/startup/app_logs:/tmp/8de65670ee011e4/antenv/lib/python3.11/site-packages'
+2026-02-06T10:07:15.1391213Z DEBUG: API.PY MODULE LOADING...
+2026-02-06T10:07:21.8534226Z DEBUG: httpx version: 0.28.1
+2026-02-06T10:07:21.8709620Z DEBUG: gotrue version: 2.12.3
+2026-02-06T10:07:21.8709857Z DEBUG: supabase version: 2.11.0
+2026-02-06T10:07:25.1993642Z  * Serving Flask app 'form_filler.api'
+2026-02-06T10:07:25.1993955Z  * Debug mode: off
+2026-02-06T10:07:25.2605864Z 2026-02-06 10:07:25,260 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+2026-02-06T10:07:25.2606333Z  * Running on all addresses (0.0.0.0)
+2026-02-06T10:07:25.2606359Z  * Running on http://127.0.0.1:8000
+2026-02-06T10:07:25.2606377Z  * Running on http://169.254.130.3:8000
+2026-02-06T10:07:25.2704068Z 2026-02-06 10:07:25,267 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-06T10:07:25.9097666Z 2026-02-06 10:07:25,909 - INFO - 169.254.130.1 - - [06/Feb/2026 10:07:25] "[33mGET /robots933456.txt HTTP/1.1[0m" 404 -
+2026-02-06T10:07:26.3574614Z DEBUG: Attempting DB Connection to aws-1-ap-northeast-1.pooler.supabase.com...
+2026-02-06T10:07:26.3578249Z DEBUG ENV: DB_PORT=6543
+2026-02-06T10:07:26.3580211Z DEBUG ENV: DB_NAME=postgres
+2026-02-06T10:07:26.3582640Z DEBUG ENV: DB_PASSWORD=QStaR3Ac39V8SDuf
+2026-02-06T10:07:26.3584669Z DEBUG ENV: DB_HOST=aws-1-ap-northeast-1.pooler.supabase.com
+2026-02-06T10:07:26.3585509Z DEBUG ENV: DB_USER=postgres.uehkqlamchtdzcusqmhi
+2026-02-06T10:07:26.9591874Z DEBUG: DB Connection SUCCESS!
+2026-02-06T10:07:27.0695910Z 2026-02-06 10:07:27,069 - INFO - 169.254.130.1 - - [06/Feb/2026 10:07:27] "GET /health HTTP/1.1" 200 -
+2026-02-06T10:13:53.7997340Z 2026-02-06 10:13:53,793 - INFO - 169.254.130.1 - - [06/Feb/2026 10:13:53] "[33mGET / HTTP/1.1[0m" 404 -
+2026-02-06T10:15:00.0453970Z 2026-02-06 10:15:00,044 - INFO - 169.254.130.1 - - [06/Feb/2026 10:15:00] "[33mGET / HTTP/1.1[0m" 404 -
+2026-02-06T10:21:43.2273374Z    _____                               
+2026-02-06T10:21:43.2583985Z   /  _  \ __________ _________   ____  
+2026-02-06T10:21:43.2584092Z  /  /_\  \\___   /  |  \_  __ \_/ __ \ 
+2026-02-06T10:21:43.2584112Z /    |    \/    /|  |  /|  | \/\  ___/ 
+2026-02-06T10:21:43.2584131Z \____|__  /_____ \____/ |__|    \___  >
+2026-02-06T10:21:43.2584151Z         \/      \/                  \/ 
+2026-02-06T10:21:43.2585320Z A P P   S E R V I C E   O N   L I N U X
+2026-02-06T10:21:43.2585353Z 
+2026-02-06T10:21:43.2585374Z Documentation    : http://aka.ms/webapp-linux
+2026-02-06T10:21:43.2585392Z Python quickstart: https://aka.ms/python-qs
+2026-02-06T10:21:43.2585413Z Python version   : 3.11.14
+2026-02-06T10:21:43.2585432Z Instance Name    : lw0sdlwk00098M
+2026-02-06T10:21:43.2585473Z Instance Id      : 9d5f45b0f79333e643cadcb5aa89db4a1f3f4858a422c559aeaf07997d03f017
+2026-02-06T10:21:43.2585489Z 
+2026-02-06T10:21:43.2585506Z Note: Any data outside '/home' is not persisted
+2026-02-06T10:21:46.1927487Z Starting OpenBSD Secure Shell server: sshd.
+2026-02-06T10:21:46.2922285Z WEBSITES_INCLUDE_CLOUD_CERTS is not set to true.
+2026-02-06T10:21:46.3936170Z Updating certificates in /etc/ssl/certs...
+2026-02-06T10:22:06.9034561Z rehash: warning: skipping duplicate certificate in azl_SSL.com_TLS_RSA_Root_CA_2022.pem
+2026-02-06T10:22:06.9053101Z rehash: warning: skipping duplicate certificate in azl_Sectigo_Public_Server_Authentication_Root_E46.pem
+2026-02-06T10:22:06.9227827Z rehash: warning: skipping duplicate certificate in azl_SSL.com_TLS_ECC_Root_CA_2022.pem
+2026-02-06T10:22:06.9650514Z rehash: warning: skipping duplicate certificate in azl_Sectigo_Public_Server_Authentication_Root_R46.pem
+2026-02-06T10:22:07.0637445Z 4 added, 0 removed; done.
+2026-02-06T10:22:07.0643887Z Running hooks in /etc/ca-certificates/update.d...
+2026-02-06T10:22:07.0823589Z done.
+2026-02-06T10:22:07.1020331Z CA certificates copied and updated successfully.
+2026-02-06T10:22:07.4151021Z Site's appCommandLine: python -u app.py
+2026-02-06T10:22:08.3816893Z Starting periodic command scheduler: cron.
+2026-02-06T10:22:08.3823574Z Launching oryx with: create-script -appPath /home/site/wwwroot -output /opt/startup/startup.sh -virtualEnvName antenv -defaultApp /opt/defaultsite -userStartupCommand 'python -u app.py'
+2026-02-06T10:22:08.5599550Z Found build manifest file at '/home/site/wwwroot/oryx-manifest.toml'. Deserializing it...
+2026-02-06T10:22:08.5701941Z Build Operation ID: b6ef8cc0dacff204
+2026-02-06T10:22:08.5804924Z Oryx Version: 0.2.20260112.1, Commit: da7d752b5a9eaff8f6f06e0e37df55a14ef5705b, ReleaseTagName: 20260112.1
+2026-02-06T10:22:08.5900443Z Output is compressed. Extracting it...
+2026-02-06T10:22:08.5997210Z Found zstd-compressed tarball.
+2026-02-06T10:22:08.6007356Z Extracting '/home/site/wwwroot/output.tar.zst' to directory '/tmp/8de65670ee011e4'...
+2026-02-06T10:22:08.6014260Z Using zstd for decompression of file: /home/site/wwwroot/output.tar.zst
+2026-02-06T10:22:24.5218454Z App path is set to '/tmp/8de65670ee011e4'
+2026-02-06T10:22:24.6929380Z Writing output script to '/opt/startup/startup.sh'
+2026-02-06T10:22:25.4113025Z Using packages from virtual environment antenv located at /tmp/8de65670ee011e4/antenv.
+2026-02-06T10:22:25.4116370Z Updated PYTHONPATH to '/opt/startup/app_logs:/tmp/8de65670ee011e4/antenv/lib/python3.11/site-packages'
+2026-02-06T10:22:25.7008486Z DEBUG: API.PY MODULE LOADING...
+2026-02-06T10:22:32.2001748Z DEBUG: httpx version: 0.28.1
+2026-02-06T10:22:32.2003400Z DEBUG: gotrue version: 2.12.3
+2026-02-06T10:22:32.2005789Z DEBUG: supabase version: 2.11.0
+2026-02-06T10:22:36.1588554Z  * Serving Flask app 'form_filler.api'
+2026-02-06T10:22:36.1596310Z  * Debug mode: off
+2026-02-06T10:22:36.2189215Z 2026-02-06 10:22:36,209 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+2026-02-06T10:22:36.2189405Z  * Running on all addresses (0.0.0.0)
+2026-02-06T10:22:36.2189428Z  * Running on http://127.0.0.1:8000
+2026-02-06T10:22:36.2189446Z  * Running on http://169.254.130.4:8000
+2026-02-06T10:22:36.2189465Z 2026-02-06 10:22:36,209 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-06T10:22:36.9399742Z 2026-02-06 10:22:36,912 - INFO - 169.254.130.1 - - [06/Feb/2026 10:22:36] "[33mGET /robots933456.txt HTTP/1.1[0m" 404 -
+2026-02-06T10:23:07.4364899Z    _____                               
+2026-02-06T10:23:07.4366059Z   /  _  \ __________ _________   ____  
+2026-02-06T10:23:07.4366092Z  /  /_\  \\___   /  |  \_  __ \_/ __ \ 
+2026-02-06T10:23:07.4366110Z /    |    \/    /|  |  /|  | \/\  ___/ 
+2026-02-06T10:23:07.4366130Z \____|__  /_____ \____/ |__|    \___  >
+2026-02-06T10:23:07.4366190Z         \/      \/                  \/ 
+2026-02-06T10:23:07.4366209Z A P P   S E R V I C E   O N   L I N U X
+2026-02-06T10:23:07.4366224Z 
+2026-02-06T10:23:07.4366245Z Documentation    : http://aka.ms/webapp-linux
+2026-02-06T10:23:07.4366266Z Python quickstart: https://aka.ms/python-qs
+2026-02-06T10:23:07.4366282Z Python version   : 3.11.14
+2026-02-06T10:23:07.4366299Z Instance Name    : lw0sdlwk00098M
+2026-02-06T10:23:07.4366330Z Instance Id      : 9d5f45b0f79333e643cadcb5aa89db4a1f3f4858a422c559aeaf07997d03f017
+2026-02-06T10:23:07.4366347Z 
+2026-02-06T10:23:07.4366364Z Note: Any data outside '/home' is not persisted
+2026-02-06T10:23:09.1080608Z Starting OpenBSD Secure Shell server: sshd.
+2026-02-06T10:23:09.1292315Z WEBSITES_INCLUDE_CLOUD_CERTS is not set to true.
+2026-02-06T10:23:09.1692694Z Updating certificates in /etc/ssl/certs...
+2026-02-06T10:23:21.5242705Z rehash: warning: skipping duplicate certificate in azl_SSL.com_TLS_RSA_Root_CA_2022.pem
+2026-02-06T10:23:21.5337939Z rehash: warning: skipping duplicate certificate in azl_Sectigo_Public_Server_Authentication_Root_E46.pem
+2026-02-06T10:23:21.6146313Z rehash: warning: skipping duplicate certificate in azl_SSL.com_TLS_ECC_Root_CA_2022.pem
+2026-02-06T10:23:21.6453535Z rehash: warning: skipping duplicate certificate in azl_Sectigo_Public_Server_Authentication_Root_R46.pem
+2026-02-06T10:23:21.6848179Z 4 added, 0 removed; done.
+2026-02-06T10:23:21.6929048Z Running hooks in /etc/ca-certificates/update.d...
+2026-02-06T10:23:21.7329266Z done.
+2026-02-06T10:23:21.7344132Z CA certificates copied and updated successfully.
+2026-02-06T10:23:21.8827094Z Site's appCommandLine: python -u app.py
+2026-02-06T10:23:23.2575937Z Output is compressed. Extracting it...
+2026-02-06T10:23:23.2576191Z Found zstd-compressed tarball.
+2026-02-06T10:23:23.2576221Z Extracting '/home/site/wwwroot/output.tar.zst' to directory '/tmp/8de65670ee011e4'...
+2026-02-06T10:23:23.2576244Z Using zstd for decompression of file: /home/site/wwwroot/output.tar.zst
+2026-02-06T10:23:23.2780309Z Starting periodic command scheduler: cron.
+2026-02-06T10:23:23.2780483Z Launching oryx with: create-script -appPath /home/site/wwwroot -output /opt/startup/startup.sh -virtualEnvName antenv -defaultApp /opt/defaultsite -userStartupCommand 'python -u app.py'
+2026-02-06T10:23:23.2780508Z Found build manifest file at '/home/site/wwwroot/oryx-manifest.toml'. Deserializing it...
+2026-02-06T10:23:23.2780525Z Build Operation ID: b6ef8cc0dacff204
+2026-02-06T10:23:23.2780553Z Oryx Version: 0.2.20260112.1, Commit: da7d752b5a9eaff8f6f06e0e37df55a14ef5705b, ReleaseTagName: 20260112.1
+2026-02-06T10:23:31.8226237Z App path is set to '/tmp/8de65670ee011e4'
+2026-02-06T10:23:33.2711261Z Writing output script to '/opt/startup/startup.sh'
+2026-02-06T10:23:33.4483960Z Using packages from virtual environment antenv located at /tmp/8de65670ee011e4/antenv.
+2026-02-06T10:23:33.4495547Z Updated PYTHONPATH to '/opt/startup/app_logs:/tmp/8de65670ee011e4/antenv/lib/python3.11/site-packages'
+2026-02-06T10:23:33.5299294Z DEBUG: API.PY MODULE LOADING...
+2026-02-06T10:23:34.7556857Z DEBUG: httpx version: 0.28.1
+2026-02-06T10:23:34.7557196Z DEBUG: gotrue version: 2.12.3
+2026-02-06T10:23:34.7557226Z DEBUG: supabase version: 2.11.0
+2026-02-06T10:23:35.7654303Z  * Serving Flask app 'form_filler.api'
+2026-02-06T10:23:35.7661714Z  * Debug mode: off
+2026-02-06T10:23:35.7763709Z 2026-02-06 10:23:35,776 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+2026-02-06T10:23:35.7763954Z  * Running on all addresses (0.0.0.0)
+2026-02-06T10:23:35.7763979Z  * Running on http://127.0.0.1:8000
+2026-02-06T10:23:35.7763997Z  * Running on http://169.254.130.3:8000
+2026-02-06T10:23:35.7844351Z 2026-02-06 10:23:35,784 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-06T10:23:36.2994458Z 2026-02-06 10:23:36,299 - INFO - 169.254.130.1 - - [06/Feb/2026 10:23:36] "[33mGET /robots933456.txt HTTP/1.1[0m" 404 -
+2026-02-06T10:39:42.4717536Z DEBUG: Attempting DB Connection to aws-1-ap-northeast-1.pooler.supabase.com...
+2026-02-06T10:39:42.4722712Z DEBUG ENV: DB_PORT=6543
+2026-02-06T10:39:42.4722745Z DEBUG ENV: DB_NAME=postgres
+2026-02-06T10:39:42.4746098Z DEBUG ENV: DB_PASSWORD=QStaR3Ac39V8SDuf
+2026-02-06T10:39:42.4746118Z DEBUG ENV: DB_HOST=aws-1-ap-northeast-1.pooler.supabase.com
+2026-02-06T10:39:42.4746135Z DEBUG ENV: DB_USER=postgres.uehkqlamchtdzcusqmhi
+2026-02-06T10:39:43.1124387Z DEBUG: DB Connection SUCCESS!
+2026-02-06T10:39:43.2244020Z 2026-02-06 10:39:43,223 - INFO - 169.254.130.1 - - [06/Feb/2026 10:39:43] "GET /health HTTP/1.1" 200 -
+2026-02-06T10:40:00.7774514Z 2026-02-06 10:40:00,777 - INFO - 169.254.130.1 - - [06/Feb/2026 10:40:00] "[33mGET / HTTP/1.1[0m" 404 -
+2026-02-06T10:53:42.9257034Z 2026-02-06 10:53:42,904 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=id&email=eq.agent_verify_test_v2%40woxsen.edu.in "HTTP/2 200 OK"
+2026-02-06T10:53:42.9326018Z 2026-02-06 10:53:42,932 - INFO - Skipping Outlook verification for agent_verify_test_v2@woxsen.edu.in to unblock registration
+2026-02-06T10:53:44.1643857Z 2026-02-06 10:53:44,164 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users "HTTP/2 201 Created"
+2026-02-06T10:53:44.2723173Z 2026-02-06 10:53:44,272 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/student_profiles "HTTP/2 400 Bad Request"
+2026-02-06T10:53:44.2737979Z Registration Error: {'code': '23502', 'details': 'Failing row contains (5, 8, Agent Test 2, 2026AGENT002, SOE, null, null, null, null, null, null, null, null, Father, null, null, null, Mother, null, null, 2026-02-06 10:53:44.211122, 2026-02-06 10:53:44.211122).', 'hint': None, 'message': 'null value in column "academic_year" of relation "student_profiles" violates not-null constraint'}
+2026-02-06T10:53:44.2747351Z 2026-02-06 10:53:44,274 - INFO - 169.254.130.1 - - [06/Feb/2026 10:53:44] "[31m[1mPOST /api/auth/register HTTP/1.1[0m" 400 -
+2026-02-06T10:54:15.2488029Z 2026-02-06 10:54:15,240 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=id&email=eq.agent_verify_test_v3%40woxsen.edu.in "HTTP/2 200 OK"
+2026-02-06T10:54:15.2488628Z 2026-02-06 10:54:15,242 - INFO - Skipping Outlook verification for agent_verify_test_v3@woxsen.edu.in to unblock registration
+2026-02-06T10:54:16.1989354Z 2026-02-06 10:54:16,198 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users "HTTP/2 201 Created"
+2026-02-06T10:54:16.2835433Z 2026-02-06 10:54:16,283 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/student_profiles "HTTP/2 400 Bad Request"
+2026-02-06T10:54:16.2841164Z Registration Error: {'code': '23502', 'details': 'Failing row contains (6, 9, Agent Test 3, 2026AGENT003, SOE, null, null, null, null, null, null, null, null, Father, null, null, null, Mother, null, null, 2026-02-06 10:54:16.241357, 2026-02-06 10:54:16.241357).', 'hint': None, 'message': 'null value in column "academic_year" of relation "student_profiles" violates not-null constraint'}
+2026-02-06T10:54:16.2845781Z 2026-02-06 10:54:16,284 - INFO - 169.254.130.1 - - [06/Feb/2026 10:54:16] "[31m[1mPOST /api/auth/register HTTP/1.1[0m" 400 -
+2026-02-06T10:56:51.7724952Z    _____                               
+2026-02-06T10:56:51.7726051Z   /  _  \ __________ _________   ____  
+2026-02-06T10:56:51.7726085Z  /  /_\  \\___   /  |  \_  __ \_/ __ \ 
+2026-02-06T10:56:51.7726103Z /    |    \/    /|  |  /|  | \/\  ___/ 
+2026-02-06T10:56:51.7726122Z \____|__  /_____ \____/ |__|    \___  >
+2026-02-06T10:56:51.7726194Z         \/      \/                  \/ 
+2026-02-06T10:56:51.7726213Z A P P   S E R V I C E   O N   L I N U X
+2026-02-06T10:56:51.7726229Z 
+2026-02-06T10:56:51.7726254Z Documentation    : http://aka.ms/webapp-linux
+2026-02-06T10:56:51.7726274Z Python quickstart: https://aka.ms/python-qs
+2026-02-06T10:56:51.7726290Z Python version   : 3.11.14
+2026-02-06T10:56:51.7726308Z Instance Name    : lw0sdlwk00098M
+2026-02-06T10:56:51.7726338Z Instance Id      : 9d5f45b0f79333e643cadcb5aa89db4a1f3f4858a422c559aeaf07997d03f017
+2026-02-06T10:56:51.7726355Z 
+2026-02-06T10:56:51.7726372Z Note: Any data outside '/home' is not persisted
+2026-02-06T10:56:53.7808112Z Starting OpenBSD Secure Shell server: sshd.
+2026-02-06T10:56:53.8201653Z WEBSITES_INCLUDE_CLOUD_CERTS is not set to true.
+2026-02-06T10:56:53.9004269Z Updating certificates in /etc/ssl/certs...
+
