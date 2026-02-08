@@ -350,8 +350,10 @@ Return only the JSON object:`
 
             setSubmissionStatus('Sending to Automation Agent...');
 
-            // Ensure Flask is running on 5000
-            const response = await fetch('http://localhost:5000/api/submit-form', {
+            // Use the centralized API utility or env var
+            // const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://outing-backend-api.azurewebsites.net';
+
+            const response = await fetch('https://outing-backend-api.azurewebsites.net/api/submit-form', {
                 method: 'POST',
                 body: formDataToSend
             });
@@ -375,7 +377,7 @@ Return only the JSON object:`
     const pollStatus = (id) => {
         const interval = setInterval(async () => {
             try {
-                const res = await fetch(`http://localhost:5000/api/task-status/${id}`);
+                const res = await fetch(`https://outing-backend-api.azurewebsites.net/api/task-status/${id}`);
                 const data = await res.json();
                 if (data.success) {
                     const task = data.task;
