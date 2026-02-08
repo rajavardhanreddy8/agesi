@@ -1,7 +1,7 @@
-# Use official Python image
-FROM python:3.11-slim
+# Use official Playwright Python image (comes with browsers pre-installed)
+FROM mcr.microsoft.com/playwright/python:v1.40.0-jammy
 
-# Install system dependencies for Playwright and Gunicorn
+# Install additional system dependencies if needed (e.g., for psycopg2)
 RUN apt-get update && apt-get install -y \
     wget \
     gnupg \
@@ -14,11 +14,24 @@ WORKDIR /app
 COPY requirements.txt .
 
 # Install Python dependencies
+# Chunk 1: Small/Core dependencies
+RUN pip install --no-cache-dir python-dotenv requests flask flask-cors gunicorn psycopg2-binary bcrypt cryptography PyJWT
+
+# Chunk 2a: Supabase and network libs
+RUN pip install --no-cache-dir "supabase>=2.10.0" httpx razorpay
+
+# Chunk 2b: PDF generation
+RUN pip install --no-cache-dir reportlab
+
+# Chunk 2c: Image processing
+RUN pip install --no-cache-dir Pillow
+
+# Chunk 3: Ensure everything from requirements is covered (will be fast if satisfied)
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install Playwright browsers (Chromium only is enough for this app)
-RUN playwright install chromium
-RUN playwright install-deps chromium
+# (Browsers are already pre-installed in this image)
+# Reduced size: Commenting out install-deps as base image is likely sufficient
+# RUN playwright install-deps chromium
 
 # Copy the rest of the application
 COPY . .

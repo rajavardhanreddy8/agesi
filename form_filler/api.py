@@ -3,14 +3,10 @@ Flask API to trigger Microsoft Forms automation
 Integrates with your existing PDF generation web app and PostgreSQL database
 """
 
-print("DEBUG: API.PY MODULE LOADING...", flush=True)
-
 import httpx
-import gotrue
 import supabase
-print(f"DEBUG: httpx version: {httpx.__version__}", flush=True)
-print(f"DEBUG: gotrue version: {gotrue.__version__}", flush=True)
-print(f"DEBUG: supabase version: {supabase.__version__}", flush=True)
+# print(f"DEBUG: httpx version: {httpx.__version__}", flush=True)
+# print(f"DEBUG: supabase version: {supabase.__version__}", flush=True)
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS
@@ -18,9 +14,26 @@ import threading
 import json
 import os
 import logging
+print("DEBUG: API.PY MODULE LOADING...", flush=True)
 from datetime import datetime, timedelta
 from cryptography.fernet import Fernet
 from dotenv import load_dotenv
+# Force override of environment variables from .env file
+import os
+from pathlib import Path
+
+# Force clear existing variables to ensure .env is read
+# if 'RAZORPAY_KEY_ID' in os.environ:
+#     del os.environ['RAZORPAY_KEY_ID']
+# if 'RAZORPAY_KEY_SECRET' in os.environ:
+#     del os.environ['RAZORPAY_KEY_SECRET']
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+env_path = BASE_DIR / '.env'
+print(f"DEBUG: Loading .env from: {env_path}", flush=True)
+load_dotenv(dotenv_path=env_path, override=True)
+print(f"DEBUG: Loaded DB_HOST: {os.getenv('DB_HOST')}", flush=True)
+print(f"DEBUG: Loaded RAZORPAY_KEY_ID: {os.getenv('RAZORPAY_KEY_ID')}", flush=True)
 import razorpay
 from functools import wraps
 import psycopg2
@@ -29,13 +42,6 @@ import hashlib
 
 def get_db_connection():
     db_host = os.getenv('DB_HOST')
-    print(f"DEBUG: Attempting DB Connection to {db_host}...", flush=True)
-    
-    # DEBUG ENV VARS
-    for k, v in os.environ.items():
-        if k.startswith("DB_"):
-            print(f"DEBUG ENV: {k}={v}", flush=True)
-
     try:
         # Standard connection using hostname (Pooler is IPv4)
         conn = psycopg2.connect(
@@ -54,21 +60,36 @@ def get_db_connection():
         raise e
 
 # Import the automation class (Optional for now)
+# Import the automation class (Optional for now)
 try:
-    from form_filler.ms_form_automation import MSFormAutomation
+    try:
+        from form_filler.ms_form_automation import MSFormAutomation
+    except ImportError:
+         from ms_form_automation import MSFormAutomation
 except ImportError:
     MSFormAutomation = None
-    logging.warning("Playwright not installed. Automation features disabled.")
+    logging.warning("Playwright not installed or module not found. Automation features disabled.")
 
 # Import authentication system (Supabase-based, no password required!)
-from form_filler.auth_system_v2 import (
-    register_user, login_user, verify_email_token,
-    request_password_reset, reset_password,
-    encrypt_outlook_password, decrypt_outlook_password,
-    hash_password, verify_outlook_credentials,
-    verify_password, generate_jwt, verify_jwt,
-    get_user_profile, supabase, login_required
-)
+# Import authentication system (Supabase-based, no password required!)
+try:
+    from form_filler.auth_system_v2 import (
+        register_user, login_user, verify_email_token,
+        request_password_reset, reset_password,
+        encrypt_outlook_password, decrypt_outlook_password,
+        hash_password, verify_outlook_credentials,
+        verify_password, generate_jwt, verify_jwt,
+        get_user_profile, supabase, login_required
+    )
+except ImportError:
+    from auth_system_v2 import (
+        register_user, login_user, verify_email_token,
+        request_password_reset, reset_password,
+        encrypt_outlook_password, decrypt_outlook_password,
+        hash_password, verify_outlook_credentials,
+        verify_password, generate_jwt, verify_jwt,
+        get_user_profile, supabase, login_required
+    )
 
 load_dotenv()
 
@@ -823,8 +844,14 @@ def get_history():
 # ============================================================================
 
 # Payment Gateway Setup
+# Payment Gateway Setup
+# Use Environment Variables from Azure/Service
+razorpay_key_id = os.getenv('RAZORPAY_KEY_ID')
+razorpay_key_secret = os.getenv('RAZORPAY_KEY_SECRET')
+
+print(f"DEBUG: Initializing Razorpay with Key ID: {razorpay_key_id}", flush=True)
 razorpay_client = razorpay.Client(
-    auth=(os.getenv('RAZORPAY_KEY_ID', 'rzp_test_SCirsefYPKs565'), os.getenv('RAZORPAY_KEY_SECRET', 'hGfMUJ3phWJiNWxfVge6n9J6'))
+    auth=(razorpay_key_id, razorpay_key_secret)
 )
 
 
@@ -928,6 +955,7 @@ def upgrade_subscription():
         
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        print("DEBUG: DB Connection established", flush=True)
         
         # Razorpay only
         order_data = {
@@ -936,14 +964,40 @@ def upgrade_subscription():
             'payment_capture': 1,
             'notes': {'user_id': request.user_id, 'plan_type': plan_type}
         }
-        order = razorpay_client.order.create(data=order_data)
+        print(f"DEBUG: Creating Razorpay order with data: {order_data}", flush=True)
         
+        # Retry logic for Razorpay connection issues
+        import time
+        max_retries = 3
+        order = None
+        last_exception = None
+        
+        for attempt in range(max_retries):
+            try:
+                order = razorpay_client.order.create(data=order_data)
+                print(f"DEBUG: Razorpay Order created: {order}", flush=True)
+                break
+            except Exception as e:
+                print(f"DEBUG: Razorpay Create Failed (Attempt {attempt+1}/{max_retries}): {e}", flush=True)
+                last_exception = e
+                time.sleep(1) # Wait 1 second before retrying
+        
+        if not order:
+             print(f"DEBUG: Razorpay Create Failed after {max_retries} attempts: {last_exception}", flush=True)
+             return jsonify({'success': False, 'error': f"Razorpay connection failed: {str(last_exception)}"}), 500
+        
+        print("DEBUG: Inserting payment into DB...", flush=True)
         cur.execute("""
             INSERT INTO payments (user_id, plan_type, amount, currency, payment_gateway, payment_order_id, status)
-            VALUES (%s, %s, %s, %s, %s, %s, 'pending')
+            VALUES (%s, %s, %s, %s, %s, %s, 'pending') RETURNING id
         """, (request.user_id, plan_type, amount, plan['currency'], 'razorpay', order['id']))
-        payment_id = cur.lastrowid
+        
+        result = cur.fetchone()
+        payment_id = result['id'] if result else None
+        print(f"DEBUG: Payment inserted with ID: {payment_id}", flush=True)
+        
         conn.commit()
+        print("DEBUG: DB Commit successful", flush=True)
         cur.close()
         conn.close()
         
@@ -953,16 +1007,14 @@ def upgrade_subscription():
             'order_id': order['id'],
             'amount': amount,
             'currency': plan['currency'],
-            'key': os.getenv('RAZORPAY_KEY_ID')
+            'key': razorpay_key_id # Use the global variable we set
         })
             
     except Exception as e:
         print(f"Upgrade Error: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
             
-    except Exception as e:
-        print(f"Upgrade Error: {e}")
-        return jsonify({'success': False, 'error': str(e)}), 500
+
 
 
 

@@ -93,6 +93,11 @@ def login_required(f):
 
 def verify_outlook_credentials(email: str, password: str) -> tuple:
     """Verify Outlook credentials using Playwright"""
+    # SKIP FOR TEST EMAILS to allow local testing
+    if email.endswith('@example.com') or email.endswith('.test'):
+        print(f"Skipping Outlook verification for test email: {email}")
+        return True, None
+
     try:
         from playwright.sync_api import sync_playwright
     except ImportError:
@@ -103,7 +108,13 @@ def verify_outlook_credentials(email: str, password: str) -> tuple:
             # IMPORTANT: --no-sandbox is required for Docker environments
             browser = p.chromium.launch(
                 headless=True,
-                args=['--no-sandbox', '--disable-setuid-sandbox']
+                args=[
+                    '--no-sandbox',
+                    '--disable-setuid-sandbox',
+                    '--disable-dev-shm-usage', # Critical for Docker to prevent crashes
+                    '--disable-gpu' # Often needed in container
+                ],
+                timeout=30000 
             )
             page = browser.new_page()
             page.goto('https://login.microsoftonline.com')
@@ -205,17 +216,23 @@ def register_user(data: dict) -> dict:
 def login_user(email: str, password: str) -> dict:
     """Login user using Supabase"""
     try:
+        print(f"DEBUG: login_user called for {email}", flush=True)
         # Get user with profile
+        print("DEBUG: Fetching user from Supabase...", flush=True)
         user_result = supabase.table('users').select('*, student_profiles(full_name, roll_number)').eq('email', email).execute()
         
         if not user_result.data:
+            print("DEBUG: User not found", flush=True)
             return {'success': False, 'error': 'Invalid credentials'}
         
         user = user_result.data[0]
         
+        print(f"DEBUG: User fetched: {user['id']}. Verifying password...", flush=True)
         if not verify_password(password, user['password_hash']):
+            print("DEBUG: Password verification failed", flush=True)
             return {'success': False, 'error': 'Invalid credentials'}
         
+        print("DEBUG: Password valid. getting profile...", flush=True)
         
         # Get profile data - handle both object and array formats from Supabase
         sp = user.get('student_profiles')
@@ -226,7 +243,9 @@ def login_user(email: str, password: str) -> dict:
         else:
             profile = {}
         
+        print(f"DEBUG: Profile: {profile}. Generating token...", flush=True)
         token = generate_jwt(user['id'], user['email'])
+        print(f"DEBUG: Token generated for {email}", flush=True)
         return {
             'success': True,
             'token': token,
@@ -239,6 +258,7 @@ def login_user(email: str, password: str) -> dict:
     except Exception as e:
         import traceback
         logging.error(f"Login Failed Traceback: {traceback.format_exc()}")
+        print(f"DEBUG: Login Exception: {e}", flush=True)
         return {'success': False, 'error': f"Login Error: {str(e)}"}
 
 def verify_email_token(token: str) -> dict:
