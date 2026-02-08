@@ -20,7 +20,7 @@
         }
     },
     "globalHeaders": {
-        "cache-control": "public, max-age=31536000, immutable"
+        "cache-control": "no-cache, no-store, must-revalidate"
     },
     "mimeTypes": {
         ".json": "application/json",
