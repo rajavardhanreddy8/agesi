@@ -2,7 +2,7 @@ import axios from 'axios';
 // Trigger build: 2026-02-08 10:55 AM
 
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || 'https://outing-backend-api.azurewebsites.net',
+    baseURL: (import.meta.env.VITE_API_URL || 'https://outing-backend-api.azurewebsites.net') + '/api',
     headers: {
         'Content-Type': 'application/json',
     },
