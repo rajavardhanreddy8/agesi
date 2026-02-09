@@ -350,15 +350,11 @@ Return only the JSON object:`
 
             setSubmissionStatus('Sending to Automation Agent...');
 
-            // Use the centralized API utility or env var
-            // const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://outing-backend-api.azurewebsites.net';
+            // Use the centralized API utility
+            const response = await api.post('/submit-form', formDataToSend);
 
-            const response = await fetch('https://outing-backend-api.azurewebsites.net/api/submit-form', {
-                method: 'POST',
-                body: formDataToSend
-            });
-
-            const result = await response.json();
+            // Axios returns data in response.data
+            const result = response.data;
 
             if (result.success) {
                 setTaskId(result.task_id);
@@ -377,8 +373,8 @@ Return only the JSON object:`
     const pollStatus = (id) => {
         const interval = setInterval(async () => {
             try {
-                const res = await fetch(`https://outing-backend-api.azurewebsites.net/api/task-status/${id}`);
-                const data = await res.json();
+                const res = await api.get(`/task-status/${id}`);
+                const data = res.data;
                 if (data.success) {
                     const task = data.task;
                     setSubmissionStatus(`Status: ${task.status} - ${task.message} (${task.progress}%)`);

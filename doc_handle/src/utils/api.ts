@@ -18,7 +18,7 @@ const normalizeBaseURL = (url: string | undefined): string => {
     return url;
 };
 
-const baseURL = normalizeBaseURL(import.meta.env.VITE_API_URL);
+const baseURL = normalizeBaseURL(import.meta.env.VITE_BACKEND_URL || import.meta.env.VITE_API_URL);
 
 const api = axios.create({
     baseURL: baseURL,
@@ -36,6 +36,13 @@ api.interceptors.request.use(
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
+
+        // Defensive fix: Ensure we don't duplicate /api in the URL
+        if (config.url && config.url.startsWith('/api/') && config.baseURL?.endsWith('/api')) {
+            console.warn('Detected double API path, stripping prefix...');
+            config.url = config.url.substring(4); // Remove /api
+        }
+
         return config;
     },
     (error) => {
