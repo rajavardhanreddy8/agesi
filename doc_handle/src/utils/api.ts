@@ -1,8 +1,27 @@
 import axios from 'axios';
 // Trigger build: 2026-02-08 10:55 AM
 
+// Helper function to normalize base URL
+const normalizeBaseURL = (url: string | undefined): string => {
+    if (!url) {
+        return 'https://outing-backend-api.azurewebsites.net/api';
+    }
+
+    // Remove trailing slashes
+    url = url.replace(/\/+$/, '');
+
+    // If URL doesn't end with /api, add it
+    if (!url.endsWith('/api')) {
+        url = url + '/api';
+    }
+
+    return url;
+};
+
+const baseURL = normalizeBaseURL(import.meta.env.VITE_API_URL);
+
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || 'https://outing-backend-api.azurewebsites.net/api',
+    baseURL: baseURL,
     headers: {
         'Content-Type': 'application/json',
     },
