@@ -129,6 +129,13 @@ def home():
         "timestamp": datetime.now().isoformat(),
         "health_check": "/health"
     })
+
+@app.route('/health')
+def health_check_endpoint():
+    return jsonify({
+        "status": "healthy",
+        "timestamp": datetime.now().isoformat()
+    }), 200
 app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY', 'your-secret-key')
 
 # Configure logging
