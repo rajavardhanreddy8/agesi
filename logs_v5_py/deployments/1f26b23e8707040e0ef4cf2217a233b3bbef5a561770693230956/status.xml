@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<deployment>
+  <id>1f26b23e8707040e0ef4cf2217a233b3bbef5a561770693230956</id>
+  <author>rajavardhanreddy8</author>
+  <deployer>GitHub</deployer>
+  <authorEmail />
+  <message>{"type":"Deployment","sha":"1f26b23e8707040e0ef4cf2217a233b3bbef5a56","repoName":"rajavardhanreddy8/agesi","actor":"rajavardhanreddy8","slotName":"production"}</message>
+  <progress />
+  <status>Success</status>
+  <statusText />
+  <lastSuccessEndTime>2026-02-10T03:13:53.8841974Z</lastSuccessEndTime>
+  <receivedTime>2026-02-10T03:13:53.8841974Z</receivedTime>
+  <startTime>2026-02-10T03:13:53.8841974Z</startTime>
+  <endTime>2026-02-10T03:13:53.8841974Z</endTime>
+  <complete>True</complete>
+  <is_temp>False</is_temp>
+  <is_readonly>True</is_readonly>
+  <containerId>a91f4912b50e</containerId>
+  <buildSummary />
+</deployment>

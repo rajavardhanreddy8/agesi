@@ -1,0 +1,29 @@
+DEBUG: API.PY MODULE LOADING...
+DEBUG: Loading .env from: C:\Users\admin\Documents\outing\agent 4.0\.env
+==================================================
+DEBUG: STARTING APP - 2026-02-10T23:04:31.387444
+DEBUG: Loaded DB_HOST: aws-1-ap-northeast-1.pooler.supabase.com
+DEBUG: Loaded RAZORPAY_KEY_ID: rzp_test_SDZo4nNk0ZZe23
+==================================================
+Warning: Encryption key issue: Fernet key must be 32 url-safe base64-encoded bytes.
+DEBUG: Initializing Razorpay with Key ID: rzp_test_SDZo4nNk0ZZe23
+ * Serving Flask app 'api'
+ * Debug mode: on
+2026-02-10 23:04:32,951 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.120:5000
+2026-02-10 23:04:32,951 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-10 23:04:32,954 - INFO -  * Restarting with stat
+DEBUG: API.PY MODULE LOADING...
+DEBUG: Loading .env from: C:\Users\admin\Documents\outing\agent 4.0\.env
+==================================================
+DEBUG: STARTING APP - 2026-02-10T23:04:35.638025
+DEBUG: Loaded DB_HOST: aws-1-ap-northeast-1.pooler.supabase.com
+DEBUG: Loaded RAZORPAY_KEY_ID: rzp_test_SDZo4nNk0ZZe23
+==================================================
+Warning: Encryption key issue: Fernet key must be 32 url-safe base64-encoded bytes.
+DEBUG: Initializing Razorpay with Key ID: rzp_test_SDZo4nNk0ZZe23
+2026-02-10 23:04:37,032 - WARNING -  * Debugger is active!
+2026-02-10 23:04:37,037 - INFO -  * Debugger PIN: 900-091-490
+2026-02-10 23:05:20,800 - INFO - 127.0.0.1 - - [10/Feb/2026 23:05:20] "GET / HTTP/1.1" 200 -
