@@ -327,6 +327,18 @@ def auto_submit_from_email():
         for user in eligible_users:
             try:
                 user_id = user['id']
+
+                # Check for existing pending/completed task for this date
+                cur.execute("""
+                    SELECT 1 FROM submission_history 
+                    WHERE user_id = %s 
+                      AND leave_start_date = %s 
+                      AND status IN ('queued', 'running', 'completed')
+                """, (user_id, start_date))
+                
+                if cur.fetchone():
+                    logging.info(f"Skipping duplicate task for user {user_id} on {start_date}")
+                    continue
                 
                 # Decrypt password
                 try:
