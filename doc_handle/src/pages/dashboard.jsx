@@ -118,18 +118,11 @@ const Dashboard = () => {
         setSubmission({ loading: true, taskId: null, status: 'starting', message: 'Initiating submission...', progress: 0 });
 
         try {
-            // Format dates as DD.MM.YYYY for backend
-            const formatDateForBackend = (dateStr) => {
-                if (!dateStr) return '';
-                const parts = dateStr.split('-'); // YYYY-MM-DD
-                if (parts.length === 3) return `${parts[2]}.${parts[1]}.${parts[0]}`;
-                return dateStr;
-            };
-
+            // Send JSON payload with form URL, dates, and reason
             const payload = {
                 form_url: outingData.formLink,
-                leave_start_date: outingData.startDate,
-                leave_end_date: outingData.endDate,
+                leave_start_date: outingData.startDate,  // YYYY-MM-DD format
+                leave_end_date: outingData.endDate,      // YYYY-MM-DD format
                 reason: 'Home Visit'
             };
 

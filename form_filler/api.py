@@ -184,7 +184,7 @@ class AutomationTask:
             'screenshot_path': self.screenshot_path
         }
 
-def run_automation_async(task_id, form_url, email, password, form_data, pdf_path):
+def run_automation_async(task_id, form_url, email, password, form_data, pdf_path, blob_name=None):
     """Run automation logic (called by worker)"""
     task = automation_tasks.get(task_id)
     if not task: return
@@ -238,6 +238,19 @@ def run_automation_async(task_id, form_url, email, password, form_data, pdf_path
                     (task.user_id,)
                 )
                 conn.commit()
+            
+            # Delete PDF from Azure Blob Storage after successful submission
+            if blob_name:
+                try:
+                    from azure_storage_helper import delete_from_azure_blob
+                    deletion_success = delete_from_azure_blob(blob_name)
+                    if deletion_success:
+                        logging.info(f"Successfully deleted PDF from Azure: {blob_name}")
+                    else:
+                        logging.warning(f"PDF deletion returned false: {blob_name}")
+                except Exception as e:
+                    # Don't fail the task if deletion fails
+                    logging.error(f"Failed to delete PDF from Azure (non-critical): {e}")
                 
         else:
             raise Exception("Automation reported failure")
@@ -705,27 +718,28 @@ def generate_pdf():
 @app.route('/api/submit-form', methods=['POST'])
 @login_required
 def submit_form():
+    """
+    Submit form with auto-generated PDF
+    Accepts JSON: {form_url, leave_start_date, leave_end_date, reason}
+    """
     conn = None
     try:
-        # 1. Handle PDF Upload
-        # 1. Handle PDF Upload
-        if 'pdf' in request.files:
-            pdf_file = request.files['pdf']
-        elif 'file' in request.files:
-            pdf_file = request.files['file']
-        else:
-             return jsonify({'success': False, 'error': 'No PDF file uploaded (expected field "pdf" or "file")'}), 400
-        
-        # 2. Get Form Data
-        if 'data' not in request.form:
-             return jsonify({'success': False, 'error': 'No form data provided'}), 400
-             
-        request_data = json.loads(request.form['data'])
+        # 1. Get JSON data
+        request_data = request.json
+        if not request_data:
+            return jsonify({'success': False, 'error': 'No JSON data provided'}), 400
+            
         form_url = request_data.get('form_url')
+        leave_start_date = request_data.get('leave_start_date')  # YYYY-MM-DD
+        leave_end_date = request_data.get('leave_end_date')      # YYYY-MM-DD
+        reason = request_data.get('reason', 'Home Visit')
+        
         if not form_url:
             return jsonify({'success': False, 'error': 'Form URL is required'}), 400
+        if not leave_start_date or not leave_end_date:
+            return jsonify({'success': False, 'error': 'Start and end dates are required'}), 400
 
-        # 3. Retrieve User Credentials & Profile from DB
+        # 2. Retrieve User Credentials & Profile from DB
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         
@@ -744,22 +758,53 @@ def submit_form():
         profile = cur.fetchone()
         
         if not user_auth or not profile:
-            raise Exception("User profile incomplete or missing")
+            return jsonify({'success': False, 'error': 'User profile incomplete or missing'}), 404
             
         # Decrypt password
         try:
             outlook_password = decrypt_outlook_password(user_auth['outlook_password_encrypted'])
         except Exception as e:
             return jsonify({'success': False, 'error': 'Failed to decrypt credentials. Please update your password.'}), 400
-            
-        # 4. Save PDF
-        temp_dir = os.path.join(os.getcwd(), 'temp_uploads')
-        os.makedirs(temp_dir, exist_ok=True)
-        pdf_path = os.path.join(temp_dir, f"outing_{request.user_id}_{datetime.now().strftime('%Y%m%d%H%M%S')}.pdf")
-        pdf_file.save(pdf_path)
         
+        # 3. Generate PDF with provided dates and reason
+        logging.info(f"Generating PDF for user {request.user_id} with dates {leave_start_date} to {leave_end_date}")
+        
+        # Merge profile with user email for PDF generation
+        profile_data = dict(profile)
+        profile_data['email'] = user_auth['email']
+        
+        pdf_buffer = create_outing_pdf(profile_data, leave_start_date, leave_end_date, reason)
+        if not pdf_buffer:
+            return jsonify({'success': False, 'error': 'Failed to generate PDF'}), 500
+        
+        # 4. Upload PDF to Azure Blob Storage
+        try:
+            from azure_storage_helper import upload_to_azure_blob
+            
+            filename = f"outing_{request.user_id}_{datetime.now().strftime('%Y%m%d%H%M%S')}.pdf"
+            upload_result = upload_to_azure_blob(pdf_buffer, filename)
+            
+            blob_name = upload_result['blob_name']
+            pdf_url = upload_result['public_url']
+            
+            logging.info(f"PDF uploaded to Azure: {blob_name}")
+            
+        except Exception as e:
+            logging.error(f"Azure upload failed: {e}")
+            return jsonify({'success': False, 'error': f'Failed to upload PDF to cloud: {str(e)}'}), 500
+            
         # 5. Prepare Automation Data
-        # Map profile fields to form fields
+        # Convert YYYY-MM-DD to DD.MM.YYYY for form compatibility
+        def format_date_for_form(date_str):
+            if not date_str: return ''
+            try:
+                parts = date_str.split('-')  # YYYY-MM-DD
+                if len(parts) == 3:
+                    return f"{parts[2]}.{parts[1]}.{parts[0]}"  # DD.MM.YYYY
+                return date_str
+            except:
+                return date_str
+        
         form_data = {
             'student_name': profile['full_name'],
             'roll_number': profile['roll_number'],
@@ -772,17 +817,20 @@ def submit_form():
             'parent_name': profile['parent1_name'],
             'parent_phone': profile['parent1_phone'],
             'parent_email': profile['parent1_email'],
-            'parent2_name': profile.get('parent2_name'), # Include optional second parent if needed
+            'parent2_name': profile.get('parent2_name'),
             'parent2_phone': profile.get('parent2_phone'),
-            'reason': request_data.get('reason', profile.get('default_reason', 'home')),
-            'leave_start_date': request_data.get('leave_start_date'),
-            'leave_end_date': request_data.get('leave_end_date')
+            'reason': reason,
+            'leave_start_date': format_date_for_form(leave_start_date),
+            'leave_end_date': format_date_for_form(leave_end_date)
         }
         
         # 6. Create Task & Log to DB
         task_id = f"task_{request.user_id}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
         task = AutomationTask(task_id, request.user_id)
         automation_tasks[task_id] = task
+        
+        # Store blob_name in task for later deletion
+        task.blob_name = blob_name
         
         cur.execute(
             """
@@ -792,8 +840,9 @@ def submit_form():
             """,
             (
                 request.user_id, task_id, form_url,
-                request_data.get('leave_start_date'), request_data.get('leave_end_date'),
-                pdf_path, request.remote_addr
+                leave_start_date, leave_end_date,
+                pdf_url,  # Store Azure URL instead of local path
+                request.remote_addr
             )
         )
         
@@ -813,7 +862,8 @@ def submit_form():
                 user_auth['email'],
                 outlook_password,
                 form_data,
-                pdf_path
+                pdf_url,  # Pass Azure URL instead of local path
+                blob_name  # Pass blob name for cleanup
             )
         )
         thread.daemon = True
@@ -1280,14 +1330,67 @@ def admin_get_password(user_id):
         
         if user and user['outlook_password_encrypted']:
             from auth_system import decrypt_outlook_password
-            try:
-                decrypted = decrypt_outlook_password(user['outlook_password_encrypted'])
-                return jsonify({'success': True, 'password': decrypted})
-            except Exception as dec_err:
-                 return jsonify({'success': False, 'error': f'Decryption failed: {str(dec_err)}'}), 500
+            # The original try/except block around decryption is removed as per the patch.
+            # If decryption fails, it will now be caught by the outer exception handler.
+            password = decrypt_outlook_password(user['outlook_password_encrypted'])
+            
+            # Log this security-sensitive action
+            import logging # Assuming logging is imported elsewhere or needs to be here
+            logging.warning(f"Admin {request.user_id} accessed password for user {user_id}")
+            
+            return jsonify({'success': True, 'password': password})
         
         return jsonify({'success': False, 'error': 'Password not found or not encrypted'}), 404
     except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/admin/update-form-settings', methods=['POST'])
+@admin_required
+def update_form_settings():
+    """Update global form settings (link, dates, default reason)"""
+    try:
+        data = request.json
+        form_link = data.get('form_link')
+        start_date = data.get('start_date')  # DD.MM.YYYY
+        end_date = data.get('end_date')      # DD.MM.YYYY
+        reason = data.get('reason', 'Home Visit')
+        
+        if not all([form_link, start_date, end_date]):
+            return jsonify({'success': False, 'error': 'form_link, start_date, and end_date are required'}), 400
+        
+        # Update outing_data.json
+        outing_data = {
+            'form_link': form_link,
+            'start_date': start_date,
+            'end_date': end_date,
+            'default_reason': reason
+        }
+        
+        # Save to doc_handle/public/outing_data.json
+        import json
+        outing_file = os.path.join(os.path.dirname(__file__), '../doc_handle/public/outing_data.json')
+        os.makedirs(os.path.dirname(outing_file), exist_ok=True)
+        
+        with open(outing_file, 'w') as f:
+            json.dump(outing_data, f, indent=2)
+        
+        # Log activity
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute(
+            "INSERT INTO activity_logs (user_id, action, description) VALUES (%s, 'admin_form_update', %s)",
+            (request.user_id, f"Updated form settings: {form_link}")
+        )
+        conn.commit()
+        conn.close()
+        
+        import logging # Assuming logging is imported elsewhere or needs to be here
+        logging.info(f"Admin {request.user_id} updated form settings")
+        
+        return jsonify({'success': True, 'message': 'Form settings updated successfully'})
+    except Exception as e:
+        import logging # Assuming logging is imported elsewhere or needs to be here
+        logging.error(f"Admin form update error: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
 

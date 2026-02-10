@@ -258,22 +258,53 @@ class MSFormAutomation:
     def upload_pdf(self, pdf_path):
         """
         Upload PDF document to the form
+        Supports both local file paths and URLs
         """
         try:
             print(f"📤 Uploading PDF: {pdf_path}")
             
-            # Verify file exists
-            if not os.path.exists(pdf_path):
-                raise FileNotFoundError(f"PDF file not found: {pdf_path}")
+            # Check if pdf_path is a URL
+            is_url = pdf_path.startswith('http://') or pdf_path.startswith('https://')
+            
+            if is_url:
+                # Download PDF from URL to temp location
+                import requests
+                import tempfile
+                
+                print(f"📥 Downloading PDF from URL...")
+                response = requests.get(pdf_path, timeout=30)
+                response.raise_for_status()
+                
+                # Create temp file
+                temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.pdf')
+                temp_file.write(response.content)
+                temp_file.close()
+                
+                local_pdf_path = temp_file.name
+                print(f"✓ Downloaded to: {local_pdf_path}")
+            else:
+                # Verify local file exists
+                if not os.path.exists(pdf_path):
+                    raise FileNotFoundError(f"PDF file not found: {pdf_path}")
+                local_pdf_path = pdf_path
             
             # Find file input
             file_input = self.page.locator('input[type="file"]').first
             
             # Upload file
-            file_input.set_input_files(pdf_path)
+            file_input.set_input_files(local_pdf_path)
             
             # Wait for upload to complete
             time.sleep(5)  # Give it time to upload and scan
+            
+            # Clean up temp file if we downloaded it
+            if is_url:
+                try:
+                    os.unlink(local_pdf_path)
+                    print(f"🧹 Cleaned up temp file: {local_pdf_path}")
+                except:
+                    pass
+            
             print("✅ PDF uploaded successfully!")
             return True
                 
