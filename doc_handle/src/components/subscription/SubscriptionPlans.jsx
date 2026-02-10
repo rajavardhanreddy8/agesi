@@ -19,6 +19,13 @@ const SubscriptionPlans = () => {
     useEffect(() => {
         fetchPlans();
         fetchCurrentSubscription();
+        const script = document.createElement('script');
+        script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+        script.async = true;
+        document.body.appendChild(script);
+        return () => {
+            document.body.removeChild(script);
+        };
     }, []);
 
     const fetchPlans = async () => {
@@ -151,7 +158,7 @@ const SubscriptionPlans = () => {
                                     disabled={isLoading || currentPlan?.plan_type === key}
                                     className={`w-full py-3 rounded-xl font-bold transition-all ${currentPlan?.plan_type === key
                                         ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
-                                        : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-500/30'
+                                        : 'bg-sky-400 hover:bg-sky-500 text-white shadow-lg shadow-sky-500/30'
                                         }`}
                                 >
                                     {isLoading ? 'Processing...' : currentPlan?.plan_type === key ? 'Current Plan' : 'Upgrade Now'}
