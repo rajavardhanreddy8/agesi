@@ -24,10 +24,9 @@ const Dashboard = () => {
     });
 
     // Helper to get pure base URL (no /api suffix)
-    // Helper to get pure base URL (no /api suffix)
     const getBaseUrl = () => {
-        const url = import.meta.env.VITE_BACKEND_URL || 'https://outing-backend-api.azurewebsites.net';
-        return url.replace(/\/api\/?$/, '').replace(/\/$/, '');
+        const url = import.meta.env.VITE_API_URL || 'https://outing-backend-api.azurewebsites.net/api';
+        return url.replace(/\/api$/, '');
     };
 
     useEffect(() => {

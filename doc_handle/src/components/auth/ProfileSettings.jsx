@@ -341,7 +341,7 @@ export const ProfileSettings = () => {
                         <div className="mt-3 p-3 border rounded bg-gray-50">
                             <p className="text-sm font-medium mb-2">Current Signature:</p>
                             <img
-                                src={formData.signaturePreview?.startsWith('signatures/') ? `http://localhost:5000/${formData.signaturePreview}` : formData.signaturePreview}
+                                src={formData.signaturePreview?.startsWith('signatures/') ? `https://outing-backend-api.azurewebsites.net/${formData.signaturePreview}` : formData.signaturePreview}
                                 alt="Signature preview"
                                 style={{ maxHeight: '80px', border: '1px solid #ccc', background: '#fff', padding: '5px' }}
                             />
