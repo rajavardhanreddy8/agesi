@@ -120,6 +120,15 @@ allow_origins = [
     "http://localhost:3000"
 ]
 CORS(app, resources={r"/*": {"origins": allow_origins}}, supports_credentials=True)
+
+@app.route('/')
+def home():
+    return jsonify({
+        "service": "Outing Automation Backend",
+        "status": "online",
+        "timestamp": datetime.now().isoformat(),
+        "health_check": "/health"
+    })
 app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY', 'your-secret-key')
 
 # Configure logging
