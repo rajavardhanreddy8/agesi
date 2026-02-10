@@ -87,6 +87,31 @@ const SubscriptionPlans = () => {
 
     if (!plans) return <div className="p-8 text-center text-white">Loading plans...</div>;
 
+    const RazorpayButton = () => {
+        const containerRef = React.useRef(null);
+
+        useEffect(() => {
+            const script = document.createElement('script');
+            script.src = 'https://checkout.razorpay.com/v1/payment-button.js';
+            script.dataset.payment_button_id = 'pl_SEHm5LcI6tu76n';
+            script.async = true;
+
+            const form = document.createElement('form');
+            form.appendChild(script);
+
+            if (containerRef.current) {
+                containerRef.current.innerHTML = ''; // Cleanup previous
+                containerRef.current.appendChild(form);
+            }
+
+            return () => {
+                if (containerRef.current) containerRef.current.innerHTML = '';
+            };
+        }, []);
+
+        return <div ref={containerRef} className="w-full flex justify-center py-2" />;
+    };
+
     return (
         <div className="min-h-screen p-8" style={{ background: 'radial-gradient(ellipse at top, #1e293b 0%, #0f172a 100%)' }}>
             <div className="max-w-6xl mx-auto">
@@ -118,16 +143,20 @@ const SubscriptionPlans = () => {
                                 ))}
                             </ul>
 
-                            <button
-                                onClick={() => handleUpgrade(key)}
-                                disabled={isLoading || currentPlan?.plan_type === key}
-                                className={`w-full py-3 rounded-xl font-bold transition-all ${currentPlan?.plan_type === key
-                                    ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
-                                    : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-500/30'
-                                    }`}
-                            >
-                                {isLoading ? 'Processing...' : currentPlan?.plan_type === key ? 'Current Plan' : 'Upgrade Now'}
-                            </button>
+                            {key === 'premium' ? (
+                                <RazorpayButton />
+                            ) : (
+                                <button
+                                    onClick={() => handleUpgrade(key)}
+                                    disabled={isLoading || currentPlan?.plan_type === key}
+                                    className={`w-full py-3 rounded-xl font-bold transition-all ${currentPlan?.plan_type === key
+                                        ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
+                                        : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-500/30'
+                                        }`}
+                                >
+                                    {isLoading ? 'Processing...' : currentPlan?.plan_type === key ? 'Current Plan' : 'Upgrade Now'}
+                                </button>
+                            )}
                         </div>
                     ))}
                 </div>
