@@ -31,9 +31,15 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 env_path = BASE_DIR / '.env'
 print(f"DEBUG: Loading .env from: {env_path}", flush=True)
-load_dotenv(dotenv_path=env_path, override=True)
+# CRITICAL FIX: Do NOT override system env vars (Azure settings take first priority)
+load_dotenv(dotenv_path=env_path, override=False)
+
+print("="*50, flush=True)
+print(f"DEBUG: STARTING APP - {datetime.now().isoformat()}", flush=True)
 print(f"DEBUG: Loaded DB_HOST: {os.getenv('DB_HOST')}", flush=True)
 print(f"DEBUG: Loaded RAZORPAY_KEY_ID: {os.getenv('RAZORPAY_KEY_ID')}", flush=True)
+print("="*50, flush=True)
+
 import razorpay
 # Initialize Razorpay Client Global
 razorpay_key_id = os.getenv('RAZORPAY_KEY_ID')
