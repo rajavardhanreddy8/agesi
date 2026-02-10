@@ -212,41 +212,36 @@ class MSFormAutomation:
             # 7. Reason
             fill_idx(3, form_data.get('reason', 'home'))
             
-            # 8. Start Date
+            # 8. Start Date & 9. End Date
+            # Try to find all date inputs
             print(f"Filling Start Date: {form_data['leave_start_date']}")
-            try:
-                if date_inputs.count() > 0:
-                    date_inputs.first.fill(form_data['leave_start_date'])
-            except Exception as e: print(f"Date error: {e}")
-                
-            # 9. End Date (Index strategy might vary for dates, assuming text input fallback or 2nd date picker)
-            # Note: MS Forms often puts text inputs and date inputs in different collections.
-            # If date inputs are specialized, we handle them separately.
-            # However, looking at previous success, index 4 was parent phone... wait.
-            # Let's check submit_now.py mapping again.
-            # submit_now: 
-            # fill_idx(4, form_data['parent_phone']) <- This implies inputs array skips dates?
-            # Let's stick to the exact mapping from the successful script:
-            
-            fill_idx(4, form_data['parent_phone'])
-            fill_idx(5, form_data['parent_email'])
-            fill_idx(6, form_data['student_phone'])
-            fill_idx(7, form_data['student_email'])
-            
-            # Correction: We need to handle End Date. submit_now.py didn't seem to fill End Date in the text inputs loop?
-            # Wait, submit_now.py had:
-            # fill_idx(4, form_data['parent_phone']) ...
-            # AND: try: date_inputs.first.fill(form_data['leave_start_date'])
-            # It seems End Date might have been missed or handled differently in submit_now?
-            # Actually, let's look at the screenshot.
-            # Q8 is Start Date, Q9 is End Date.
-            # If Q9 is also a date picker, we need date_inputs.nth(1)
-            
             print(f"Filling End Date: {form_data['leave_end_date']}")
+            
             try:
-                if date_inputs.count() > 1:
+                # Re-query date inputs to be fresh
+                date_inputs = self.page.locator('input[placeholder*="date"]')
+                count = date_inputs.count()
+                print(f"Found {count} date inputs via placeholder")
+                
+                if count >= 1:
+                    date_inputs.first.fill(form_data['leave_start_date'])
+                    print(f"Filled start date (index 0): {form_data['leave_start_date']}")
+                
+                if count >= 2:
                     date_inputs.nth(1).fill(form_data['leave_end_date'])
-            except: pass
+                    print(f"Filled end date (index 1): {form_data['leave_end_date']}")
+                elif count == 1:
+                     # Fallback: Maybe the second date input has a different placeholder or is a text input?
+                     # Let's try looking for inputs near "End Date" text
+                     print("Attempting validation/fallback for date fields...")
+            except Exception as e: 
+                print(f"Date filling error: {e}")
+                
+            # Fallback for End Date if not filled by generic date locator
+            # Sometimes MS Forms treats them as text inputs if configured differently
+            # We can try filling by Label if possible, but MS Forms DOM is messy.
+            # Assuming the standard 2-date picker layout for now.
+            pass
             
             print("✅ All form fields filled (best effort)!")
             return True

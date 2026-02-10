@@ -56,4 +56,4 @@ RUN mkdir -p /app/signatures /app/temp_uploads /app/screenshots
 EXPOSE 8000
 
 # Start command
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--timeout", "600", "--workers", "1", "app:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--timeout", "600", "--workers", "1", "--log-level", "debug", "--access-logfile", "-", "--error-logfile", "-", "app:app"]

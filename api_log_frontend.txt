@@ -1,0 +1,112 @@
+DEBUG: API.PY MODULE LOADING...
+Warning: Encryption key issue: Fernet key must be 32 url-safe base64-encoded bytes.
+ * Serving Flask app 'api'
+ * Debug mode: on
+2026-02-08 14:46:18,440 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.20.10.3:5000
+2026-02-08 14:46:18,440 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-08 14:46:18,442 - INFO -  * Restarting with stat
+DEBUG: API.PY MODULE LOADING...
+Warning: Encryption key issue: Fernet key must be 32 url-safe base64-encoded bytes.
+2026-02-08 14:46:21,091 - WARNING -  * Debugger is active!
+2026-02-08 14:46:21,096 - INFO -  * Debugger PIN: 900-091-490
+DEBUG: DB Connection SUCCESS!
+2026-02-08 14:47:48,423 - INFO - 127.0.0.1 - - [08/Feb/2026 14:47:48] "GET /health HTTP/1.1" 200 -
+2026-02-08 14:48:57,163 - INFO - 127.0.0.1 - - [08/Feb/2026 14:48:57] "OPTIONS /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 14:48:57,167 - INFO - 127.0.0.1 - - [08/Feb/2026 14:48:57] "OPTIONS /api/subscription/current HTTP/1.1" 200 -
+2026-02-08 14:48:57,168 - INFO - 127.0.0.1 - - [08/Feb/2026 14:48:57] "OPTIONS /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 14:48:57,171 - INFO - 127.0.0.1 - - [08/Feb/2026 14:48:57] "OPTIONS /api/subscription/current HTTP/1.1" 200 -
+2026-02-08 14:48:57,174 - INFO - 127.0.0.1 - - [08/Feb/2026 14:48:57] "GET /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 14:48:57,183 - INFO - 127.0.0.1 - - [08/Feb/2026 14:48:57] "GET /api/subscription/plans HTTP/1.1" 200 -
+DEBUG: DB Connection SUCCESS!
+2026-02-08 14:48:58,664 - INFO - 127.0.0.1 - - [08/Feb/2026 14:48:58] "[35m[1mGET /api/subscription/current HTTP/1.1[0m" 500 -
+DEBUG: DB Connection SUCCESS!
+2026-02-08 14:48:59,966 - INFO - 127.0.0.1 - - [08/Feb/2026 14:48:59] "[35m[1mGET /api/subscription/current HTTP/1.1[0m" 500 -
+2026-02-08 14:49:06,477 - INFO - 127.0.0.1 - - [08/Feb/2026 14:49:06] "OPTIONS /api/subscription/upgrade HTTP/1.1" 200 -
+DEBUG: DB Connection SUCCESS!
+DEBUG: DB Connection established
+DEBUG: Creating Razorpay order with data: {'amount': 5000, 'currency': 'INR', 'payment_capture': 1, 'notes': {'user_id': 12, 'plan_type': 'basic'}}
+DEBUG: Razorpay Order created: {'amount': 5000, 'amount_due': 5000, 'amount_paid': 0, 'attempts': 0, 'created_at': 1770542348, 'currency': 'INR', 'entity': 'order', 'id': 'order_SDbE9z1clhm1pA', 'notes': {'plan_type': 'basic', 'user_id': 12}, 'offer_id': None, 'receipt': None, 'status': 'created'}
+DEBUG: Inserting payment into DB...
+DEBUG: Payment inserted with ID: 9
+DEBUG: DB Commit successful
+2026-02-08 14:49:09,238 - INFO - 127.0.0.1 - - [08/Feb/2026 14:49:09] "POST /api/subscription/upgrade HTTP/1.1" 200 -
+2026-02-08 14:49:38,148 - INFO - 127.0.0.1 - - [08/Feb/2026 14:49:38] "OPTIONS /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 14:49:38,152 - INFO - 127.0.0.1 - - [08/Feb/2026 14:49:38] "OPTIONS /api/subscription/current HTTP/1.1" 200 -
+2026-02-08 14:49:38,156 - INFO - 127.0.0.1 - - [08/Feb/2026 14:49:38] "OPTIONS /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 14:49:38,159 - INFO - 127.0.0.1 - - [08/Feb/2026 14:49:38] "OPTIONS /api/subscription/current HTTP/1.1" 200 -
+2026-02-08 14:49:38,161 - INFO - 127.0.0.1 - - [08/Feb/2026 14:49:38] "GET /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 14:49:38,167 - INFO - 127.0.0.1 - - [08/Feb/2026 14:49:38] "GET /api/subscription/plans HTTP/1.1" 200 -
+DEBUG: DB Connection SUCCESS!
+2026-02-08 14:49:39,759 - INFO - 127.0.0.1 - - [08/Feb/2026 14:49:39] "[35m[1mGET /api/subscription/current HTTP/1.1[0m" 500 -
+DEBUG: DB Connection SUCCESS!
+2026-02-08 14:49:41,009 - INFO - 127.0.0.1 - - [08/Feb/2026 14:49:41] "OPTIONS /api/subscription/upgrade HTTP/1.1" 200 -
+2026-02-08 14:49:41,021 - INFO - 127.0.0.1 - - [08/Feb/2026 14:49:41] "[35m[1mGET /api/subscription/current HTTP/1.1[0m" 500 -
+DEBUG: DB Connection SUCCESS!
+DEBUG: DB Connection established
+DEBUG: Creating Razorpay order with data: {'amount': 5000, 'currency': 'INR', 'payment_capture': 1, 'notes': {'user_id': 12, 'plan_type': 'basic'}}
+DEBUG: Razorpay Order created: {'amount': 5000, 'amount_due': 5000, 'amount_paid': 0, 'attempts': 0, 'created_at': 1770542382, 'currency': 'INR', 'entity': 'order', 'id': 'order_SDbEkb4EPiBoHw', 'notes': {'plan_type': 'basic', 'user_id': 12}, 'offer_id': None, 'receipt': None, 'status': 'created'}
+DEBUG: Inserting payment into DB...
+DEBUG: Payment inserted with ID: 10
+DEBUG: DB Commit successful
+2026-02-08 14:49:42,709 - INFO - 127.0.0.1 - - [08/Feb/2026 14:49:42] "POST /api/subscription/upgrade HTTP/1.1" 200 -
+2026-02-08 14:55:18,945 - INFO - 127.0.0.1 - - [08/Feb/2026 14:55:18] "OPTIONS /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 14:55:18,952 - INFO - 127.0.0.1 - - [08/Feb/2026 14:55:18] "OPTIONS /api/subscription/current HTTP/1.1" 200 -
+2026-02-08 14:55:18,956 - INFO - 127.0.0.1 - - [08/Feb/2026 14:55:18] "OPTIONS /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 14:55:18,960 - INFO - 127.0.0.1 - - [08/Feb/2026 14:55:18] "OPTIONS /api/subscription/current HTTP/1.1" 200 -
+2026-02-08 14:55:18,963 - INFO - 127.0.0.1 - - [08/Feb/2026 14:55:18] "GET /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 14:55:18,973 - INFO - 127.0.0.1 - - [08/Feb/2026 14:55:18] "GET /api/subscription/plans HTTP/1.1" 200 -
+DEBUG: DB Connection SUCCESS!
+2026-02-08 14:55:21,567 - INFO - 127.0.0.1 - - [08/Feb/2026 14:55:21] "[35m[1mGET /api/subscription/current HTTP/1.1[0m" 500 -
+DEBUG: DB Connection SUCCESS!
+2026-02-08 14:55:22,874 - INFO - 127.0.0.1 - - [08/Feb/2026 14:55:22] "[35m[1mGET /api/subscription/current HTTP/1.1[0m" 500 -
+2026-02-08 14:55:50,393 - INFO - 127.0.0.1 - - [08/Feb/2026 14:55:50] "OPTIONS /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 14:55:50,398 - INFO - 127.0.0.1 - - [08/Feb/2026 14:55:50] "OPTIONS /api/subscription/current HTTP/1.1" 200 -
+2026-02-08 14:55:50,400 - INFO - 127.0.0.1 - - [08/Feb/2026 14:55:50] "OPTIONS /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 14:55:50,401 - INFO - 127.0.0.1 - - [08/Feb/2026 14:55:50] "OPTIONS /api/subscription/current HTTP/1.1" 200 -
+2026-02-08 14:55:50,405 - INFO - 127.0.0.1 - - [08/Feb/2026 14:55:50] "GET /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 14:55:50,413 - INFO - 127.0.0.1 - - [08/Feb/2026 14:55:50] "GET /api/subscription/plans HTTP/1.1" 200 -
+DEBUG: DB Connection SUCCESS!
+2026-02-08 14:55:51,701 - INFO - 127.0.0.1 - - [08/Feb/2026 14:55:51] "[35m[1mGET /api/subscription/current HTTP/1.1[0m" 500 -
+2026-02-08 14:55:51,934 - INFO - 127.0.0.1 - - [08/Feb/2026 14:55:51] "OPTIONS /api/subscription/upgrade HTTP/1.1" 200 -
+DEBUG: DB Connection SUCCESS!
+DEBUG: DB Connection SUCCESS!
+DEBUG: DB Connection established
+DEBUG: Creating Razorpay order with data: {'amount': 5000, 'currency': 'INR', 'payment_capture': 1, 'notes': {'user_id': 12, 'plan_type': 'basic'}}
+2026-02-08 14:55:52,868 - INFO - 127.0.0.1 - - [08/Feb/2026 14:55:52] "[35m[1mGET /api/subscription/current HTTP/1.1[0m" 500 -
+Connection failed.
+DEBUG: Razorpay Create Failed: ('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))
+2026-02-08 14:55:52,905 - INFO - 127.0.0.1 - - [08/Feb/2026 14:55:52] "[35m[1mPOST /api/subscription/upgrade HTTP/1.1[0m" 500 -
+2026-02-08 14:56:33,398 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=id&email=eq.test_27kps0hy%40example.com "HTTP/2 200 OK"
+2026-02-08 14:56:33,400 - INFO - Verifying Outlook credentials for test_27kps0hy@example.com
+Skipping Outlook verification for test email: test_27kps0hy@example.com
+2026-02-08 14:56:34,444 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users "HTTP/2 201 Created"
+2026-02-08 14:56:34,681 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/student_profiles "HTTP/2 201 Created"
+2026-02-08 14:56:34,882 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/subscriptions "HTTP/2 201 Created"
+DEBUG: Email Verification Link: None/verify-email?token=7FNh0NTQkMhOMezXnGIhog78IyZ1qPJ33Phjsn5h5xI
+2026-02-08 14:56:34,883 - INFO - 127.0.0.1 - - [08/Feb/2026 14:56:34] "[35m[1mPOST /api/auth/register HTTP/1.1[0m" 201 -
+DEBUG: login_user called for test_27kps0hy@example.com
+DEBUG: Fetching user from Supabase...
+2026-02-08 14:56:35,087 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=%2A%2Cstudent_profiles%28full_name%2Croll_number%29&email=eq.test_27kps0hy%40example.com "HTTP/2 200 OK"
+DEBUG: User fetched: 23. Verifying password...
+DEBUG: Password valid. getting profile...
+DEBUG: Profile: {'full_name': 'Test User', 'roll_number': 'WOX3nit'}. Generating token...
+DEBUG: Token generated for test_27kps0hy@example.com
+2026-02-08 14:56:35,407 - INFO - 127.0.0.1 - - [08/Feb/2026 14:56:35] "POST /api/auth/login HTTP/1.1" 200 -
+2026-02-08 14:56:35,410 - INFO - 127.0.0.1 - - [08/Feb/2026 14:56:35] "GET /api/subscription/plans HTTP/1.1" 200 -
+DEBUG: DB Connection SUCCESS!
+DEBUG: DB Connection established
+DEBUG: Creating Razorpay order with data: {'amount': 5000, 'currency': 'INR', 'payment_capture': 1, 'notes': {'user_id': 23, 'plan_type': 'basic'}}
+DEBUG: Razorpay Order created: {'amount': 5000, 'amount_due': 5000, 'amount_paid': 0, 'attempts': 0, 'created_at': 1770542797, 'currency': 'INR', 'entity': 'order', 'id': 'order_SDbM3kHWpvemBq', 'notes': {'plan_type': 'basic', 'user_id': 23}, 'offer_id': None, 'receipt': None, 'status': 'created'}
+DEBUG: Inserting payment into DB...
+DEBUG: Payment inserted with ID: 11
+DEBUG: DB Commit successful
+2026-02-08 14:56:37,875 - INFO - 127.0.0.1 - - [08/Feb/2026 14:56:37] "POST /api/subscription/upgrade HTTP/1.1" 200 -
+2026-02-08 14:57:24,130 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\api.py', reloading
+2026-02-08 14:57:24,569 - INFO -  * Restarting with stat
+DEBUG: API.PY MODULE LOADING...
+Warning: Encryption key issue: Fernet key must be 32 url-safe base64-encoded bytes.
+2026-02-08 14:57:28,916 - WARNING -  * Debugger is active!
+2026-02-08 14:57:28,922 - INFO -  * Debugger PIN: 900-091-490

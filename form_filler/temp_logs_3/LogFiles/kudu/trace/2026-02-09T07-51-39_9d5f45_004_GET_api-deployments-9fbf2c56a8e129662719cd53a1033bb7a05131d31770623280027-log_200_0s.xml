@@ -1,0 +1,9 @@
+<step title="Incoming Request" date="2026-02-09T07:51:39.073" instance="9d5f45" url="/api/deployments/9fbf2c56a8e129662719cd53a1033bb7a05131d31770623280027/log" method="GET" type="request" pid="769,1,5" Host="outing-backend-api.scm.azurewebsites.net" User-Agent="vscode-azureappservice/0.26.4 core-rest-pipeline/1.20.0 Node/22.21.1 OS/(x64-Windows_NT-10.0.26200)" Accept-Encoding="gzip,deflate" Accept-Language="en" Authorization="Bea..." x-ms-correlation-request-id="42603adb-7770-4a7b-b338-0d9774412739" x-ms-client-request-id="d6a01b13-9433-435f-9dab-64e0a79c3f9f" X-ARR-LOG-ID="d6a01b13-9433-435f-9dab-64e0a79c3f9f" CLIENT-IP="182.156.3.86:62059" X-SITE-DEPLOYMENT-ID="outing-backend-api" WAS-DEFAULT-HOSTNAME="outing-backend-api.scm.azurewebsites.net" X-Forwarded-Proto="https" X-AppService-Proto="https" X-Forwarded-TlsVersion="1.3" X-WAWS-Unencoded-URL="/api/deployments/9fbf2c56a8e129662719cd53a1033bb7a05131d31770623280027/log" X-Client-IP="182.156.3.86" X-Client-Port="62059" >
+  <step title="Cleanup Xml Logs" date="2026-02-09T07:51:39.076" >
+    <step title="Cleanup Infos" date="2026-02-09T07:51:39.087" totalFiles="481" totalCleanup="321" /><!-- duration: 4ms -->
+  </step><!-- duration: 18ms -->
+  <step title="DeploymentService.GetLogEntry" date="2026-02-09T07:51:39.130" >
+    <step title="DeploymentManager.GetLogEntries(id:9fbf2c56a8e129662719cd53a1033bb7a05131d31770623280027)" date="2026-02-09T07:51:39.133" /><!-- duration: 12ms -->
+  </step><!-- duration: 19ms -->
+  <step title="Outgoing response" date="2026-02-09T07:51:39.160" type="response" statusCode="200" statusText="OK" /><!-- duration: 3ms -->
+</step><!-- duration: 93ms -->

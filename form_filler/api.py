@@ -35,6 +35,17 @@ load_dotenv(dotenv_path=env_path, override=True)
 print(f"DEBUG: Loaded DB_HOST: {os.getenv('DB_HOST')}", flush=True)
 print(f"DEBUG: Loaded RAZORPAY_KEY_ID: {os.getenv('RAZORPAY_KEY_ID')}", flush=True)
 import razorpay
+# Initialize Razorpay Client Global
+razorpay_key_id = os.getenv('RAZORPAY_KEY_ID')
+razorpay_key_secret = os.getenv('RAZORPAY_KEY_SECRET')
+
+# Create client only if keys exist to avoid startup crash if env vars missing
+if razorpay_key_id and razorpay_key_secret:
+    razorpay_client = razorpay.Client(auth=(razorpay_key_id, razorpay_key_secret))
+else:
+    print("WARNING: Razorpay keys not found in environment", flush=True)
+    razorpay_client = None
+
 from functools import wraps
 import psycopg2
 import psycopg2.extras
@@ -94,7 +105,15 @@ except ImportError:
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}}) # Allow Vercel Frontend
+# Configure CORS with explicit allowed origins
+allow_origins = [
+    "https://campusouting.app",
+    "https://www.campusouting.app",
+    "https://agreeable-sky-058124200.4.azurestaticapps.net",
+    "http://localhost:5173",
+    "http://localhost:3000"
+]
+CORS(app, resources={r"/*": {"origins": allow_origins}}, supports_credentials=True)
 app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY', 'your-secret-key')
 
 # Configure logging
@@ -279,7 +298,7 @@ def auto_submit_from_email():
             JOIN subscriptions s ON u.id = s.user_id
             JOIN student_profiles sp ON u.id = sp.user_id
             WHERE s.is_auto_submit = 1 
-              AND s.subscription_end >= CURDATE()
+              AND s.subscription_end >= CURRENT_DATE
               AND u.is_active = 1
         """)
         eligible_users = cur.fetchall()
@@ -611,15 +630,28 @@ def create_outing_pdf(profile, start_date, end_date, reason):
         c.drawString(50, y, "Student Signature:")
         
         sig_data = profile.get('signature_data')
-        if sig_data and sig_data.startswith('data:image'):
+        if sig_data:
             try:
-                # Extract base64 data
-                header, encoded = sig_data.split(',', 1)
-                sig_bytes = base64.b64decode(encoded)
-                sig_image = ImageReader(io.BytesIO(sig_bytes))
-                c.drawImage(sig_image, 70, y - 60, width=100, height=50, preserveAspectRatio=True)
+                if sig_data.startswith('data:image'):
+                    # Extract base64 data
+                    header, encoded = sig_data.split(',', 1)
+                    sig_bytes = base64.b64decode(encoded)
+                    sig_image = ImageReader(io.BytesIO(sig_bytes))
+                    c.drawImage(sig_image, 70, y - 60, width=100, height=50, preserveAspectRatio=True)
+                else:
+                    # Assume it's a file path (relative to api.py or absolute)
+                    # Check relative to current working directory first
+                    if os.path.exists(sig_data):
+                        c.drawImage(sig_data, 70, y - 60, width=100, height=50, preserveAspectRatio=True)
+                    elif os.path.exists(os.path.join(os.getcwd(), sig_data)):
+                         c.drawImage(os.path.join(os.getcwd(), sig_data), 70, y - 60, width=100, height=50, preserveAspectRatio=True)
+                    else:
+                        c.drawString(70, y - 20, "[Signature File Not Found]")
+                        logging.warning(f"Signature file not found: {sig_data}")
+
             except Exception as e:
                 c.drawString(70, y - 20, "[Signature Error]")
+                logging.error(f"Failed to draw signature: {e}")
         else:
             c.drawString(70, y - 20, "[No signature uploaded]")
         
@@ -925,8 +957,8 @@ def get_current_subscription():
             SELECT s.*,
                 CASE 
                     WHEN s.subscription_end IS NULL THEN NULL
-                    WHEN s.subscription_end < CURDATE() THEN 'expired'
-                    WHEN s.subscription_end < DATE_ADD(CURDATE(), INTERVAL 7 DAY) THEN 'expiring_soon'
+                    WHEN s.subscription_end < CURRENT_DATE THEN 'expired'
+                    WHEN s.subscription_end < CURRENT_DATE + INTERVAL '7 days' THEN 'expiring_soon'
                     ELSE 'active'
                 END as subscription_status
             FROM subscriptions s WHERE user_id = %s
@@ -1021,37 +1053,49 @@ def upgrade_subscription():
 @app.route('/api/subscription/verify-payment', methods=['POST'])
 @login_required
 def verify_payment():
+    print("DEBUG: /verify-payment called", flush=True)
     try:
         data = request.json
+        print(f"DEBUG: Verify Data: {data}", flush=True)
+        
         try:
+            print("DEBUG: Verifying signature...", flush=True)
             razorpay_client.utility.verify_payment_signature({
                 'razorpay_order_id': data['razorpay_order_id'],
                 'razorpay_payment_id': data['razorpay_payment_id'],
                 'razorpay_signature': data['razorpay_signature']
             })
-        except:
-            return jsonify({'success': False, 'error': 'Invalid signature'}), 400
+            print("DEBUG: Signature Verified!", flush=True)
+        except Exception as sig_err:
+            print(f"DEBUG: Signature Verification Failed: {sig_err}", flush=True)
+            return jsonify({'success': False, 'error': f'Invalid signature: {str(sig_err)}'}), 400
             
+        print("DEBUG: Connecting to DB...", flush=True)
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         
         cur.execute("SELECT * FROM payments WHERE payment_order_id = %s", (data['razorpay_order_id'],))
         payment = cur.fetchone()
         
-        if not payment: return jsonify({'success': False, 'error': 'Payment not found'}), 404
+        if not payment: 
+            print("DEBUG: Payment order not found in DB", flush=True)
+            return jsonify({'success': False, 'error': 'Payment not found'}), 404
         
+        print(f"DEBUG: Found payment record: {payment['id']}", flush=True)
         plan = SUBSCRIPTION_PLANS[payment['plan_type']]
         sub_end = datetime.now() + timedelta(days=plan['duration_days'])
         
+        print("DEBUG: Updating payment status...", flush=True)
         cur.execute("UPDATE payments SET status = 'completed', payment_id = %s, completed_at = NOW() WHERE id = %s",
                    (data['razorpay_payment_id'], payment['id']))
                    
+        print("DEBUG: Updating subscription...", flush=True)
         cur.execute("""
             UPDATE subscriptions SET 
                 plan_type = %s,
                 is_auto_submit = %s,
                 monthly_submissions_limit = %s,
-                subscription_start = CURDATE(),
+                subscription_start = CURRENT_DATE,
                 subscription_end = %s
             WHERE user_id = %s
         """, (payment['plan_type'], plan['features']['auto_submit'], plan['features']['monthly_submissions'], sub_end, request.user_id))
@@ -1062,10 +1106,13 @@ def verify_payment():
         conn.commit()
         cur.close()
         conn.close()
+        print("DEBUG: Upgrade Successful!", flush=True)
         return jsonify({'success': True, 'message': 'Upgraded!'})
     except Exception as e:
-        print(f"Verify Error: {e}")
-        return jsonify({'success': False, 'error': str(e)}), 500
+        print(f"DEBUG: Verify Critical Error: {e}", flush=True)
+        import traceback
+        traceback.print_exc()
+        return jsonify({'success': False, 'error': f"Server Error: {str(e)}"}), 500
 
 # ============================================================================
 # ADMIN ROUTES

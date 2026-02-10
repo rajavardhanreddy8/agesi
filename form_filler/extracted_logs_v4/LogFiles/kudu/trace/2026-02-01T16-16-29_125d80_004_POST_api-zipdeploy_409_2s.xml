@@ -1,0 +1,16 @@
+<step title="Incoming Request" date="2026-02-01T16:16:29.138" instance="125d80" url="/api/zipdeploy?isAsync=true" method="POST" type="request" pid="772,1,23" Accept="*/*" Host="outing-backend-api.scm.azurewebsites.net" User-Agent="AZURECLI/2.80.0 (MSI)" Accept-Encoding="gzip, deflate" Authorization="Bea..." Cache-Control="no-cache" Content-Type="application/octet-stream" Content-Length="53772" x-ms-client-request-id="574ab035-ff89-11f0-a2e4-c46516fda539" x-ms-artifact-checksum="b5a12f506a0c7255af381d64027b0b95a38f30621123deaecbd1620cbbcfd11e" X-ARR-LOG-ID="574ab035-ff89-11f0-a2e4-c46516fda539" CLIENT-IP="152.57.170.227:54902" X-SITE-DEPLOYMENT-ID="outing-backend-api" WAS-DEFAULT-HOSTNAME="outing-backend-api.scm.azurewebsites.net" X-Forwarded-Proto="https" X-AppService-Proto="https" X-Forwarded-TlsVersion="1.3" X-WAWS-Unencoded-URL="/api/zipdeploy?isAsync=true" X-Client-IP="152.57.170.227" X-Client-Port="54902" >
+  <step title="Cleanup Xml Logs" date="2026-02-01T16:16:29.155" /><!-- duration: 72ms -->
+  <step title="ZipPushDeploy" date="2026-02-01T16:16:29.348" >
+    <step title="ZipDeploy. Extract zip. Remote build." date="2026-02-01T16:16:29.364" /><!-- duration: 10ms -->
+    <step title="Starting PushDeployAsync" date="2026-02-01T16:16:29.387" /><!-- duration: 21ms -->
+    <step title="Writing artifact to /tmp/zipdeploy/7445ea68-e95c-4066-922c-635722a12004.zip" date="2026-02-01T16:16:29.457" >
+      <step title="Writing multipart request body to /tmp/zipdeploy/7445ea68-e95c-4066-922c-635722a12004.zip" date="2026-02-01T16:16:29.495" /><!-- duration: 52ms -->
+    </step><!-- duration: 294ms -->
+    <step title="Start deployment in the background" date="2026-02-01T16:16:29.801" >
+      <step title="Acquiring Deployment Lock" date="2026-02-01T16:16:30.700" /><!-- duration: 59ms -->
+      <step title="Cannot Acquire Deployment Lock already held" date="2026-02-01T16:16:31.025" /><!-- duration: 12ms -->
+    </step><!-- duration: 1567ms -->
+    <step title="There is a deployment currently in progress. Please try again when it completes." date="2026-02-01T16:16:31.424" /><!-- duration: 19ms -->
+  </step><!-- duration: 2113ms -->
+  <step title="Outgoing response" date="2026-02-01T16:16:31.541" type="response" statusCode="409" statusText="Conflict" /><!-- duration: 46ms -->
+</step><!-- duration: 2470ms -->

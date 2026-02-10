@@ -1,0 +1,222 @@
+DEBUG: API.PY MODULE LOADING...
+DEBUG: Loading .env from: C:\Users\admin\Documents\outing\agent 4.0\.env
+DEBUG: Loaded DB_HOST: aws-1-ap-northeast-1.pooler.supabase.com
+DEBUG: Loaded RAZORPAY_KEY_ID: rzp_test_SDZo4nNk0ZZe23
+Warning: Encryption key issue: Fernet key must be 32 url-safe base64-encoded bytes.
+DEBUG: Initializing Razorpay with Key ID: rzp_live_SDcqknc6G4xFYv
+ * Serving Flask app 'api'
+ * Debug mode: on
+2026-02-08 16:41:24,257 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.20.10.3:5000
+2026-02-08 16:41:24,266 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-08 16:41:24,268 - INFO -  * Restarting with stat
+DEBUG: API.PY MODULE LOADING...
+DEBUG: Loading .env from: C:\Users\admin\Documents\outing\agent 4.0\.env
+DEBUG: Loaded DB_HOST: aws-1-ap-northeast-1.pooler.supabase.com
+DEBUG: Loaded RAZORPAY_KEY_ID: rzp_test_SDZo4nNk0ZZe23
+Warning: Encryption key issue: Fernet key must be 32 url-safe base64-encoded bytes.
+DEBUG: Initializing Razorpay with Key ID: rzp_live_SDcqknc6G4xFYv
+2026-02-08 16:41:27,444 - WARNING -  * Debugger is active!
+2026-02-08 16:41:27,449 - INFO -  * Debugger PIN: 900-091-490
+2026-02-08 16:41:29,763 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=id&email=eq.test_4rxaj4de%40example.com "HTTP/2 200 OK"
+2026-02-08 16:41:29,766 - INFO - Verifying Outlook credentials for test_4rxaj4de@example.com
+Skipping Outlook verification for test email: test_4rxaj4de@example.com
+2026-02-08 16:41:30,512 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users "HTTP/2 201 Created"
+2026-02-08 16:41:30,770 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/student_profiles "HTTP/2 201 Created"
+2026-02-08 16:41:30,995 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/subscriptions "HTTP/2 201 Created"
+DEBUG: Email Verification Link: None/verify-email?token=A_3CdS1P2JS1w0gDTszqX6UvptvntRiRTw5NVwomT_I
+2026-02-08 16:41:30,999 - INFO - 127.0.0.1 - - [08/Feb/2026 16:41:30] "[35m[1mPOST /api/auth/register HTTP/1.1[0m" 201 -
+DEBUG: login_user called for test_4rxaj4de@example.com
+DEBUG: Fetching user from Supabase...
+2026-02-08 16:41:31,242 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=%2A%2Cstudent_profiles%28full_name%2Croll_number%29&email=eq.test_4rxaj4de%40example.com "HTTP/2 200 OK"
+DEBUG: User fetched: 30. Verifying password...
+DEBUG: Password valid. getting profile...
+DEBUG: Profile: {'full_name': 'Test User', 'roll_number': 'WOX0win'}. Generating token...
+DEBUG: Token generated for test_4rxaj4de@example.com
+2026-02-08 16:41:31,720 - INFO - 127.0.0.1 - - [08/Feb/2026 16:41:31] "POST /api/auth/login HTTP/1.1" 200 -
+2026-02-08 16:41:31,724 - INFO - 127.0.0.1 - - [08/Feb/2026 16:41:31] "GET /api/subscription/plans HTTP/1.1" 200 -
+DEBUG: DB Connection SUCCESS!
+DEBUG: DB Connection established
+DEBUG: Creating Razorpay order with data: {'amount': 100, 'currency': 'INR', 'payment_capture': 1, 'notes': {'user_id': 30, 'plan_type': 'basic'}}
+DEBUG: Razorpay Order created: {'amount': 100, 'amount_due': 100, 'amount_paid': 0, 'attempts': 0, 'created_at': 1770549094, 'currency': 'INR', 'entity': 'order', 'id': 'order_SDd8uypmjGmqF0', 'notes': {'plan_type': 'basic', 'user_id': 30}, 'offer_id': None, 'receipt': None, 'status': 'created'}
+DEBUG: Inserting payment into DB...
+DEBUG: Payment inserted with ID: 21
+DEBUG: DB Commit successful
+2026-02-08 16:41:34,660 - INFO - 127.0.0.1 - - [08/Feb/2026 16:41:34] "POST /api/subscription/upgrade HTTP/1.1" 200 -
+2026-02-08 16:41:58,127 - INFO - 127.0.0.1 - - [08/Feb/2026 16:41:58] "OPTIONS /api/subscription/upgrade HTTP/1.1" 200 -
+DEBUG: DB Connection SUCCESS!
+DEBUG: DB Connection established
+DEBUG: Creating Razorpay order with data: {'amount': 100, 'currency': 'INR', 'payment_capture': 1, 'notes': {'user_id': 12, 'plan_type': 'basic'}}
+DEBUG: Razorpay Order created: {'amount': 100, 'amount_due': 100, 'amount_paid': 0, 'attempts': 0, 'created_at': 1770549119, 'currency': 'INR', 'entity': 'order', 'id': 'order_SDd9MFb6uNVBWt', 'notes': {'plan_type': 'basic', 'user_id': 12}, 'offer_id': None, 'receipt': None, 'status': 'created'}
+DEBUG: Inserting payment into DB...
+DEBUG: Payment inserted with ID: 22
+DEBUG: DB Commit successful
+2026-02-08 16:41:59,723 - INFO - 127.0.0.1 - - [08/Feb/2026 16:41:59] "POST /api/subscription/upgrade HTTP/1.1" 200 -
+2026-02-08 16:51:27,219 - INFO - 127.0.0.1 - - [08/Feb/2026 16:51:27] "OPTIONS /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 16:51:27,224 - INFO - 127.0.0.1 - - [08/Feb/2026 16:51:27] "OPTIONS /api/subscription/current HTTP/1.1" 200 -
+2026-02-08 16:51:27,227 - INFO - 127.0.0.1 - - [08/Feb/2026 16:51:27] "OPTIONS /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 16:51:27,230 - INFO - 127.0.0.1 - - [08/Feb/2026 16:51:27] "OPTIONS /api/subscription/current HTTP/1.1" 200 -
+2026-02-08 16:51:27,237 - INFO - 127.0.0.1 - - [08/Feb/2026 16:51:27] "GET /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 16:51:27,244 - INFO - 127.0.0.1 - - [08/Feb/2026 16:51:27] "GET /api/subscription/plans HTTP/1.1" 200 -
+DEBUG: DB Connection SUCCESS!
+2026-02-08 16:51:28,853 - INFO - 127.0.0.1 - - [08/Feb/2026 16:51:28] "[35m[1mGET /api/subscription/current HTTP/1.1[0m" 500 -
+2026-02-08 16:51:28,926 - INFO - 127.0.0.1 - - [08/Feb/2026 16:51:28] "OPTIONS /api/subscription/upgrade HTTP/1.1" 200 -
+DEBUG: DB Connection SUCCESS!
+DEBUG: DB Connection SUCCESS!
+DEBUG: DB Connection established
+DEBUG: Creating Razorpay order with data: {'amount': 100, 'currency': 'INR', 'payment_capture': 1, 'notes': {'user_id': 12, 'plan_type': 'basic'}}
+Connection failed.
+DEBUG: Razorpay Create Failed (Attempt 1/3): ('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))
+2026-02-08 16:51:30,036 - INFO - 127.0.0.1 - - [08/Feb/2026 16:51:30] "[35m[1mGET /api/subscription/current HTTP/1.1[0m" 500 -
+DEBUG: Razorpay Order created: {'amount': 100, 'amount_due': 100, 'amount_paid': 0, 'attempts': 0, 'created_at': 1770549691, 'currency': 'INR', 'entity': 'order', 'id': 'order_SDdJR8lZPY0UNi', 'notes': {'plan_type': 'basic', 'user_id': 12}, 'offer_id': None, 'receipt': None, 'status': 'created'}
+DEBUG: Inserting payment into DB...
+DEBUG: Payment inserted with ID: 23
+DEBUG: DB Commit successful
+2026-02-08 16:51:32,127 - INFO - 127.0.0.1 - - [08/Feb/2026 16:51:32] "POST /api/subscription/upgrade HTTP/1.1" 200 -
+2026-02-08 16:57:46,327 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\api.py', reloading
+2026-02-08 16:57:46,656 - INFO -  * Restarting with stat
+DEBUG: API.PY MODULE LOADING...
+DEBUG: Loading .env from: C:\Users\admin\Documents\outing\agent 4.0\.env
+DEBUG: Loaded DB_HOST: aws-1-ap-northeast-1.pooler.supabase.com
+DEBUG: Loaded RAZORPAY_KEY_ID: rzp_test_SDZo4nNk0ZZe23
+Warning: Encryption key issue: Fernet key must be 32 url-safe base64-encoded bytes.
+DEBUG: Initializing Razorpay with Key ID: rzp_live_SDcqknc6G4xFYv
+2026-02-08 16:57:49,569 - WARNING -  * Debugger is active!
+2026-02-08 16:57:49,573 - INFO -  * Debugger PIN: 900-091-490
+2026-02-08 17:55:23,995 - INFO - 127.0.0.1 - - [08/Feb/2026 17:55:23] "OPTIONS /api/subscription/current HTTP/1.1" 200 -
+2026-02-08 17:55:23,998 - INFO - 127.0.0.1 - - [08/Feb/2026 17:55:23] "OPTIONS /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 17:55:24,003 - INFO - 127.0.0.1 - - [08/Feb/2026 17:55:24] "OPTIONS /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 17:55:24,006 - INFO - 127.0.0.1 - - [08/Feb/2026 17:55:24] "OPTIONS /api/subscription/current HTTP/1.1" 200 -
+2026-02-08 17:55:24,029 - INFO - 127.0.0.1 - - [08/Feb/2026 17:55:24] "GET /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 17:55:24,037 - INFO - 127.0.0.1 - - [08/Feb/2026 17:55:24] "GET /api/subscription/plans HTTP/1.1" 200 -
+DEBUG: DB Connection SUCCESS!
+2026-02-08 17:55:26,045 - INFO - 127.0.0.1 - - [08/Feb/2026 17:55:26] "[35m[1mGET /api/subscription/current HTTP/1.1[0m" 500 -
+2026-02-08 17:55:26,441 - INFO - 127.0.0.1 - - [08/Feb/2026 17:55:26] "OPTIONS /api/subscription/upgrade HTTP/1.1" 200 -
+DEBUG: DB Connection SUCCESS!
+2026-02-08 17:55:27,576 - INFO - 127.0.0.1 - - [08/Feb/2026 17:55:27] "[35m[1mGET /api/subscription/current HTTP/1.1[0m" 500 -
+DEBUG: DB Connection SUCCESS!
+DEBUG: DB Connection established
+DEBUG: Creating Razorpay order with data: {'amount': 5000, 'currency': 'INR', 'payment_capture': 1, 'notes': {'user_id': 12, 'plan_type': 'basic'}}
+DEBUG: Razorpay Order created: {'amount': 5000, 'amount_due': 5000, 'amount_paid': 0, 'attempts': 0, 'created_at': 1770553529, 'currency': 'INR', 'entity': 'order', 'id': 'order_SDeP09XCVU0VR8', 'notes': {'plan_type': 'basic', 'user_id': 12}, 'offer_id': None, 'receipt': None, 'status': 'created'}
+DEBUG: Inserting payment into DB...
+DEBUG: Payment inserted with ID: 24
+DEBUG: DB Commit successful
+2026-02-08 17:55:29,901 - INFO - 127.0.0.1 - - [08/Feb/2026 17:55:29] "POST /api/subscription/upgrade HTTP/1.1" 200 -
+2026-02-08 21:10:02,887 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\api.py', reloading
+2026-02-08 21:10:03,615 - INFO -  * Restarting with stat
+DEBUG: API.PY MODULE LOADING...
+DEBUG: Loading .env from: C:\Users\admin\Documents\outing\agent 4.0\.env
+DEBUG: Loaded DB_HOST: aws-1-ap-northeast-1.pooler.supabase.com
+DEBUG: Loaded RAZORPAY_KEY_ID: rzp_test_SDZo4nNk0ZZe23
+Warning: Encryption key issue: Fernet key must be 32 url-safe base64-encoded bytes.
+DEBUG: Initializing Razorpay with Key ID: rzp_live_SDcqknc6G4xFYv
+2026-02-08 21:10:08,404 - WARNING -  * Debugger is active!
+2026-02-08 21:10:08,414 - INFO -  * Debugger PIN: 900-091-490
+2026-02-08 23:05:25,542 - INFO - 127.0.0.1 - - [08/Feb/2026 23:05:25] "[33mGET /signatures/sig_7_9afacf23.png HTTP/1.1[0m" 404 -
+2026-02-08 23:38:27,609 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\api.py', reloading
+2026-02-08 23:38:28,138 - INFO -  * Restarting with stat
+DEBUG: API.PY MODULE LOADING...
+DEBUG: Loading .env from: C:\Users\admin\Documents\outing\agent 4.0\.env
+DEBUG: Loaded DB_HOST: aws-1-ap-northeast-1.pooler.supabase.com
+DEBUG: Loaded RAZORPAY_KEY_ID: rzp_test_SDZo4nNk0ZZe23
+Warning: Encryption key issue: Fernet key must be 32 url-safe base64-encoded bytes.
+DEBUG: Initializing Razorpay with Key ID: rzp_test_SDZo4nNk0ZZe23
+2026-02-08 23:38:35,404 - WARNING -  * Debugger is active!
+2026-02-08 23:38:35,415 - INFO -  * Debugger PIN: 900-091-490
+2026-02-08 23:57:49,826 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\api.py', reloading
+2026-02-08 23:57:50,201 - INFO -  * Restarting with stat
+DEBUG: API.PY MODULE LOADING...
+DEBUG: Loading .env from: C:\Users\admin\Documents\outing\agent 4.0\.env
+DEBUG: Loaded DB_HOST: aws-1-ap-northeast-1.pooler.supabase.com
+DEBUG: Loaded RAZORPAY_KEY_ID: rzp_test_SDZo4nNk0ZZe23
+Warning: Encryption key issue: Fernet key must be 32 url-safe base64-encoded bytes.
+DEBUG: Initializing Razorpay with Key ID: rzp_test_SDZo4nNk0ZZe23
+2026-02-08 23:57:54,136 - WARNING -  * Debugger is active!
+2026-02-08 23:57:54,140 - INFO -  * Debugger PIN: 900-091-490
+2026-02-09 00:15:44,530 - INFO - 127.0.0.1 - - [09/Feb/2026 00:15:44] "[33mOPTIONS /api/api/subscription/plans HTTP/1.1[0m" 404 -
+2026-02-09 00:15:44,534 - INFO - 127.0.0.1 - - [09/Feb/2026 00:15:44] "[33mOPTIONS /api/api/subscription/current HTTP/1.1[0m" 404 -
+2026-02-09 00:15:44,538 - INFO - 127.0.0.1 - - [09/Feb/2026 00:15:44] "[33mOPTIONS /api/api/subscription/plans HTTP/1.1[0m" 404 -
+2026-02-09 00:15:44,542 - INFO - 127.0.0.1 - - [09/Feb/2026 00:15:44] "[33mOPTIONS /api/api/subscription/current HTTP/1.1[0m" 404 -
+2026-02-09 07:28:24,910 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\find_latest_log.py', reloading
+2026-02-09 07:28:25,401 - INFO -  * Restarting with stat
+DEBUG: API.PY MODULE LOADING...
+DEBUG: Loading .env from: C:\Users\admin\Documents\outing\agent 4.0\.env
+DEBUG: Loaded DB_HOST: aws-1-ap-northeast-1.pooler.supabase.com
+DEBUG: Loaded RAZORPAY_KEY_ID: rzp_test_SDZo4nNk0ZZe23
+Warning: Encryption key issue: Fernet key must be 32 url-safe base64-encoded bytes.
+DEBUG: Initializing Razorpay with Key ID: rzp_test_SDZo4nNk0ZZe23
+2026-02-09 07:28:29,510 - WARNING -  * Debugger is active!
+2026-02-09 07:28:29,515 - INFO -  * Debugger PIN: 900-091-490
+2026-02-09 07:35:51,368 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\extract_logs.py', reloading
+2026-02-09 07:35:51,667 - INFO -  * Restarting with stat
+DEBUG: API.PY MODULE LOADING...
+DEBUG: Loading .env from: C:\Users\admin\Documents\outing\agent 4.0\.env
+DEBUG: Loaded DB_HOST: aws-1-ap-northeast-1.pooler.supabase.com
+DEBUG: Loaded RAZORPAY_KEY_ID: rzp_test_SDZo4nNk0ZZe23
+Warning: Encryption key issue: Fernet key must be 32 url-safe base64-encoded bytes.
+DEBUG: Initializing Razorpay with Key ID: rzp_test_SDZo4nNk0ZZe23
+2026-02-09 07:35:54,383 - WARNING -  * Debugger is active!
+2026-02-09 07:35:54,387 - INFO -  * Debugger PIN: 900-091-490
+2026-02-09 07:36:24,598 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\analyze_logs.py', reloading
+2026-02-09 07:36:24,902 - INFO -  * Restarting with stat
+DEBUG: API.PY MODULE LOADING...
+DEBUG: Loading .env from: C:\Users\admin\Documents\outing\agent 4.0\.env
+DEBUG: Loaded DB_HOST: aws-1-ap-northeast-1.pooler.supabase.com
+DEBUG: Loaded RAZORPAY_KEY_ID: rzp_test_SDZo4nNk0ZZe23
+Warning: Encryption key issue: Fernet key must be 32 url-safe base64-encoded bytes.
+DEBUG: Initializing Razorpay with Key ID: rzp_test_SDZo4nNk0ZZe23
+2026-02-09 07:36:27,924 - WARNING -  * Debugger is active!
+2026-02-09 07:36:27,928 - INFO -  * Debugger PIN: 900-091-490
+2026-02-09 07:36:37,048 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\extract_logs.py', reloading
+2026-02-09 07:36:37,288 - INFO -  * Restarting with stat
+DEBUG: API.PY MODULE LOADING...
+DEBUG: Loading .env from: C:\Users\admin\Documents\outing\agent 4.0\.env
+DEBUG: Loaded DB_HOST: aws-1-ap-northeast-1.pooler.supabase.com
+DEBUG: Loaded RAZORPAY_KEY_ID: rzp_test_SDZo4nNk0ZZe23
+Warning: Encryption key issue: Fernet key must be 32 url-safe base64-encoded bytes.
+DEBUG: Initializing Razorpay with Key ID: rzp_test_SDZo4nNk0ZZe23
+2026-02-09 07:36:40,319 - WARNING -  * Debugger is active!
+2026-02-09 07:36:40,324 - INFO -  * Debugger PIN: 900-091-490
+2026-02-09 07:48:49,387 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\extract_logs.py', reloading
+2026-02-09 07:48:49,652 - INFO -  * Restarting with stat
+DEBUG: API.PY MODULE LOADING...
+DEBUG: Loading .env from: C:\Users\admin\Documents\outing\agent 4.0\.env
+DEBUG: Loaded DB_HOST: aws-1-ap-northeast-1.pooler.supabase.com
+DEBUG: Loaded RAZORPAY_KEY_ID: rzp_test_SDZo4nNk0ZZe23
+Warning: Encryption key issue: Fernet key must be 32 url-safe base64-encoded bytes.
+DEBUG: Initializing Razorpay with Key ID: rzp_test_SDZo4nNk0ZZe23
+2026-02-09 07:48:52,338 - WARNING -  * Debugger is active!
+2026-02-09 07:48:52,342 - INFO -  * Debugger PIN: 900-091-490
+2026-02-09 11:10:42,058 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\extract_logs.py', reloading
+2026-02-09 11:10:42,989 - INFO -  * Restarting with stat
+DEBUG: API.PY MODULE LOADING...
+DEBUG: Loading .env from: C:\Users\admin\Documents\outing\agent 4.0\.env
+DEBUG: Loaded DB_HOST: aws-1-ap-northeast-1.pooler.supabase.com
+DEBUG: Loaded RAZORPAY_KEY_ID: rzp_test_SDZo4nNk0ZZe23
+Warning: Encryption key issue: Fernet key must be 32 url-safe base64-encoded bytes.
+DEBUG: Initializing Razorpay with Key ID: rzp_test_SDZo4nNk0ZZe23
+2026-02-09 11:10:49,792 - WARNING -  * Debugger is active!
+2026-02-09 11:10:49,803 - INFO -  * Debugger PIN: 900-091-490
+2026-02-09 11:14:44,533 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\extract_logs.py', reloading
+2026-02-09 11:14:45,569 - INFO -  * Restarting with stat
+DEBUG: API.PY MODULE LOADING...
+DEBUG: Loading .env from: C:\Users\admin\Documents\outing\agent 4.0\.env
+DEBUG: Loaded DB_HOST: aws-1-ap-northeast-1.pooler.supabase.com
+DEBUG: Loaded RAZORPAY_KEY_ID: rzp_test_SDZo4nNk0ZZe23
+Warning: Encryption key issue: Fernet key must be 32 url-safe base64-encoded bytes.
+DEBUG: Initializing Razorpay with Key ID: rzp_test_SDZo4nNk0ZZe23
+2026-02-09 11:14:57,520 - WARNING -  * Debugger is active!
+2026-02-09 11:14:57,534 - INFO -  * Debugger PIN: 900-091-490
+2026-02-09 11:21:25,370 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\test_payment.py', reloading
+2026-02-09 11:21:25,732 - INFO -  * Restarting with stat
+DEBUG: API.PY MODULE LOADING...
+DEBUG: Loading .env from: C:\Users\admin\Documents\outing\agent 4.0\.env
+DEBUG: Loaded DB_HOST: aws-1-ap-northeast-1.pooler.supabase.com
+DEBUG: Loaded RAZORPAY_KEY_ID: rzp_test_SDZo4nNk0ZZe23
+Warning: Encryption key issue: Fernet key must be 32 url-safe base64-encoded bytes.
+DEBUG: Initializing Razorpay with Key ID: rzp_test_SDZo4nNk0ZZe23
+2026-02-09 11:21:30,235 - WARNING -  * Debugger is active!
+2026-02-09 11:21:30,243 - INFO -  * Debugger PIN: 900-091-490
+2026-02-09 18:15:46,070 - INFO - 127.0.0.1 - - [09/Feb/2026 18:15:46] "[33mGET /signatures/sig_7_9afacf23.png HTTP/1.1[0m" 404 -

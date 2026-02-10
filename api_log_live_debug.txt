@@ -1,0 +1,50 @@
+DEBUG: API.PY MODULE LOADING...
+Warning: Encryption key issue: Fernet key must be 32 url-safe base64-encoded bytes.
+DEBUG: Initializing Razorpay with Key ID: rzp_test_SDZo4nNk0ZZe23
+ * Serving Flask app 'api'
+ * Debug mode: on
+2026-02-08 16:30:26,950 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.20.10.3:5000
+2026-02-08 16:30:26,950 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-08 16:30:26,952 - INFO -  * Restarting with stat
+DEBUG: API.PY MODULE LOADING...
+Warning: Encryption key issue: Fernet key must be 32 url-safe base64-encoded bytes.
+DEBUG: Initializing Razorpay with Key ID: rzp_test_SDZo4nNk0ZZe23
+2026-02-08 16:30:29,754 - WARNING -  * Debugger is active!
+2026-02-08 16:30:29,758 - INFO -  * Debugger PIN: 900-091-490
+2026-02-08 16:30:40,227 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=id&email=eq.test_qp4aiwce%40example.com "HTTP/2 200 OK"
+2026-02-08 16:30:40,229 - INFO - Verifying Outlook credentials for test_qp4aiwce@example.com
+Skipping Outlook verification for test email: test_qp4aiwce@example.com
+2026-02-08 16:30:41,184 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users "HTTP/2 201 Created"
+2026-02-08 16:30:41,433 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/student_profiles "HTTP/2 201 Created"
+2026-02-08 16:30:41,667 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/subscriptions "HTTP/2 201 Created"
+DEBUG: Email Verification Link: None/verify-email?token=VpZLwLzikAjeluheX6nVBkzYGxwHpLgVgOGfddM1sSI
+2026-02-08 16:30:41,671 - INFO - 127.0.0.1 - - [08/Feb/2026 16:30:41] "[35m[1mPOST /api/auth/register HTTP/1.1[0m" 201 -
+DEBUG: login_user called for test_qp4aiwce@example.com
+DEBUG: Fetching user from Supabase...
+2026-02-08 16:30:41,944 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=%2A%2Cstudent_profiles%28full_name%2Croll_number%29&email=eq.test_qp4aiwce%40example.com "HTTP/2 200 OK"
+DEBUG: User fetched: 26. Verifying password...
+DEBUG: Password valid. getting profile...
+DEBUG: Profile: {'full_name': 'Test User', 'roll_number': 'WOX5pvx'}. Generating token...
+DEBUG: Token generated for test_qp4aiwce@example.com
+2026-02-08 16:30:42,492 - INFO - 127.0.0.1 - - [08/Feb/2026 16:30:42] "POST /api/auth/login HTTP/1.1" 200 -
+2026-02-08 16:30:42,497 - INFO - 127.0.0.1 - - [08/Feb/2026 16:30:42] "GET /api/subscription/plans HTTP/1.1" 200 -
+DEBUG: DB Connection SUCCESS!
+DEBUG: DB Connection established
+DEBUG: Creating Razorpay order with data: {'amount': 5000, 'currency': 'INR', 'payment_capture': 1, 'notes': {'user_id': 26, 'plan_type': 'basic'}}
+DEBUG: Razorpay Order created: {'amount': 5000, 'amount_due': 5000, 'amount_paid': 0, 'attempts': 0, 'created_at': 1770548444, 'currency': 'INR', 'entity': 'order', 'id': 'order_SDcxTwBVUH2Yym', 'notes': {'plan_type': 'basic', 'user_id': 26}, 'offer_id': None, 'receipt': None, 'status': 'created'}
+DEBUG: Inserting payment into DB...
+DEBUG: Payment inserted with ID: 18
+DEBUG: DB Commit successful
+2026-02-08 16:30:45,185 - INFO - 127.0.0.1 - - [08/Feb/2026 16:30:45] "POST /api/subscription/upgrade HTTP/1.1" 200 -
+2026-02-08 16:30:57,458 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\api.py', reloading
+2026-02-08 16:30:57,784 - INFO -  * Restarting with stat
+DEBUG: API.PY MODULE LOADING...
+DEBUG: Loaded DB_HOST: aws-1-ap-northeast-1.pooler.supabase.com
+DEBUG: Loaded RAZORPAY_KEY_ID: rzp_test_SDZo4nNk0ZZe23
+Warning: Encryption key issue: Fernet key must be 32 url-safe base64-encoded bytes.
+DEBUG: Initializing Razorpay with Key ID: rzp_test_SDZo4nNk0ZZe23
+2026-02-08 16:31:00,649 - WARNING -  * Debugger is active!
+2026-02-08 16:31:00,654 - INFO -  * Debugger PIN: 900-091-490

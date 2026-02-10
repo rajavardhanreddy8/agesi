@@ -1,0 +1,5 @@
+<step title="Startup Request" date="2026-02-07T14:56:47.831" instance="9d5f45" url="/dump" method="GET" type="request" pid="769,1,15" SCM_DO_BUILD_DURING_DEPLOYMENT="true" ScmType="None" >
+  <step title="Cleanup Xml Logs" date="2026-02-07T14:56:47.837" >
+    <step title="Cleanup Infos" date="2026-02-07T14:56:47.853" totalFiles="378" totalCleanup="218" /><!-- duration: 6ms -->
+  </step><!-- duration: 26ms -->
+</step><!-- duration: 36ms -->
