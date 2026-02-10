@@ -50,24 +50,19 @@ const Dashboard = () => {
 
     const fetchOutingData = async () => {
         try {
-            const res = await fetch('/outing_data.json?t=' + Date.now());
-            if (res.ok) {
-                const data = await res.json();
-                const parseDate = (dStr) => {
-                    if (!dStr) return '';
-                    const parts = dStr.split('.');
-                    if (parts.length === 3) return `${parts[2]}-${parts[1]}-${parts[0]}`;
-                    return '';
-                };
-
+            // Fetch latest config from backend API (source of truth)
+            const res = await api.get('/config/active-outing');
+            if (res.data.success) {
+                const data = res.data;
                 setOutingData({
-                    startDate: parseDate(data.start_date) || new Date().toISOString().split('T')[0],
-                    endDate: parseDate(data.end_date) || new Date(Date.now() + 172800000).toISOString().split('T')[0],
+                    startDate: data.start_date || new Date().toISOString().split('T')[0],
+                    endDate: data.end_date || new Date(Date.now() + 172800000).toISOString().split('T')[0],
                     formLink: data.form_link || ''
                 });
             }
         } catch (e) {
-            // Fallback
+            console.error("Failed to fetch outing config:", e);
+            // Fallback to defaults
             setOutingData(prev => ({
                 ...prev,
                 startDate: new Date().toISOString().split('T')[0],
