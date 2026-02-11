@@ -410,7 +410,8 @@ class MSFormAutomation:
             logging.error(f"Error type: {type(e).__name__}")
             logging.error(f"Full traceback:", exc_info=True)
             logging.error("=" * 60)
-            return False
+            # Re-raise so api.py can capture the REAL error message
+            raise
             
         finally:
             # Cleanup

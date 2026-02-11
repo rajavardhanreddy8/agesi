@@ -257,9 +257,10 @@ def run_automation_async(task_id, form_url, email, password, form_data, pdf_path
                 except Exception as e:
                     # Don't fail the task if deletion fails
                     logging.error(f"Failed to delete PDF from Azure (non-critical): {e}")
-                
-        else:
-            raise Exception("Automation reported failure")
+        # run_automation now raises an exception with the actual error on failure,
+        # so if we reach here, it was successful.
+        if not success:
+            raise Exception("Automation returned False unexpectedly")
         
     except Exception as e:
         task.status = 'failed'
