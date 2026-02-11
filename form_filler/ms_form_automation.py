@@ -9,8 +9,19 @@ import time
 import random
 import json
 import os
+import logging
 from datetime import datetime
 from pathlib import Path
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('automation.log'),
+        logging.StreamHandler()
+    ]
+)
 
 class MSFormAutomation:
     def __init__(self, headless=False, min_delay=5, max_delay=15):
@@ -394,9 +405,11 @@ class MSFormAutomation:
             return True
             
         except Exception as e:
-            print("\n" + "=" * 60)
-            print(f"❌ AUTOMATION FAILED: {str(e)}")
-            print("=" * 60)
+            logging.error("=" * 60)
+            logging.error(f"❌ AUTOMATION FAILED: {str(e)}")
+            logging.error(f"Error type: {type(e).__name__}")
+            logging.error(f"Full traceback:", exc_info=True)
+            logging.error("=" * 60)
             return False
             
         finally:
