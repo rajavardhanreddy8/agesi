@@ -13,18 +13,18 @@ from datetime import datetime
 from pathlib import Path
 
 class MSFormAutomation:
-    def __init__(self, headless=False, min_delay=180, max_delay=420):
+    def __init__(self, headless=False, min_delay=5, max_delay=15):
         """
         Initialize automation with configurable delays.
-        min_delay: minimum delay in seconds (default 3 minutes = 180s)
-        max_delay: maximum delay in seconds (default 7 minutes = 420s)
+        min_delay: minimum delay in seconds (default 5 seconds)
+        max_delay: maximum delay in seconds (default 15 seconds)
         """
         self.headless = headless
         self.browser = None
         self.context = None
         self.page = None
-        self.min_delay = min_delay  # 3 minutes
-        self.max_delay = max_delay  # 7 minutes
+        self.min_delay = min_delay  
+        self.max_delay = max_delay  
     
     def human_delay(self, action_name="action", short=False):
         """

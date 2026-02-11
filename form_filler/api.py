@@ -474,6 +474,52 @@ def api_reset():
 
 
 # ============================================================================
+# CONFIGURATION ROUTES
+# ============================================================================
+
+@app.route('/api/config/active-outing', methods=['GET'])
+def get_active_outing_config():
+    """
+    Get the latest outing configuration (form link, dates) 
+    from the most recent automated submission.
+    """
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        
+        # Get the very latest submission task to infer current config
+        cur.execute("""
+            SELECT form_url, leave_start_date, leave_end_date 
+            FROM submission_history 
+            WHERE form_url IS NOT NULL 
+            ORDER BY id DESC 
+            LIMIT 1
+        """)
+        latest = cur.fetchone()
+        conn.close()
+        
+        if latest:
+            return jsonify({
+                "success": True,
+                "form_link": latest['form_url'],
+                "start_date": latest['leave_start_date'].strftime('%Y-%m-%d') if latest['leave_start_date'] else None,
+                "end_date": latest['leave_end_date'].strftime('%Y-%m-%d') if latest['leave_end_date'] else None
+            })
+        else:
+            # Return nulls if no history exists yet
+            return jsonify({
+                "success": True,
+                "form_link": "",
+                "start_date": "",
+                "end_date": ""
+            })
+            
+    except Exception as e:
+        logging.error(f"Config fetch failed: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+# ============================================================================
 # PROFILE ROUTES
 # ============================================================================
 

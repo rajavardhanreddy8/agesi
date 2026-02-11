@@ -135,11 +135,16 @@ const Dashboard = () => {
                 // Poll for status
                 let retryCount = 0;
                 let errorCount = 0;
-                const maxRetries = 120; // 2 minutes (assuming 1s interval initially)
+                const maxRetries = 600; // 10-20 minutes depending on speed
 
                 const pollStatus = async () => {
                     if (retryCount >= maxRetries) {
-                        setSubmission(prev => ({ ...prev, loading: false, status: 'failed', message: '❌ Operation timed out. Please check history later.' }));
+                        setSubmission(prev => ({
+                            ...prev,
+                            loading: false,
+                            status: 'failed',
+                            message: '❌ Submission is taking longer than usual. Please check the History tab in a few minutes to see if it completed.'
+                        }));
                         return;
                     }
                     retryCount++;
