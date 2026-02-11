@@ -474,52 +474,6 @@ def api_reset():
 
 
 # ============================================================================
-# CONFIGURATION ROUTES
-# ============================================================================
-
-@app.route('/api/config/active-outing', methods=['GET'])
-def get_active_outing_config():
-    """
-    Get the latest outing configuration (form link, dates) 
-    from the most recent automated submission.
-    """
-    try:
-        conn = get_db_connection()
-        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        
-        # Get the very latest submission task to infer current config
-        cur.execute("""
-            SELECT form_url, leave_start_date, leave_end_date 
-            FROM submission_history 
-            WHERE form_url IS NOT NULL 
-            ORDER BY id DESC 
-            LIMIT 1
-        """)
-        latest = cur.fetchone()
-        conn.close()
-        
-        if latest:
-            return jsonify({
-                "success": True,
-                "form_link": latest['form_url'],
-                "start_date": latest['leave_start_date'].strftime('%Y-%m-%d') if latest['leave_start_date'] else None,
-                "end_date": latest['leave_end_date'].strftime('%Y-%m-%d') if latest['leave_end_date'] else None
-            })
-        else:
-            # Return nulls if no history exists yet
-            return jsonify({
-                "success": True,
-                "form_link": "",
-                "start_date": "",
-                "end_date": ""
-            })
-            
-    except Exception as e:
-        logging.error(f"Config fetch failed: {e}")
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-
-# ============================================================================
 # PROFILE ROUTES
 # ============================================================================
 
@@ -571,29 +525,17 @@ def update_profile():
         # Handle Signature separately
         if 'signature_data' in data and data['signature_data']:
             try:
-                import base64
-                import uuid
-                
-                sig_data = data['signature_data']
-                if ',' in sig_data:
-                    sig_data = sig_data.split(',')[1]
-                
-                sig_dir = 'signatures'
-                os.makedirs(sig_dir, exist_ok=True)
-                
-                filename = f"sig_{request.user_id}_{uuid.uuid4().hex[:8]}.png"
-                filepath = os.path.join(sig_dir, filename)
-                
-                with open(filepath, "wb") as fh:
-                    fh.write(base64.b64decode(sig_data))
-                
-                # Store relative path
+                from azure_storage_helper import upload_signature_to_azure
+                sig_url = upload_signature_to_azure(data['signature_data'], request.user_id)
                 updates.append("signature_data = %s")
-                values.append(f"signatures/{filename}")
-                logging.info(f"Saved signature for user {request.user_id} at {filepath}")
+                values.append(sig_url)
+                logging.info(f"Signature uploaded to Azure for user {request.user_id}: {sig_url}")
             except Exception as e:
-                logging.error(f"Failed to save signature: {e}")
-                pass
+                logging.error(f"Failed to upload signature to Azure: {e}")
+                # Fallback: store base64 directly in DB
+                updates.append("signature_data = %s")
+                values.append(data['signature_data'])
+                logging.info(f"Fallback: stored signature base64 in DB for user {request.user_id}")
 
         if updates:
             values.append(request.user_id)
@@ -766,6 +708,12 @@ def create_outing_pdf(profile, start_date, end_date, reason):
                     header, encoded = sig_data.split(',', 1)
                     sig_bytes = base64.b64decode(encoded)
                     sig_image = ImageReader(io.BytesIO(sig_bytes))
+                    c.drawImage(sig_image, 70, y - 60, width=100, height=50, preserveAspectRatio=True)
+                elif sig_data.startswith('http://') or sig_data.startswith('https://'):
+                    # Azure Blob Storage URL — download and embed
+                    import urllib.request
+                    sig_response = urllib.request.urlopen(sig_data)
+                    sig_image = ImageReader(io.BytesIO(sig_response.read()))
                     c.drawImage(sig_image, 70, y - 60, width=100, height=50, preserveAspectRatio=True)
                 else:
                     # Assume it's a file path (relative to api.py or absolute)

@@ -159,3 +159,50 @@ def delete_from_azure_blob(blob_name):
     """Delete PDF from Azure Blob Storage"""
     client = get_azure_client()
     return client.delete_blob(blob_name)
+
+def upload_signature_to_azure(image_base64, user_id):
+    """
+    Upload a signature image (base64) to Azure Blob Storage.
+    Returns the permanent public URL.
+    """
+    import base64
+    import uuid
+    
+    client = get_azure_client()
+    
+    # Strip data URI prefix if present
+    raw_b64 = image_base64
+    content_type = 'image/png'
+    if ',' in raw_b64:
+        header, raw_b64 = raw_b64.split(',', 1)
+        if 'jpeg' in header or 'jpg' in header:
+            content_type = 'image/jpeg'
+    
+    image_bytes = base64.b64decode(raw_b64)
+    
+    # Ensure signatures container exists
+    sig_container = 'signatures'
+    try:
+        container_client = client.blob_service_client.get_container_client(sig_container)
+        if not container_client.exists():
+            container_client.create_container(public_access='blob')
+            logging.info(f"Created public Azure container: {sig_container}")
+    except Exception as e:
+        logging.warning(f"Signature container check: {e}")
+    
+    # Upload with unique name
+    ext = 'jpg' if 'jpeg' in content_type else 'png'
+    blob_name = f"sig_{user_id}_{uuid.uuid4().hex[:8]}.{ext}"
+    blob_client = client.blob_service_client.get_blob_client(
+        container=sig_container,
+        blob=blob_name
+    )
+    blob_client.upload_blob(image_bytes, overwrite=True, content_type=content_type)
+    
+    # Build permanent public URL (no SAS needed for public container)
+    conn_parts = dict(item.split('=', 1) for item in client.connection_string.split(';') if '=' in item)
+    account_name = conn_parts.get('AccountName')
+    public_url = f"https://{account_name}.blob.core.windows.net/{sig_container}/{blob_name}"
+    
+    logging.info(f"Uploaded signature to Azure: {public_url}")
+    return public_url
