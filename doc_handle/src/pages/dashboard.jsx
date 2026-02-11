@@ -133,10 +133,20 @@ const Dashboard = () => {
                 setSubmission(prev => ({ ...prev, taskId: res.data.task_id, status: 'pending', message: 'Task queued...' }));
 
                 // Poll for status
+                let retryCount = 0;
+                let errorCount = 0;
+                const maxRetries = 120; // 2 minutes (assuming 1s interval initially)
+
                 const pollStatus = async () => {
+                    if (retryCount >= maxRetries) {
+                        setSubmission(prev => ({ ...prev, loading: false, status: 'failed', message: '❌ Operation timed out. Please check history later.' }));
+                        return;
+                    }
+                    retryCount++;
+
                     try {
                         const statusRes = await api.get(`/task-status/${res.data.task_id}`);
-                        const task = statusRes.data;
+                        const task = statusRes.data.task || statusRes.data; // Handle both formats if needed
 
                         setSubmission(prev => ({
                             ...prev,
@@ -164,7 +174,12 @@ const Dashboard = () => {
                         }
                     } catch (e) {
                         console.error('Status poll error:', e);
-                        setTimeout(pollStatus, 3000);
+                        errorCount++;
+                        if (errorCount > 5) {
+                            setSubmission(prev => ({ ...prev, loading: false, status: 'failed', message: '❌ Connection lost. Please check history.' }));
+                        } else {
+                            setTimeout(pollStatus, 3000);
+                        }
                     }
                 };
 
