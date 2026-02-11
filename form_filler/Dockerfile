@@ -29,9 +29,10 @@ RUN pip install --no-cache-dir Pillow
 # Chunk 3: Ensure everything from requirements is covered (will be fast if satisfied)
 RUN pip install --no-cache-dir -r requirements.txt
 
-# (Browsers are already pre-installed in this image)
-# Reduced size: Commenting out install-deps as base image is likely sufficient
-# RUN playwright install-deps chromium
+# Install Playwright browsers (CRITICAL for form automation)
+# The base image has Playwright, but we need to ensure Chromium is installed
+RUN playwright install chromium
+RUN playwright install-deps chromium
 
 # Copy the rest of the application
 COPY . .
