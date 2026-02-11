@@ -25,7 +25,7 @@ logging.basicConfig(
 
 class MSFormAutomation:
     # Path to persist login session across runs
-    STORAGE_STATE_FILE = '/app/browser_state.json'
+    STORAGE_STATE_FILE = 'browser_state.json'
     
     def __init__(self, headless=False, min_delay=5, max_delay=15):
         """
@@ -383,10 +383,22 @@ class MSFormAutomation:
             self.page.screenshot(path=f'error_submit_{datetime.now().strftime("%Y%m%d_%H%M%S")}.png')
             raise
     
-    def run_automation(self, form_url, email, password, form_data, pdf_path):
+    def run_automation(self, form_url, email, password, form_data, pdf_path, status_callback=None):
         """
-        Complete automation workflow with human-like delays
+        Complete automation workflow.
+        status_callback: function(message, progress, screenshot_bytes)
         """
+        def update_status(msg, prog):
+            print(f"[{prog}%] {msg}")
+            if status_callback:
+                try:
+                    # Capture screenshot for "Live View"
+                    screenshot = self.page.screenshot(type='jpeg', quality=50)
+                    status_callback(msg, prog, screenshot)
+                except Exception as e:
+                    logging.warning(f"Failed to capture screenshot: {e}")
+                    status_callback(msg, prog, None)
+
         try:
             print("=" * 60)
             print("🤖 STARTING MICROSOFT FORMS AUTOMATION")
@@ -394,50 +406,34 @@ class MSFormAutomation:
             print(f"⏱️  Human-like delays: {self.min_delay//60}-{self.max_delay//60} minutes between steps")
             
             # Step 1: Start browser
+            update_status("Starting browser session...", 10)
             self.start_browser()
             
-            # Step 2: Navigate to form (with initial delay to simulate reading email)
-            self.human_delay("opening form link")
-            print(f"\n📍 Navigating to form: {form_url}")
+            # Step 2: Navigate to form URL
+            update_status(f"Navigating to form: {form_url}", 20)
             self.page.goto(form_url)
             time.sleep(3)
             
             # Step 3: Handle Microsoft login
-            print("\n🔐 AUTHENTICATION PHASE")
-            print("-" * 60)
+            update_status("Authenticating with Microsoft...", 40)
             self.microsoft_login(email, password)
             
-            # Delay after login - simulating user reviewing the form
-            self.human_delay("reviewing form")
-            
             # Step 4: Fill form
-            print("\n📝 FORM FILLING PHASE")
-            print("-" * 60)
+            update_status("Filling form data...", 60)
             self.fill_form(form_data)
             
-            # Delay after filling - simulating user reviewing entries
-            self.human_delay("reviewing filled data")
-            
             # Step 5: Upload PDF
-            print("\n📤 PDF UPLOAD PHASE")
-            print("-" * 60)
+            update_status("Uploading signed PDF...", 80)
             self.upload_pdf(pdf_path)
             
-            # Delay after upload - simulating user waiting for upload confirmation
-            self.human_delay("confirming upload", short=True)  # Shorter delay for this
-            
             # Step 6: Submit
-            print("\n🚀 SUBMISSION PHASE")
-            print("-" * 60)
+            update_status("Finalizing submission...", 95)
             self.submit_form()
             
-            print("\n" + "=" * 60)
-            print("✅ AUTOMATION COMPLETED SUCCESSFULLY!")
-            print("=" * 60)
+            update_status("Completed successfully!", 100)
             
-            # Keep browser open for 5 seconds to verify
+            # Keep browser open for a bit
             time.sleep(5)
-            
             return True
             
         except Exception as e:

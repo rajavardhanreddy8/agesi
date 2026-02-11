@@ -213,16 +213,36 @@ def run_automation_async(task_id, form_url, email, password, form_data, pdf_path
         except Exception as e:
             logging.error(f"Failed to update DB status: {e}")
         
-        # Headless=True REQUIRED for Azure/Docker deployment (no UI available)
-        automation = MSFormAutomation(headless=True) 
-        
+        def status_callback(msg, prog, screenshot_bytes):
+            task.message = msg
+            task.progress = prog
+            if screenshot_bytes:
+                # Save screenshot to task for "Live View"
+                # Store it as base64 for simplicity in this demo, or write to tmp file
+                import base64
+                task.screenshot_path = f"data:image/jpeg;base64,{base64.b64encode(screenshot_bytes).decode('utf-8')}"
+            
+            # Update DB status message
+            try:
+                conn_inner = get_db_connection()
+                cur_inner = conn_inner.cursor()
+                cur_inner.execute(
+                    "UPDATE submission_history SET status_message = %s WHERE task_id = %s",
+                    (msg, task_id)
+                )
+                conn_inner.commit()
+                conn_inner.close()
+            except:
+                pass
+
         # Run the full workflow
         success = automation.run_automation(
             form_url=form_url,
             email=email,
             password=password,
             form_data=form_data,
-            pdf_path=pdf_path
+            pdf_path=pdf_path,
+            status_callback=status_callback
         )
         
         if success:
@@ -997,6 +1017,38 @@ def submit_form():
         return jsonify({'success': False, 'error': str(e)}), 500
     finally:
         if conn: conn.close()
+
+@app.route('/api/live-view/<task_id>')
+def task_live_view(task_id):
+    """Return an HTML page that shows the latest screenshot for a task"""
+    task = automation_tasks.get(task_id)
+    if not task:
+        return "Task not found", 404
+        
+    html = f"""
+    <html>
+        <head>
+            <title>Live Automation View</title>
+            <meta http-equiv="refresh" content="3">
+            <style>
+                body {{ background: #1a1a1a; color: white; font-family: sans-serif; text-align: center; margin: 0; padding: 10px; }}
+                .container {{ max-width: 1000px; margin: auto; }}
+                img {{ width: 100%; border-radius: 8px; border: 2px solid #444; }}
+                .status {{ margin: 10px 0; font-size: 1.2rem; }}
+                .progress-bar {{ background: #333; height: 10px; border-radius: 5px; overflow: hidden; margin: 10px 0; }}
+                .progress-fill {{ background: #00ff00; height: 100%; width: {task.progress}%; transition: width 0.3s; }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="status">🤖 <b>Status:</b> {task.message}</div>
+                <div class="progress-bar"><div class="progress-fill"></div></div>
+                {f'<img src="{task.screenshot_path}">' if task.screenshot_path else '<p>Waiting for first screenshot...</p>'}
+            </div>
+        </body>
+    </html>
+    """
+    return html
 
 @app.route('/api/task-status/<task_id>', methods=['GET'])
 @login_required # Optional: restrict to task owner?

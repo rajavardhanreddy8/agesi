@@ -448,6 +448,24 @@ const Dashboard = () => {
                                     </div>
                                 )}
                                 {submission.message}
+
+                                {/* Live View Iframe */}
+                                {(submission.status === 'running' || submission.status === 'pending') && submission.taskId && (
+                                    <div style={{ marginTop: '15px' }}>
+                                        <div style={{ fontSize: '0.7rem', color: theme.textMuted, marginBottom: '5px' }}>LIVE AUTOMATION MONITOR:</div>
+                                        <iframe
+                                            src={`https://outing-backend-api.azurewebsites.net/api/live-view/${submission.taskId}`}
+                                            style={{
+                                                width: '100%',
+                                                height: '250px',
+                                                border: '1px solid #334155',
+                                                borderRadius: '8px',
+                                                background: '#000'
+                                            }}
+                                            title="Live View"
+                                        />
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>
