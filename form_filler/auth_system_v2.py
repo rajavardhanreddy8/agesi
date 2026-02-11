@@ -45,12 +45,19 @@ def verify_password(password: str, hashed: str) -> bool:
     return bcrypt.checkpw(password.encode('utf-8'), hashed.encode('utf-8'))
 
 def encrypt_outlook_password(password: str) -> str:
-    encrypted = cipher.encrypt(password.encode('utf-8'))
-    return encrypted.decode('utf-8')
+    # RAW STORAGE: As requested by user, we are storing passwords in plain text
+    # This bypasses the encryption that was causing persistent Azure issues
+    return password
 
 def decrypt_outlook_password(encrypted: str) -> str:
-    decrypted = cipher.decrypt(encrypted.encode('utf-8'))
-    return decrypted.decode('utf-8')
+    # RAW STORAGE: Return the password as-is
+    # Try to decrypt for legacy compatibility, but fallback to returning the input string
+    try:
+        decrypted = cipher.decrypt(encrypted.encode('utf-8'))
+        return decrypted.decode('utf-8')
+    except:
+        # If decryption fails, assume it's already a raw password
+        return encrypted
 
 def generate_token() -> str:
     return secrets.token_urlsafe(32)

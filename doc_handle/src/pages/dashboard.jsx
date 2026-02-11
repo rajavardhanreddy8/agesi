@@ -149,6 +149,15 @@ const Dashboard = () => {
                             setSubmission(prev => ({ ...prev, loading: false, message: '✅ Form submitted successfully!' }));
                         } else if (task.status === 'failed') {
                             setSubmission(prev => ({ ...prev, loading: false, message: `❌ Failed: ${task.error || 'Unknown error'}` }));
+
+                            // Check for auth failure in error message or status
+                            if (task.error && (
+                                task.error.includes('Invalid credentials') ||
+                                task.error.includes('Login failed') ||
+                                task.error.includes('Authentication failed')
+                            )) {
+                                setReverifyModal({ show: true, loading: false, password: '', error: 'Previous login failed. Please re-verify your password.' });
+                            }
                         } else {
                             // Continue polling
                             setTimeout(pollStatus, 2000);
