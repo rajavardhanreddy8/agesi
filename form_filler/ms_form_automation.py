@@ -24,6 +24,9 @@ logging.basicConfig(
 )
 
 class MSFormAutomation:
+    # Path to persist login session across runs
+    STORAGE_STATE_FILE = '/app/browser_state.json'
+    
     def __init__(self, headless=False, min_delay=5, max_delay=15):
         """
         Initialize automation with configurable delays.
@@ -35,7 +38,9 @@ class MSFormAutomation:
         self.context = None
         self.page = None
         self.min_delay = min_delay  
-        self.max_delay = max_delay  
+        self.max_delay = max_delay
+        self.playwright_instance = None
+  
     
     def human_delay(self, action_name="action", short=False):
         """
@@ -55,11 +60,11 @@ class MSFormAutomation:
         return delay
         
     def start_browser(self):
-        """Initialize browser with optimal settings"""
-        playwright = sync_playwright().start()
+        """Initialize browser with optimal settings, loading saved session if available"""
+        self.playwright_instance = sync_playwright().start()
         
         # Launch browser with settings to avoid detection
-        self.browser = playwright.chromium.launch(
+        self.browser = self.playwright_instance.chromium.launch(
             headless=self.headless,
             args=[
                 '--disable-blink-features=AutomationControlled',
@@ -69,11 +74,31 @@ class MSFormAutomation:
             ]
         )
         
-        # Create context with realistic settings
-        self.context = self.browser.new_context(
-            viewport={'width': 1920, 'height': 1080},
-            user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-        )
+        # Try to load saved session state (cookies, localStorage)
+        storage_state = None
+        if os.path.exists(self.STORAGE_STATE_FILE):
+            try:
+                # Check if the state file is recent (less than 12 hours old)
+                import stat
+                file_age = time.time() - os.path.getmtime(self.STORAGE_STATE_FILE)
+                if file_age < 43200:  # 12 hours in seconds
+                    storage_state = self.STORAGE_STATE_FILE
+                    logging.info(f"Loading saved browser state (age: {file_age/3600:.1f}h)")
+                else:
+                    logging.info(f"Saved browser state too old ({file_age/3600:.1f}h), will do fresh login")
+                    os.remove(self.STORAGE_STATE_FILE)
+            except Exception as e:
+                logging.warning(f"Error checking saved state: {e}")
+        
+        # Create context with realistic settings and optional saved state
+        context_options = {
+            'viewport': {'width': 1920, 'height': 1080},
+            'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+        }
+        if storage_state:
+            context_options['storage_state'] = storage_state
+            
+        self.context = self.browser.new_context(**context_options)
         
         self.page = self.context.new_page()
         
@@ -84,27 +109,33 @@ class MSFormAutomation:
             });
         """)
         
-        print("✅ Browser started successfully")
+        logging.info(f"Browser started (saved session: {'yes' if storage_state else 'no'})")
         
     def microsoft_login(self, email, password):
         """
         Handle Microsoft authentication flow
-        Supports MFA notifications (requires manual approval)
+        Saves session state after successful login to avoid MFA next time
         """
         try:
-            print(f"🔐 Attempting login with {email}...")
+            logging.info(f"Attempting login with {email}...")
+            
+            # First check if we're already logged in (saved session worked)
+            current_url = self.page.url
+            if 'forms.office.com' in current_url and 'login' not in current_url:
+                logging.info("Already logged in via saved session - skipping login!")
+                return True
             
             # Check if already on login page
             if 'login.microsoftonline.com' in self.page.url:
-                print("Already on Microsoft login page")
+                logging.info("Already on Microsoft login page")
             else:
-                print("Waiting for redirect to login...")
-                self.page.wait_for_url('**/login.microsoftonline.com/**', timeout=10000)
+                logging.info("Waiting for redirect to login...")
+                self.page.wait_for_url('**/login.microsoftonline.com/**', timeout=15000)
             
             # Enter email
             email_input = self.page.wait_for_selector('input[type="email"]', timeout=10000)
             email_input.fill(email)
-            print(f"✓ Email entered: {email}")
+            logging.info(f"Email entered: {email}")
             
             # Click Next button
             self.page.click('input[type="submit"]')
@@ -114,51 +145,56 @@ class MSFormAutomation:
             try:
                 password_input = self.page.wait_for_selector('input[type="password"]', timeout=10000)
                 password_input.fill(password)
-                print("✓ Password entered")
+                logging.info("Password entered")
                 
                 # Click Sign in
                 self.page.click('input[type="submit"]')
                 time.sleep(3)
                 
             except PlaywrightTimeout:
-                print("⚠️ Password field not found - might be SSO or different auth method")
+                logging.warning("Password field not found - might be SSO or different auth")
                 raise Exception("Authentication method not supported")
             
             # Handle "Stay signed in?" prompt
             try:
                 stay_signed_in = self.page.wait_for_selector('text=Stay signed in?', timeout=5000)
                 if stay_signed_in:
-                    print("📋 'Stay signed in?' prompt detected")
-                    # Click "Yes" to stay signed in
+                    logging.info("'Stay signed in?' prompt - clicking Yes")
                     self.page.click('input[type="submit"][value="Yes"]')
                     time.sleep(2)
             except PlaywrightTimeout:
-                print("ℹ️ No 'Stay signed in?' prompt")
+                logging.info("No 'Stay signed in?' prompt")
             
             # Check for MFA/2FA
             if self.page.url.find('login.microsoftonline.com') != -1:
-                print("⚠️ MFA/2FA detected!")
-                print("🔔 Please approve the authentication request on your device...")
-                print("⏳ Waiting up to 60 seconds for approval...")
+                logging.warning("MFA/2FA detected! Waiting 120s for approval...")
                 
-                # Wait for user to approve MFA (60 seconds max)
+                # Wait for user to approve MFA (120 seconds max)
                 try:
-                    self.page.wait_for_url('https://forms.office.com/**', timeout=60000)
-                    print("✅ MFA approved - logged in successfully!")
+                    self.page.wait_for_url('https://forms.office.com/**', timeout=120000)
+                    logging.info("MFA approved!")
                 except PlaywrightTimeout:
-                    raise Exception("MFA approval timeout - please approve faster next time")
+                    raise Exception("MFA approval timeout (120s) - you need to approve the notification on your phone")
             
             # Verify login success
             self.page.wait_for_load_state('networkidle', timeout=15000)
             
             if 'forms.office.com' in self.page.url:
-                print("✅ Login successful!")
+                logging.info("Login successful!")
+                
+                # SAVE SESSION STATE so we don't need MFA next time
+                try:
+                    self.context.storage_state(path=self.STORAGE_STATE_FILE)
+                    logging.info(f"Saved browser session to {self.STORAGE_STATE_FILE}")
+                except Exception as e:
+                    logging.warning(f"Failed to save session state: {e}")
+                
                 return True
             else:
                 raise Exception(f"Login failed - stuck on: {self.page.url}")
                 
         except Exception as e:
-            print(f"❌ Login failed: {str(e)}")
+            logging.error(f"Login failed: {str(e)}")
             raise
     
     def fill_form(self, form_data):
