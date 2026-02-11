@@ -22,6 +22,12 @@ const Dashboard = () => {
         message: '',
         progress: 0
     });
+    const [reverifyModal, setReverifyModal] = useState({
+        show: false,
+        loading: false,
+        password: '',
+        error: ''
+    });
 
     // Helper to get pure base URL (no /api suffix)
     const getBaseUrl = () => {
@@ -159,6 +165,14 @@ const Dashboard = () => {
             }
         } catch (error) {
             console.error('Submit error:', error);
+
+            // Check if it's a credential reverify error
+            if (error.response?.data?.error_code === 'CREDENTIAL_REVERIFY_NEEDED') {
+                setSubmission({ loading: false, taskId: null, status: null, message: '', progress: 0 });
+                setReverifyModal({ show: true, loading: false, password: '', error: '' });
+                return;
+            }
+
             setSubmission({
                 loading: false,
                 taskId: null,
@@ -166,6 +180,39 @@ const Dashboard = () => {
                 message: error.response?.data?.error || 'Connection failed',
                 progress: 0
             });
+        }
+    };
+
+    // Handle credential reverification
+    const handleReverifyCredentials = async () => {
+        if (!reverifyModal.password) {
+            setReverifyModal(prev => ({ ...prev, error: 'Please enter your Outlook password' }));
+            return;
+        }
+
+        setReverifyModal(prev => ({ ...prev, loading: true, error: '' }));
+
+        try {
+            const res = await api.post('/auth/reverify-credentials', {
+                outlook_password: reverifyModal.password
+            });
+
+            if (res.data.success) {
+                // Success! Close modal and retry submission
+                setReverifyModal({ show: false, loading: false, password: '', error: '' });
+
+                // Retry the form submission
+                handleSubmitForm();
+            } else {
+                setReverifyModal(prev => ({ ...prev, loading: false, error: res.data.error || 'Verification failed' }));
+            }
+        } catch (error) {
+            console.error('Reverify error:', error);
+            setReverifyModal(prev => ({
+                ...prev,
+                loading: false,
+                error: error.response?.data?.error || 'Verification failed. Please check your password.'
+            }));
         }
     };
 
@@ -418,6 +465,101 @@ const Dashboard = () => {
                     </div>
                 </div>
             </main>
+
+            {/* Credential Reverify Modal */}
+            {reverifyModal.show && (
+                <div style={{
+                    position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+                    background: 'rgba(0, 0, 0, 0.7)', backdropFilter: 'blur(10px)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    zIndex: 1000, padding: '1rem'
+                }}>
+                    <div style={{
+                        background: theme.card, borderRadius: '20px', border: theme.cardBorder,
+                        padding: '2rem', maxWidth: '450px', width: '100%',
+                        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8)'
+                    }}>
+                        <div style={{ marginBottom: '1.5rem' }}>
+                            <AlertCircle size={48} style={{ color: '#f59e0b', marginBottom: '1rem' }} />
+                            <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
+                                Re-verify Your Credentials
+                            </h3>
+                            <p style={{ color: theme.textMuted, fontSize: '0.9rem' }}>
+                                For security reasons, please re-enter your Outlook password to continue.
+                                This will securely update your encrypted credentials.
+                            </p>
+                        </div>
+
+                        <div style={{ marginBottom: '1rem' }}>
+                            <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '600', marginBottom: '0.5rem' }}>
+                                Outlook Password
+                            </label>
+                            <input
+                                type="password"
+                                value={reverifyModal.password}
+                                onChange={(e) => setReverifyModal(prev => ({ ...prev, password: e.target.value, error: '' }))}
+                                onKeyPress={(e) => e.key === 'Enter' && handleReverifyCredentials()}
+                                placeholder="Enter your Outlook password"
+                                disabled={reverifyModal.loading}
+                                style={{
+                                    width: '100%', padding: '0.75rem 1rem', borderRadius: '12px',
+                                    border: `1px solid ${reverifyModal.error ? '#ef4444' : 'rgba(255,255,255,0.1)'}`,
+                                    background: 'rgba(15, 23, 42, 0.5)', color: theme.text,
+                                    fontSize: '1rem', outline: 'none',
+                                    transition: 'all 0.2s'
+                                }}
+                            />
+                            {reverifyModal.error && (
+                                <p style={{ color: '#ef4444', fontSize: '0.875rem', marginTop: '0.5rem' }}>
+                                    {reverifyModal.error}
+                                </p>
+                            )}
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '1rem' }}>
+                            <button
+                                onClick={() => setReverifyModal({ show: false, loading: false, password: '', error: '' })}
+                                disabled={reverifyModal.loading}
+                                style={{
+                                    flex: 1, padding: '0.75rem 1.5rem', borderRadius: '12px',
+                                    border: '1px solid rgba(255,255,255,0.1)', background: 'transparent',
+                                    color: theme.text, fontSize: '1rem', fontWeight: '600',
+                                    cursor: reverifyModal.loading ? 'not-allowed' : 'pointer',
+                                    opacity: reverifyModal.loading ? 0.5 : 1,
+                                    transition: 'all 0.2s'
+                                }}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleReverifyCredentials}
+                                disabled={reverifyModal.loading}
+                                style={{
+                                    flex: 1, padding: '0.75rem 1.5rem', borderRadius: '12px',
+                                    border: 'none', background: theme.primary,
+                                    color: 'white', fontSize: '1rem', fontWeight: '600',
+                                    cursor: reverifyModal.loading ? 'not-allowed' : 'pointer',
+                                    opacity: reverifyModal.loading ? 0.7 : 1,
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    gap: '0.5rem', transition: 'all 0.2s'
+                                }}
+                            >
+                                {reverifyModal.loading ? (
+                                    <>
+                                        <Loader size={16} style={{ animation: 'spin 1s linear infinite' }} />
+                                        Verifying...
+                                    </>
+                                ) : (
+                                    <>
+                                        <CheckCircle size={16} />
+                                        Verify
+                                    </>
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

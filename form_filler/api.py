@@ -120,22 +120,6 @@ allow_origins = [
     "http://localhost:3000"
 ]
 CORS(app, resources={r"/*": {"origins": allow_origins}}, supports_credentials=True)
-
-@app.route('/')
-def home():
-    return jsonify({
-        "service": "Outing Automation Backend",
-        "status": "online",
-        "timestamp": datetime.now().isoformat(),
-        "health_check": "/health"
-    })
-
-@app.route('/health')
-def health_check_endpoint():
-    return jsonify({
-        "status": "healthy",
-        "timestamp": datetime.now().isoformat()
-    }), 200
 app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY', 'your-secret-key')
 
 # Configure logging
@@ -154,48 +138,6 @@ import queue
 
 # Global Automation Queue for Scalability
 automation_queue = queue.Queue()
-
-@app.route('/api/config/active-outing', methods=['GET'])
-def get_active_outing_config():
-    """
-    Get the latest outing configuration (form link, dates) 
-    from the most recent automated submission.
-    """
-    try:
-        conn = get_db_connection()
-        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        
-        # Get the very latest submission task to infer current config
-        cur.execute("""
-            SELECT form_url, leave_start_date, leave_end_date 
-            FROM submission_history 
-            WHERE form_url IS NOT NULL 
-            ORDER BY id DESC 
-            LIMIT 1
-        """)
-        latest = cur.fetchone()
-        conn.close()
-        
-        if latest:
-            return jsonify({
-                "success": True,
-                "form_link": latest['form_url'],
-                "start_date": latest['leave_start_date'].strftime('%Y-%m-%d') if latest['leave_start_date'] else None,
-                "end_date": latest['leave_end_date'].strftime('%Y-%m-%d') if latest['leave_end_date'] else None
-            })
-        else:
-            # Return nulls if no history exists yet
-            return jsonify({
-                "success": True,
-                "form_link": "",
-                "start_date": "",
-                "end_date": ""
-            })
-            
-    except Exception as e:
-        logging.error(f"Config fetch failed: {e}")
-        return jsonify({'success': False, 'error': str(e)}), 500
-
 
 def automation_worker():
     while True:
@@ -629,6 +571,58 @@ def update_profile():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
+@app.route('/api/auth/reverify-credentials', methods=['POST'])
+@login_required
+def reverify_credentials():
+    """
+    Re-verify and re-encrypt Outlook credentials when decryption fails.
+    Used for graceful recovery from encryption key changes.
+    """
+    try:
+        data = request.json
+        outlook_password = data.get('outlook_password')
+        
+        if not outlook_password:
+            return jsonify({'success': False, 'error': 'Password is required'}), 400
+        
+        # Get user email
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        cur.execute("SELECT email FROM users WHERE id = %s", (request.user_id,))
+        user = cur.fetchone()
+        
+        if not user:
+            return jsonify({'success': False, 'error': 'User not found'}), 404
+        
+        # Verify credentials with Microsoft
+        logging.info(f"Re-verifying Outlook credentials for {user['email']}")
+        is_valid, error_msg = verify_outlook_credentials(user['email'], outlook_password)
+        
+        if not is_valid:
+            return jsonify({
+                'success': False, 
+                'error': error_msg or 'Invalid Outlook credentials'
+            }), 401
+        
+        # Re-encrypt with new stable key
+        new_encrypted = encrypt_outlook_password(outlook_password)
+        cur.execute(
+            "UPDATE users SET outlook_password_encrypted = %s WHERE id = %s",
+            (new_encrypted, request.user_id)
+        )
+        conn.commit()
+        conn.close()
+        
+        logging.info(f"Successfully re-encrypted credentials for user {request.user_id}")
+        return jsonify({
+            'success': True, 
+            'message': 'Credentials verified and updated successfully'
+        }), 200
+        
+    except Exception as e:
+        logging.error(f"Reverify credentials error: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 @app.route('/signatures/<path:filename>')
 def serve_signature(filename):
     from flask import send_from_directory
@@ -840,7 +834,12 @@ def submit_form():
         try:
             outlook_password = decrypt_outlook_password(user_auth['outlook_password_encrypted'])
         except Exception as e:
-            return jsonify({'success': False, 'error': 'Failed to decrypt credentials. Please update your password.'}), 400
+            logging.warning(f"Decryption failed for user {request.user_id}: {e}")
+            return jsonify({
+                'success': False, 
+                'error': 'Failed to decrypt credentials. Please re-verify your password.',
+                'error_code': 'CREDENTIAL_REVERIFY_NEEDED'
+            }), 400
         
         # 3. Generate PDF with provided dates and reason
         logging.info(f"Generating PDF for user {request.user_id} with dates {leave_start_date} to {leave_end_date}")
