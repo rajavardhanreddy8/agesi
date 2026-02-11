@@ -18,14 +18,16 @@ class AzureBlobClient:
         self.container_name = os.getenv('AZURE_STORAGE_CONTAINER', 'outing-submissions')
         
         if not self.connection_string:
-            raise ValueError("AZURE_STORAGE_CONNECTION_STRING not set in environment")
+            logging.warning("AZURE_STORAGE_CONNECTION_STRING not set - Azure Blob features disabled")
+            self.blob_service_client = None
+            return
         
         try:
             self.blob_service_client = BlobServiceClient.from_connection_string(self.connection_string)
             self._ensure_container_exists()
         except Exception as e:
             logging.error(f"Failed to initialize Azure Blob client: {e}")
-            raise
+            self.blob_service_client = None
     
     def _ensure_container_exists(self):
         """Create container if it doesn't exist"""
@@ -48,6 +50,9 @@ class AzureBlobClient:
         Returns:
             dict: {'blob_name': str, 'public_url': str}
         """
+        if not self.blob_service_client:
+            raise ValueError("Azure Blob Storage not initialized")
+        
         try:
             blob_name = f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_{filename}"
             blob_client = self.blob_service_client.get_blob_client(
@@ -169,6 +174,9 @@ def upload_signature_to_azure(image_base64, user_id):
     import uuid
     
     client = get_azure_client()
+    
+    if not client.blob_service_client:
+        raise ValueError("Azure Blob Storage not initialized - check AZURE_STORAGE_CONNECTION_STRING")
     
     # Strip data URI prefix if present
     raw_b64 = image_base64
