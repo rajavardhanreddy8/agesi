@@ -952,7 +952,8 @@ def submit_form():
             'programme': profile['programme'],
             'specialization': profile['specialization'],
             'student_phone': profile['student_phone'],
-            'student_email': profile['student_email'] or user_auth['email'],
+            # CHANGED: Do NOT fallback to admin email. Use student email or empty string.
+            'student_email': profile['student_email'] or '',
             'parent_name': profile['parent1_name'],
             'parent_phone': profile['parent1_phone'],
             'parent_email': profile['parent1_email'],
