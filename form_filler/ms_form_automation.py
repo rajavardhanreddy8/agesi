@@ -311,11 +311,54 @@ class MSFormAutomation:
             print(f"❌ Form filling error: {str(e)}")
             raise
 
-    def submit_form(self):
+    def get_filled_values(self):
+        """Scrape the current state of the form for verification"""
+        print("🔍 Scraping form for verification...")
+        data = {}
+        try:
+            # Get all text inputs
+            inputs = self.page.locator('input[type="text"], input[type="email"], input[type="tel"], textarea')
+            count = inputs.count()
+            for i in range(count):
+                inp = inputs.nth(i)
+                # Try to get label
+                # This is tricky in MS Forms. We might just get values.
+                # Or better: get the whole page text?
+                val = inp.input_value()
+                aria = inp.get_attribute('aria-label') or f"field_{i}"
+                data[aria] = val
+            
+            # Get selected radios
+            radios = self.page.locator('div[role="radio"][aria-checked="true"]')
+            for i in range(radios.count()):
+                r = radios.nth(i)
+                label = r.get_attribute('aria-label')
+                data[f"radio_{i}"] = label
+                
+            return data
+        except Exception as e:
+            print(f"⚠️ Scraping failed: {e}")
+            return {"error": str(e)}
+
+    def submit_form(self, verification_callback=None):
         """
-        Submit and STRICTLY verify success
+        Submit and STRICTLY verify success.
+        Optionally run external verification (AI) before clicking submit.
         """
         try:
+            # AI VERIFICATION STEP
+            if verification_callback:
+                print("🤖 Running AI Verification...")
+                filled_data = self.get_filled_values()
+                # Take screenshot for AI
+                screenshot_bytes = self.page.screenshot(type='jpeg', quality=50)
+                
+                # Call callback
+                is_valid, reason = verification_callback(filled_data, screenshot_bytes)
+                if not is_valid:
+                    raise Exception(f"AI Verification Failed: {reason}")
+                print("✅ AI Verified. Proceeding to submit.")
+
             print("🚀 Submitting form...")
             
             # Click Submit
@@ -442,10 +485,11 @@ class MSFormAutomation:
             self.page.screenshot(path=f'error_submit_{datetime.now().strftime("%Y%m%d_%H%M%S")}.png')
             raise
     
-    def run_automation(self, form_url, email, password, form_data, pdf_path, status_callback=None):
+    def run_automation(self, form_url, email, password, form_data, pdf_path, status_callback=None, verification_callback=None):
         """
         Complete automation workflow.
         status_callback: function(message, progress, screenshot_bytes)
+        verification_callback: function(scraped_data, screenshot_bytes) -> (bool, str)
         """
         def update_status(msg, prog):
             print(f"[{prog}%] {msg}")
@@ -485,9 +529,13 @@ class MSFormAutomation:
             update_status("Uploading signed PDF...", 80)
             self.upload_pdf(pdf_path)
             
-            # Step 6: Submit
-            update_status("Finalizing submission...", 95)
-            self.submit_form()
+            # Step 6: Submit (with AI Verification)
+            if verification_callback:
+                update_status("Verifying with AI...", 90)
+            else:
+                update_status("Finalizing submission...", 95)
+                
+            self.submit_form(verification_callback=verification_callback)
             
             update_status("Completed successfully!", 100)
             

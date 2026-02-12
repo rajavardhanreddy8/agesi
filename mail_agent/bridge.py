@@ -54,9 +54,13 @@ def main():
             except Exception as e:
                 print(f"Date parse error: {e}")
         
-        if not form_link or not start_date:
-            print(f"Regex extraction failed. Date: {start_date}, Link: {form_link}")
-            print(f"Attempting Grok AI fallback...")
+        if not form_link or not start_date or not reason:
+            if not form_link or not start_date:
+                print(f"Regex extraction incomplete. Date: {start_date}, Link: {form_link}")
+            if not reason:
+                print("Extracting reason using AI...")
+                
+            print(f"Attempting Grok AI fallback/enrichment...")
             
             try:
                 from groq_service import process_content_with_groq

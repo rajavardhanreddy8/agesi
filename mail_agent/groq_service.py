@@ -48,3 +48,50 @@ def process_content_with_groq(email_content):
     except Exception as e:
         print(f"Grok API Error: {e}")
         return None
+
+def verify_form_data_with_groq(scraped_data, expected_data):
+    """
+    Verify if the filled form data matches expected data using AI.
+    Returns: (is_valid, reason)
+    """
+    api_key = os.getenv("GROQ_API_KEY")
+    if not api_key:
+        return False, "API Key missing"
+
+    client = Groq(api_key=api_key)
+
+    prompt = f"""
+    Compare the data filled in a Microsoft Form (Scraped Data) against the source of truth (Expected Data).
+    
+    1. Ignore formatting differences (e.g. +91 987 vs 987, "School of Tech" vs "School of Technology").
+    2. Ignore case sensitivity.
+    3. If a field is missing in Scraped Data but present in Expected, it's a MISMATCH.
+    4. If Scraped Data has valid data where Expected was empty/null, it's a MATCH (enrichment).
+    
+    Expected Data:
+    {json.dumps(expected_data, indent=2)}
+    
+    Scraped Form Data:
+    {json.dumps(scraped_data, indent=2)}
+    
+    Output PURE JSON:
+    {{
+        "match": true/false,
+        "reason": "Explanation if false, or 'Verified' if true"
+    }}
+    """
+
+    try:
+        chat_completion = client.chat.completions.create(
+            messages=[{"role": "user", "content": prompt}],
+            model="llama-3.3-70b-versatile",
+        )
+        content = chat_completion.choices[0].message.content
+        content = content.replace('```json', '').replace('```', '').strip()
+        result = json.loads(content)
+        return result.get('match', False), result.get('reason', 'AI returned no reason')
+    except Exception as e:
+        print(f"Grok Verification Error: {e}")
+        # Fail safe: if AI fails, we might want to fail verification to be safe?
+        # Or warn? User asked for verification. Better fail.
+        return False, f"AI Error: {str(e)}"

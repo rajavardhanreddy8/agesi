@@ -63,7 +63,8 @@ const Dashboard = () => {
                 setOutingData({
                     startDate: data.start_date || new Date().toISOString().split('T')[0],
                     endDate: data.end_date || new Date(Date.now() + 172800000).toISOString().split('T')[0],
-                    formLink: data.form_link || ''
+                    formLink: data.form_link || '',
+                    reason: ''
                 });
             }
         } catch (e) {
@@ -116,6 +117,26 @@ const Dashboard = () => {
             return;
         }
 
+        // STRICT VALIDATION: Check Profile Completeness
+        const missingFields = [];
+        if (!profile?.full_name) missingFields.push('Full Name');
+        if (!profile?.roll_number) missingFields.push('Roll Number');
+        if (!profile?.student_phone) missingFields.push('Student Phone');
+        if (!profile?.student_email) missingFields.push('Student Email');
+        if (!profile?.parent1_name) missingFields.push('Parent 1 Name');
+        if (!profile?.parent1_phone) missingFields.push('Parent 1 Phone');
+        if (!profile?.parent1_email) missingFields.push('Parent 1 Email');
+
+        if (missingFields.length > 0) {
+            alert(`⚠️ INCOMPLETE PROFILE!\n\nThe following details are missing:\n- ${missingFields.join('\n- ')}\n\nPlease go to "Edit Profile" and fill these details before submitting.`);
+            return;
+        }
+
+        if (!outingData.reason) {
+            alert("⚠️ REASON REQUIRED!\n\nPlease enter a reason for the outing (e.g., 'Home Visit').");
+            return;
+        }
+
         setSubmission({ loading: true, taskId: null, status: 'starting', message: 'Initiating submission...', progress: 0 });
 
         try {
@@ -124,7 +145,7 @@ const Dashboard = () => {
                 form_url: outingData.formLink,
                 leave_start_date: outingData.startDate,  // YYYY-MM-DD format
                 leave_end_date: outingData.endDate,      // YYYY-MM-DD format
-                reason: 'Home Visit'
+                reason: outingData.reason
             };
 
             const res = await api.post('/submit-form', payload);
@@ -371,6 +392,19 @@ const Dashboard = () => {
                                 value={outingData.formLink}
                                 onChange={handleDateChange}
                                 placeholder="https://forms.office.com/..."
+                                style={s.input}
+                            />
+                        </div>
+
+                        {/* Reason Input */}
+                        <div>
+                            <label style={{ fontSize: '0.75rem', color: theme.textMuted, display: 'block', marginBottom: '4px' }}>REASON</label>
+                            <input
+                                type="text"
+                                name="reason"
+                                value={outingData.reason || ''}
+                                onChange={handleDateChange}
+                                placeholder="e.g. Home Visit, Medical Checkup..."
                                 style={s.input}
                             />
                         </div>

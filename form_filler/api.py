@@ -13,6 +13,9 @@ from flask_cors import CORS
 import threading
 import json
 import os
+import sys
+import logging
+import os
 import logging
 print("DEBUG: API.PY MODULE LOADING...", flush=True)
 from datetime import datetime, timedelta
@@ -33,6 +36,16 @@ env_path = BASE_DIR / '.env'
 print(f"DEBUG: Loading .env from: {env_path}", flush=True)
 # CRITICAL FIX: Do NOT override system env vars (Azure settings take first priority)
 load_dotenv(dotenv_path=env_path, override=False)
+
+load_dotenv(dotenv_path=env_path, override=False)
+
+# Add mail_agent to path for Grok Service
+sys.path.append(str(BASE_DIR / 'mail_agent'))
+try:
+    from groq_service import verify_form_data_with_groq
+except ImportError:
+    logging.warning("Could not import groq_service. AI Verification will be disabled.")
+    verify_form_data_with_groq = None
 
 print("="*50, flush=True)
 print(f"DEBUG: STARTING APP - {datetime.now().isoformat()}", flush=True)
@@ -238,6 +251,17 @@ def run_automation_async(task_id, form_url, email, password, form_data, pdf_path
             except:
                 pass
 
+            except:
+                pass
+        
+        # AI Verification Callback
+        def verification_wrapper(scraped_data, screenshot_bytes):
+            if not verify_form_data_with_groq:
+                return True, "Grok Service not available"
+            
+            # Use form_data as expected source of truth
+            return verify_form_data_with_groq(scraped_data, form_data)
+
         # Run the full workflow
         success = automation.run_automation(
             form_url=form_url,
@@ -245,7 +269,8 @@ def run_automation_async(task_id, form_url, email, password, form_data, pdf_path
             password=password,
             form_data=form_data,
             pdf_path=pdf_path,
-            status_callback=status_callback
+            status_callback=status_callback,
+            verification_callback=verification_wrapper
         )
         
         if success:
