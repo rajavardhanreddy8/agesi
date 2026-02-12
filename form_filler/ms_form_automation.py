@@ -59,11 +59,22 @@ class MSFormAutomation:
         time.sleep(delay)
         return delay
         
-    def start_browser(self):
-        """Initialize browser with optimal settings, loading saved session if available"""
+    def start_browser(self, email=None):
+        """
+        Start Playwright browser with stealth settings
+        email: Optional email to load specific user session state
+        """
         self.playwright_instance = sync_playwright().start()
         
-        # Launch browser with settings to avoid detection
+        # Determine state file path based on email
+        if email:
+            safe_email = email.replace('@', '_').replace('.', '_')
+            self.current_state_file = f"browser_state_{safe_email}.json"
+        else:
+            self.current_state_file = self.STORAGE_STATE_FILE
+            
+        logging.info(f"Using browser state file: {self.current_state_file}")
+
         self.browser = self.playwright_instance.chromium.launch(
             headless=self.headless,
             args=[
@@ -76,17 +87,17 @@ class MSFormAutomation:
         
         # Try to load saved session state (cookies, localStorage)
         storage_state = None
-        if os.path.exists(self.STORAGE_STATE_FILE):
+        if os.path.exists(self.current_state_file):
             try:
                 # Check if the state file is recent (less than 12 hours old)
                 import stat
-                file_age = time.time() - os.path.getmtime(self.STORAGE_STATE_FILE)
+                file_age = time.time() - os.path.getmtime(self.current_state_file)
                 if file_age < 43200:  # 12 hours in seconds
-                    storage_state = self.STORAGE_STATE_FILE
+                    storage_state = self.current_state_file
                     logging.info(f"Loading saved browser state (age: {file_age/3600:.1f}h)")
                 else:
                     logging.info(f"Saved browser state too old ({file_age/3600:.1f}h), will do fresh login")
-                    os.remove(self.STORAGE_STATE_FILE)
+                    os.remove(self.current_state_file)
             except Exception as e:
                 logging.warning(f"Error checking saved state: {e}")
         
@@ -184,8 +195,9 @@ class MSFormAutomation:
                 
                 # SAVE SESSION STATE so we don't need MFA next time
                 try:
-                    self.context.storage_state(path=self.STORAGE_STATE_FILE)
-                    logging.info(f"Saved browser session to {self.STORAGE_STATE_FILE}")
+                    state_file = getattr(self, 'current_state_file', self.STORAGE_STATE_FILE)
+                    self.context.storage_state(path=state_file)
+                    logging.info(f"Saved browser session to {state_file}")
                 except Exception as e:
                     logging.warning(f"Failed to save session state: {e}")
                 
@@ -508,7 +520,7 @@ class MSFormAutomation:
             
             # Step 1: Start browser
             update_status("Starting browser session...", 10)
-            self.start_browser()
+            self.start_browser(email)
             
             # Step 2: Navigate to form URL
             update_status(f"Navigating to form: {form_url}", 20)
