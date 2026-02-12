@@ -137,14 +137,17 @@ class MSFormAutomation:
                 return True
             
             # Check if already on login page
+            # Check if already on login page
             if 'login.microsoftonline.com' in self.page.url:
                 logging.info("Already on Microsoft login page")
             else:
                 logging.info("Waiting for redirect to login...")
-                self.page.wait_for_url('**/login.microsoftonline.com/**', timeout=15000)
+                # Increased timeout to 30s for slow redirects
+                self.page.wait_for_url('**/login.microsoftonline.com/**', timeout=30000)
             
             # Enter email
-            email_input = self.page.wait_for_selector('input[type="email"]', timeout=10000)
+            # Increased timeout to 30s for slow loads
+            email_input = self.page.wait_for_selector('input[type="email"]', timeout=30000)
             email_input.fill(email)
             logging.info(f"Email entered: {email}")
             
@@ -154,7 +157,8 @@ class MSFormAutomation:
             
             # Enter password
             try:
-                password_input = self.page.wait_for_selector('input[type="password"]', timeout=10000)
+                # Increased timeout to 30s
+                password_input = self.page.wait_for_selector('input[type="password"]', timeout=30000)
                 password_input.fill(password)
                 logging.info("Password entered")
                 
@@ -552,7 +556,8 @@ class MSFormAutomation:
             
             # Step 2: Navigate to form URL
             update_status(f"Navigating to form: {form_url}", 20)
-            self.page.goto(form_url)
+            # Increased timeout to 60s for initial load
+            self.page.goto(form_url, timeout=60000)
             time.sleep(3)
             
             # Step 3: Handle Microsoft login
