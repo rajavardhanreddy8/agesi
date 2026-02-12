@@ -456,36 +456,44 @@ class MSFormAutomation:
             except:
                 print("⚠️ 'Upload' text not found, trying generic file input wait...")
 
-            # 2. Find File Input
-            # Playwright handles hidden file inputs well, but we need to make sure it exists
-            file_input = self.page.locator('input[type="file"]')
-            
-            if file_input.count() == 0:
-                print("⚠️ File input not found immediately, waiting 5s...")
-                time.sleep(5)
-                file_input = self.page.locator('input[type="file"]')
-            
-            if file_input.count() == 0:
-                 raise Exception("File input element (input[type='file']) not found on page.")
+            # 2. Trigger Upload via FileChooser
+            # This is more robust for MS Forms where input[type=file] might be hidden or lazy-loaded
+            try:
+                with self.page.expect_file_chooser(timeout=10000) as fc_info:
+                    # Click the "Upload" button to trigger the dialog
+                    # We try a few likely selectors
+                    upload_btn = self.page.locator('button:has-text("Upload"), div[role="button"]:has-text("Upload"), span:has-text("Upload")')
+                    
+                    if upload_btn.count() > 0:
+                        print("🖱️ Clicking 'Upload' button...")
+                        upload_btn.first.click()
+                    else:
+                        # Fallback: try to find the generic input again if button fails
+                        print("⚠️ Upload button not found via text. Trying generic input...")
+                        file_input = self.page.locator('input[type="file"]')
+                        if file_input.count() > 0:
+                            file_input.first.set_input_files(local_pdf_path)
+                            print("✅ PDF uploaded via direct input (fallback).")
+                            return True
+                        else:
+                             raise Exception("Neither Upload button nor file input found.")
 
-            # 3. Upload File
-            # Use the first one found (usually the correct one if there's only one upload q)
-            print(f"📄 Found {file_input.count()} file inputs. Using first one.")
-            file_input.first.set_input_files(local_pdf_path)
+                file_chooser = fc_info.value
+                file_chooser.set_files(local_pdf_path)
+                print("✅ PDF uploaded via FileChooser!")
+
+            except PlaywrightTimeout:
+                print("⚠️ FileChooser timeout. Trying direct input set as last resort...")
+                # Last resort: maybe input is there but event didn't fire?
+                file_input = self.page.locator('input[type="file"]')
+                if file_input.count() > 0:
+                    file_input.first.set_input_files(local_pdf_path)
+                    print("✅ PDF uploaded via direct input (last resort).")
+                else:
+                    raise Exception("File upload failed: FileChooser timed out and input[type='file'] not found.")
             
             # Wait for upload to complete
             time.sleep(5)  # Give it time to upload and scan
-            
-            # Clean up temp file if we downloaded it
-            if is_url:
-                try:
-                    os.unlink(local_pdf_path)
-                    print(f"🧹 Cleaned up temp file: {local_pdf_path}")
-                except:
-                    pass
-            
-            print("✅ PDF uploaded successfully!")
-            return True
                 
         except Exception as e:
             print(f"❌ PDF upload failed: {str(e)}")
