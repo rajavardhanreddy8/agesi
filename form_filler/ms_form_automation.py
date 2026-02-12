@@ -447,11 +447,31 @@ class MSFormAutomation:
                     raise FileNotFoundError(f"PDF file not found: {pdf_path}")
                 local_pdf_path = pdf_path
             
-            # Find file input
-            file_input = self.page.locator('input[type="file"]').first
+            # 1. Wait for Upload Section
+            print("⏳ Waiting for file upload section...")
+            try:
+                # MS Forms upload button usually has text "Upload file" or "Upload"
+                # We wait for the container or button to ensure the question is loaded
+                self.page.wait_for_selector('text=Upload', timeout=10000)
+            except:
+                print("⚠️ 'Upload' text not found, trying generic file input wait...")
+
+            # 2. Find File Input
+            # Playwright handles hidden file inputs well, but we need to make sure it exists
+            file_input = self.page.locator('input[type="file"]')
             
-            # Upload file
-            file_input.set_input_files(local_pdf_path)
+            if file_input.count() == 0:
+                print("⚠️ File input not found immediately, waiting 5s...")
+                time.sleep(5)
+                file_input = self.page.locator('input[type="file"]')
+            
+            if file_input.count() == 0:
+                 raise Exception("File input element (input[type='file']) not found on page.")
+
+            # 3. Upload File
+            # Use the first one found (usually the correct one if there's only one upload q)
+            print(f"📄 Found {file_input.count()} file inputs. Using first one.")
+            file_input.first.set_input_files(local_pdf_path)
             
             # Wait for upload to complete
             time.sleep(5)  # Give it time to upload and scan
