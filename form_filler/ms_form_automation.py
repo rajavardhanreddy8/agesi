@@ -206,47 +206,45 @@ class MSFormAutomation:
             self.page.wait_for_load_state('networkidle')
             time.sleep(2)
             
-            def fill_by_label(label_text, value, is_date=False):
+            def fill_by_label(label_text_or_list, value, is_date=False):
                 try:
-                    # Find the label element containing the text
-                    # MS Forms structure: div[role="heading"] -> spans, or label tags
-                    # We look for a container that has the text, then find the input inside it or near it
-                    print(f"🔍 Looking for field: '{label_text}'...")
+                    labels = label_text_or_list if isinstance(label_text_or_list, list) else [label_text_or_list]
                     
-                    # Strategy 1: Look for input with aria-label containing text
-                    input_el = self.page.locator(f'input[aria-label*="{label_text}"]')
-                    if input_el.count() > 0 and input_el.first.is_visible():
-                        input_el.first.fill(value)
-                        print(f"   ✅ Filled by aria-label: {label_text} = {value}")
-                        return True
-
-                    # Strategy 2: Look for text checks
-                    # Find the question text, then find the input in the same container
-                    question = self.page.locator(f':text("{label_text}")').first
-                    if question.count() > 0:
-                        # Go up to the question container (usually a div with specific class or role)
-                        # In MS Forms, inputs are usually within the same parent or traverse up/down
-                        # Simplest: Input appearing *after* the label in DOM order
-                        # We use Playwright's layout selectors if possible, or just look for input inside the question wrapper
+                    for label_text in labels:
+                        # Find the label element containing the text
+                        # MS Forms structure: div[role="heading"] -> spans, or label tags
+                        # We look for a container that has the text, then find the input inside it or near it
+                        print(f"🔍 Looking for field: '{label_text}'...")
                         
-                        # Try finding input inside the same section
-                        section = question.locator("xpath=./ancestor::div[contains(@class, '-question-')]|./ancestor::div[@role='listitem']")
-                        if section.count() > 0:
-                            inp = section.first.locator('input').first
-                            if inp.count() > 0:
-                                inp.fill(value)
-                                print(f"   ✅ Filled by section context: {label_text} = {value}")
-                                return True
-                    
-                    # Strategy 3: Placeholder (Weak, generic)
-                    if is_date:
-                        # Try generic date inputs if label fails
-                        pass
+                        # Strategy 1: Look for input with aria-label containing text
+                        input_el = self.page.locator(f'input[aria-label*="{label_text}"]')
+                        if input_el.count() > 0 and input_el.first.is_visible():
+                            input_el.first.fill(value)
+                            print(f"   ✅ Filled by aria-label: {label_text} = {value}")
+                            return True
 
-                    print(f"   ⚠️ Could not find input for '{label_text}'")
+                        # Strategy 2: Look for text checks
+                        # Find the question text, then find the input in the same container
+                        question = self.page.locator(f':text("{label_text}")').first
+                        if question.count() > 0:
+                            # Go up to the question container (usually a div with specific class or role)
+                            # In MS Forms, inputs are usually within the same parent or traverse up/down
+                            # Simplest: Input appearing *after* the label in DOM order
+                            # We use Playwright's layout selectors if possible, or just look for input inside the question wrapper
+                            
+                            # Try finding input inside the same section
+                            section = question.locator("xpath=./ancestor::div[contains(@class, '-question-')]|./ancestor::div[@role='listitem']")
+                            if section.count() > 0:
+                                inp = section.first.locator('input').first
+                                if inp.count() > 0:
+                                    inp.fill(value)
+                                    print(f"   ✅ Filled by section context: {label_text} = {value}")
+                                    return True
+                        
+                    print(f"   ⚠️ Could not find input for any of: {labels}")
                     return False
                 except Exception as e:
-                    print(f"   ❌ Error filling {label_text}: {e}")
+                    print(f"   ❌ Error filling {label_text_or_list}: {e}")
                     return False
 
             def select_radio(label_text, option_text):
@@ -275,8 +273,8 @@ class MSFormAutomation:
             # --- FILLING FIELDS ---
             
             # 1. Name & Roll (Standard)
-            fill_by_label("Name of the Student", form_data['student_name'])
-            fill_by_label("Roll Number", form_data['roll_number'])
+            fill_by_label(["Name of the Student", "Student Name", "Name", "Full Name"], form_data['student_name'])
+            fill_by_label(["Roll Number", "Roll No", "Roll No.", "Student ID"], form_data['roll_number'])
             
             # 2. Radios
             # STRICT: No defaults. Use provided value or empty string.
@@ -290,13 +288,13 @@ class MSFormAutomation:
             
             # 4. Parent Details
             # API sends 'parent_phone', 'parent_email'
-            fill_by_label("Parents Contact No.", form_data.get('parent_phone', '') or form_data.get('parent_contact', ''))
-            fill_by_label("Parents Email ID", form_data.get('parent_email', ''))
+            fill_by_label(["Parents Contact No.", "Parent Contact", "Father Mobile", "Mother Mobile", "Contact No."], form_data.get('parent_phone', '') or form_data.get('parent_contact', ''))
+            fill_by_label(["Parents Email ID", "Parent Email", "Email ID"], form_data.get('parent_email', ''))
             
             # 5. Student Details
             # API sends 'student_phone', 'student_email'
-            fill_by_label("Student Contact No.", form_data.get('student_phone', '') or form_data.get('student_contact', ''))
-            fill_by_label("Student Woxsen Email ID", form_data.get('student_email', ''))
+            fill_by_label(["Student Contact No.", "Student Contact", "Mobile No.", "Contact No."], form_data.get('student_phone', '') or form_data.get('student_contact', ''))
+            fill_by_label(["Student Woxsen Email ID", "Student Email", "Email ID"], form_data.get('student_email', ''))
             
             # 6. Any other random fields mapping?
             # (Just in case)
