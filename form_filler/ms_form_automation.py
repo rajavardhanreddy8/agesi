@@ -199,105 +199,164 @@ class MSFormAutomation:
     
     def fill_form(self, form_data):
         """
-        Fill all form fields with provided data
-        Includes random micro-delays between fields to simulate human behavior
+        Fill all form fields robustly by finding labels
         """
         try:
-            print("📝 Starting form filling...")
-            
-            # Wait for form to fully load
+            print("📝 Starting form filling (Label-Based Strategy)...")
             self.page.wait_for_load_state('networkidle')
             time.sleep(2)
             
-            # Helper functions for index-based filling
-            inputs = self.page.locator('input[placeholder="Enter your answer"]')
-            date_inputs = self.page.locator('input[placeholder*="date"]')
-            
-            def fill_idx(idx, val):
+            def fill_by_label(label_text, value, is_date=False):
                 try:
-                    if inputs.nth(idx).is_visible():
-                        # Random micro-delay before each field (2-8 seconds)
-                        delay = random.uniform(2, 8)
-                        time.sleep(delay)
-                        inputs.nth(idx).fill(val)
-                        print(f"Filled input index {idx} with {val} (waited {delay:.1f}s)")
-                except Exception as e:
-                    print(f"Skipping input {idx}: {e}")
+                    # Find the label element containing the text
+                    # MS Forms structure: div[role="heading"] -> spans, or label tags
+                    # We look for a container that has the text, then find the input inside it or near it
+                    print(f"🔍 Looking for field: '{label_text}'...")
+                    
+                    # Strategy 1: Look for input with aria-label containing text
+                    input_el = self.page.locator(f'input[aria-label*="{label_text}"]')
+                    if input_el.count() > 0 and input_el.first.is_visible():
+                        input_el.first.fill(value)
+                        print(f"   ✅ Filled by aria-label: {label_text} = {value}")
+                        return True
 
-            def click_radio(text):
+                    # Strategy 2: Look for text checks
+                    # Find the question text, then find the input in the same container
+                    question = self.page.locator(f':text("{label_text}")').first
+                    if question.count() > 0:
+                        # Go up to the question container (usually a div with specific class or role)
+                        # In MS Forms, inputs are usually within the same parent or traverse up/down
+                        # Simplest: Input appearing *after* the label in DOM order
+                        # We use Playwright's layout selectors if possible, or just look for input inside the question wrapper
+                        
+                        # Try finding input inside the same section
+                        section = question.locator("xpath=./ancestor::div[contains(@class, '-question-')]|./ancestor::div[@role='listitem']")
+                        if section.count() > 0:
+                            inp = section.first.locator('input').first
+                            if inp.count() > 0:
+                                inp.fill(value)
+                                print(f"   ✅ Filled by section context: {label_text} = {value}")
+                                return True
+                    
+                    # Strategy 3: Placeholder (Weak, generic)
+                    if is_date:
+                        # Try generic date inputs if label fails
+                        pass
+
+                    print(f"   ⚠️ Could not find input for '{label_text}'")
+                    return False
+                except Exception as e:
+                    print(f"   ❌ Error filling {label_text}: {e}")
+                    return False
+
+            def select_radio(label_text, option_text):
                 try:
-                    # Random micro-delay before clicking (2-6 seconds)
-                    delay = random.uniform(2, 6)
-                    time.sleep(delay)
-                    # Try span locators first (common in MS Forms)
-                    el = self.page.locator(f'span:has-text("{text}")').first
-                    if el.count() > 0:
-                        el.click()
-                        print(f"Clicked radio/text: {text} (waited {delay:.1f}s)")
-                    else:
-                         # Fallback to div role=radio
-                        el = self.page.locator(f'div[role="radio"]:has-text("{text}")').first
-                        if el.count() > 0:
-                            el.click()
-                            print(f"Clicked radio div: {text}")
+                    print(f"🔍 Looking for radio: '{label_text}' -> '{option_text}'...")
+                    # Find the choice directly
+                    choice = self.page.locator(f'div[role="radio"][aria-label="{option_text}"]')
+                    if choice.count() > 0:
+                        choice.first.click()
+                        print(f"   ✅ Selected radio (aria-label): {option_text}")
+                        return True
+                    
+                    # Fallback: exact text match
+                    choice = self.page.locator(f':text("{option_text}")')
+                    if choice.count() > 0:
+                        choice.first.click()
+                        print(f"   ✅ Selected radio (text): {option_text}")
+                        return True
+                        
+                    print(f"   ⚠️ Could not find option '{option_text}'")
+                    return False
                 except Exception as e:
-                    print(f"Failed to click {text}: {e}")
+                    print(f"   ❌ Error selecting {option_text}: {e}")
+                    return False
 
-            # 1. Name
-            fill_idx(0, form_data['student_name'])
-            # 2. Roll
-            fill_idx(1, form_data['roll_number'])
+            # --- FILLING FIELDS ---
             
-            # 3, 4, 5. Radios
-            click_radio(form_data.get('school', 'School of Technology'))
-            click_radio(form_data.get('academic_session', '2024-2028'))
-            click_radio(form_data.get('programme', 'B.Tech'))
+            # 1. Name & Roll (Standard)
+            fill_by_label("Name of the Student", form_data['student_name'])
+            fill_by_label("Roll Number", form_data['roll_number'])
             
-            # 6. Specialization
-            fill_idx(2, form_data.get('specialization', 'CSE'))
+            # 2. Radios
+            select_radio("School Name", form_data.get('school', 'School of Technology'))  
+            # Note: User screenshot showed "School of Business", check data correctness later
             
-            # 7. Reason
-            fill_idx(3, form_data.get('reason', 'home'))
+            # 3. Dates
+            # Try specific labels first
+            fill_by_label("Leave Start Date", form_data.get('leave_start_date', ''))
+            fill_by_label("Leave End Date", form_data.get('leave_end_date', ''))
             
-            # 8. Start Date & 9. End Date
-            # Try to find all date inputs
-            print(f"Filling Start Date: {form_data['leave_start_date']}")
-            print(f"Filling End Date: {form_data['leave_end_date']}")
+            
+            # 4. Parent Details
+            # API sends 'parent_phone', 'parent_email'
+            fill_by_label("Parents Contact No.", form_data.get('parent_phone', '') or form_data.get('parent_contact', ''))
+            fill_by_label("Parents Email ID", form_data.get('parent_email', ''))
+            
+            # 5. Student Details
+            # API sends 'student_phone', 'student_email'
+            fill_by_label("Student Contact No.", form_data.get('student_phone', '') or form_data.get('student_contact', ''))
+            fill_by_label("Student Woxsen Email ID", form_data.get('student_email', ''))
+            
+            # 6. Any other random fields mapping?
+            # (Just in case)
+            
+            print("✅ Form filling logic completed.")
+            
+            # Capture debug screenshot of filled form
+            self.page.screenshot(path=f'debug_filled_{datetime.now().strftime("%H%M%S")}.jpg')
+            return True
+
+        except Exception as e:
+            print(f"❌ Form filling error: {str(e)}")
+            raise
+
+    def submit_form(self):
+        """
+        Submit and STRICTLY verify success
+        """
+        try:
+            print("🚀 Submitting form...")
+            
+            # Click Submit
+            submit_btn = self.page.locator('button:has-text("Submit")')
+            if submit_btn.count() > 0:
+                submit_btn.first.click()
+            else:
+                raise Exception("Submit button not found!")
+            
+            # VERIFICATION
+            print("⏳ Waiting for confirmation...")
+            time.sleep(2)
+            
+            # Check for Success Message
+            # Standard MS Forms success text: "Thanks!", "Your response was submitted"
+            success_indicator = self.page.locator(':text("Thanks!"), :text("Your response was submitted"), :text("Save my response")')
             
             try:
-                # Re-query date inputs to be fresh
-                date_inputs = self.page.locator('input[placeholder*="date"]')
-                count = date_inputs.count()
-                print(f"Found {count} date inputs via placeholder")
+                success_indicator.first.wait_for(state='visible', timeout=10000)
+                print("✅ SUBMISSION CONFIRMED: Success message visible.")
+                return True
+            except Exception:
+                # If timeout, checks for errors
+                print("⚠️ Success message NOT found. Checking for validation errors...")
                 
-                if count >= 1:
-                    date_inputs.first.fill(form_data['leave_start_date'])
-                    print(f"Filled start date (index 0): {form_data['leave_start_date']}")
+                # Look for validation errors (usually red text)
+                # Common classes or text
+                errors = self.page.locator('.office-form-question-error-message, :text("This question is required"), :text("Please enter a valid date")')
+                if errors.count() > 0:
+                    err_texts = errors.all_inner_texts()
+                    raise Exception(f"Form Validation Errors Found: {err_texts}")
                 
-                if count >= 2:
-                    date_inputs.nth(1).fill(form_data['leave_end_date'])
-                    print(f"Filled end date (index 1): {form_data['leave_end_date']}")
-                elif count == 1:
-                     # Fallback: Maybe the second date input has a different placeholder or is a text input?
-                     # Let's try looking for inputs near "End Date" text
-                     print("Attempting validation/fallback for date fields...")
-            except Exception as e: 
-                print(f"Date filling error: {e}")
-                
-            # Fallback for End Date if not filled by generic date locator
-            # Sometimes MS Forms treats them as text inputs if configured differently
-            # We can try filling by Label if possible, but MS Forms DOM is messy.
-            # Assuming the standard 2-date picker layout for now.
-            pass
-            
-            print("✅ All form fields filled (best effort)!")
-            return True
-            
-            print("✅ All form fields filled successfully!")
-            return True
-            
+                # If no errors but no success...
+                # Maybe it's still loading?
+                self.page.screenshot(path=f'error_unknown_{datetime.now().strftime("%H%M%S")}.jpg')
+                raise Exception("Submission timed out. No success message and no validation errors found. Check screenshot.")
+
         except Exception as e:
-            print(f"❌ Form filling failed: {str(e)}")
+            print(f"❌ Submit failed: {e}")
+            self.page.screenshot(path=f'error_submit_final_{datetime.now().strftime("%H%M%S")}.jpg')
+            raise
             # Take screenshot for debugging
             self.page.screenshot(path=f'error_form_fill_{datetime.now().strftime("%Y%m%d_%H%M%S")}.png')
             raise
