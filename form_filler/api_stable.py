@@ -1,4 +1,4 @@
-"""
+﻿"""
 Flask API to trigger Microsoft Forms automation
 Integrates with your existing PDF generation web app and PostgreSQL database
 """
@@ -213,39 +213,16 @@ def run_automation_async(task_id, form_url, email, password, form_data, pdf_path
         except Exception as e:
             logging.error(f"Failed to update DB status: {e}")
         
-        # CRITICAL: Create the automation object (headless=True for server)
-        automation = MSFormAutomation(headless=True)
+        # Headless=True REQUIRED for Azure/Docker deployment (no UI available)
+        automation = MSFormAutomation(headless=True) 
         
-        def status_callback(msg, prog, screenshot_bytes):
-            task.message = msg
-            task.progress = prog
-            if screenshot_bytes:
-                # Save screenshot to task for "Live View"
-                # Store it as base64 for simplicity in this demo, or write to tmp file
-                import base64
-                task.screenshot_path = f"data:image/jpeg;base64,{base64.b64encode(screenshot_bytes).decode('utf-8')}"
-            
-            # Update DB status message
-            try:
-                conn_inner = get_db_connection()
-                cur_inner = conn_inner.cursor()
-                cur_inner.execute(
-                    "UPDATE submission_history SET status_message = %s WHERE task_id = %s",
-                    (msg, task_id)
-                )
-                conn_inner.commit()
-                conn_inner.close()
-            except:
-                pass
-
         # Run the full workflow
         success = automation.run_automation(
             form_url=form_url,
             email=email,
             password=password,
             form_data=form_data,
-            pdf_path=pdf_path,
-            status_callback=status_callback
+            pdf_path=pdf_path
         )
         
         if success:
@@ -280,10 +257,9 @@ def run_automation_async(task_id, form_url, email, password, form_data, pdf_path
                 except Exception as e:
                     # Don't fail the task if deletion fails
                     logging.error(f"Failed to delete PDF from Azure (non-critical): {e}")
-        # run_automation now raises an exception with the actual error on failure,
-        # so if we reach here, it was successful.
-        if not success:
-            raise Exception("Automation returned False unexpectedly")
+                
+        else:
+            raise Exception("Automation reported failure")
         
     except Exception as e:
         task.status = 'failed'
@@ -595,17 +571,29 @@ def update_profile():
         # Handle Signature separately
         if 'signature_data' in data and data['signature_data']:
             try:
-                from azure_storage_helper import upload_signature_to_azure
-                sig_url = upload_signature_to_azure(data['signature_data'], request.user_id)
+                import base64
+                import uuid
+                
+                sig_data = data['signature_data']
+                if ',' in sig_data:
+                    sig_data = sig_data.split(',')[1]
+                
+                sig_dir = 'signatures'
+                os.makedirs(sig_dir, exist_ok=True)
+                
+                filename = f"sig_{request.user_id}_{uuid.uuid4().hex[:8]}.png"
+                filepath = os.path.join(sig_dir, filename)
+                
+                with open(filepath, "wb") as fh:
+                    fh.write(base64.b64decode(sig_data))
+                
+                # Store relative path
                 updates.append("signature_data = %s")
-                values.append(sig_url)
-                logging.info(f"Signature uploaded to Azure for user {request.user_id}: {sig_url}")
+                values.append(f"signatures/{filename}")
+                logging.info(f"Saved signature for user {request.user_id} at {filepath}")
             except Exception as e:
-                logging.error(f"Failed to upload signature to Azure: {e}")
-                # Fallback: store base64 directly in DB
-                updates.append("signature_data = %s")
-                values.append(data['signature_data'])
-                logging.info(f"Fallback: stored signature base64 in DB for user {request.user_id}")
+                logging.error(f"Failed to save signature: {e}")
+                pass
 
         if updates:
             values.append(request.user_id)
@@ -779,12 +767,6 @@ def create_outing_pdf(profile, start_date, end_date, reason):
                     sig_bytes = base64.b64decode(encoded)
                     sig_image = ImageReader(io.BytesIO(sig_bytes))
                     c.drawImage(sig_image, 70, y - 60, width=100, height=50, preserveAspectRatio=True)
-                elif sig_data.startswith('http://') or sig_data.startswith('https://'):
-                    # Azure Blob Storage URL — download and embed
-                    import urllib.request
-                    sig_response = urllib.request.urlopen(sig_data)
-                    sig_image = ImageReader(io.BytesIO(sig_response.read()))
-                    c.drawImage(sig_image, 70, y - 60, width=100, height=50, preserveAspectRatio=True)
                 else:
                     # Assume it's a file path (relative to api.py or absolute)
                     # Check relative to current working directory first
@@ -866,8 +848,7 @@ def submit_form():
         form_url = request_data.get('form_url')
         leave_start_date = request_data.get('leave_start_date')  # YYYY-MM-DD
         leave_end_date = request_data.get('leave_end_date')      # YYYY-MM-DD
-        # STRICT: No default reason. Must be provided by user.
-        reason = request_data.get('reason')
+        reason = request_data.get('reason', 'Home Visit')
         
         if not form_url:
             return jsonify({'success': False, 'error': 'Form URL is required'}), 400
@@ -953,8 +934,7 @@ def submit_form():
             'programme': profile['programme'],
             'specialization': profile['specialization'],
             'student_phone': profile['student_phone'],
-            # CHANGED: Do NOT fallback to admin email. Use student email or empty string.
-            'student_email': profile['student_email'] or '',
+            'student_email': profile['student_email'] or user_auth['email'],
             'parent_name': profile['parent1_name'],
             'parent_phone': profile['parent1_phone'],
             'parent_email': profile['parent1_email'],
@@ -1022,38 +1002,6 @@ def submit_form():
         return jsonify({'success': False, 'error': str(e)}), 500
     finally:
         if conn: conn.close()
-
-@app.route('/api/live-view/<task_id>')
-def task_live_view(task_id):
-    """Return an HTML page that shows the latest screenshot for a task"""
-    task = automation_tasks.get(task_id)
-    if not task:
-        return "Task not found", 404
-        
-    html = f"""
-    <html>
-        <head>
-            <title>Live Automation View</title>
-            <meta http-equiv="refresh" content="3">
-            <style>
-                body {{ background: #1a1a1a; color: white; font-family: sans-serif; text-align: center; margin: 0; padding: 10px; }}
-                .container {{ max-width: 1000px; margin: auto; }}
-                img {{ width: 100%; border-radius: 8px; border: 2px solid #444; }}
-                .status {{ margin: 10px 0; font-size: 1.2rem; }}
-                .progress-bar {{ background: #333; height: 10px; border-radius: 5px; overflow: hidden; margin: 10px 0; }}
-                .progress-fill {{ background: #00ff00; height: 100%; width: {task.progress}%; transition: width 0.3s; }}
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                <div class="status">🤖 <b>Status:</b> {task.message}</div>
-                <div class="progress-bar"><div class="progress-fill"></div></div>
-                {f'<img src="{task.screenshot_path}">' if task.screenshot_path else '<p>Waiting for first screenshot...</p>'}
-            </div>
-        </body>
-    </html>
-    """
-    return html
 
 @app.route('/api/task-status/<task_id>', methods=['GET'])
 @login_required # Optional: restrict to task owner?

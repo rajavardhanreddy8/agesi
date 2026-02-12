@@ -279,8 +279,8 @@ class MSFormAutomation:
             fill_by_label("Roll Number", form_data['roll_number'])
             
             # 2. Radios
-            select_radio("School Name", form_data.get('school', 'School of Technology'))  
-            # Note: User screenshot showed "School of Business", check data correctness later
+            # STRICT: No defaults. Use provided value or empty string.
+            select_radio("School Name", form_data.get('school') or '')
             
             # 3. Dates
             # Try specific labels first
