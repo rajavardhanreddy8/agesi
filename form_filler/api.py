@@ -213,6 +213,9 @@ def run_automation_async(task_id, form_url, email, password, form_data, pdf_path
         except Exception as e:
             logging.error(f"Failed to update DB status: {e}")
         
+        # CRITICAL: Create the automation object (headless=True for server)
+        automation = MSFormAutomation(headless=True)
+        
         def status_callback(msg, prog, screenshot_bytes):
             task.message = msg
             task.progress = prog
