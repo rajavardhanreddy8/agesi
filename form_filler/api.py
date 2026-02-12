@@ -250,9 +250,6 @@ def run_automation_async(task_id, form_url, email, password, form_data, pdf_path
                 conn_inner.close()
             except:
                 pass
-
-            except:
-                pass
         
         # AI Verification Callback
         def verification_wrapper(scraped_data, screenshot_bytes):
