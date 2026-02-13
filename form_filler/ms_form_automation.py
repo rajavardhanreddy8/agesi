@@ -314,11 +314,79 @@ class MSFormAutomation:
     def fill_form(self, form_data):
         """
         Fill all form fields robustly by finding labels
+        With diagnostic DOM dump and positional fallback
         """
         try:
-            print("📝 Starting form filling (Label-Based Strategy)...")
+            print("Starting form filling...")
             self.page.wait_for_load_state('networkidle')
-            time.sleep(2)
+            time.sleep(3)
+            
+            # === DIAGNOSTIC DOM DUMP ===
+            # This helps us understand the actual form structure
+            try:
+                dom_info = self.page.evaluate("""() => {
+                    const output = [];
+                    
+                    // Count question items
+                    const qi = document.querySelectorAll('[data-automation-id="questionItem"]');
+                    output.push("QuestionItems: " + qi.length);
+                    
+                    // All visible inputs
+                    const inputs = Array.from(document.querySelectorAll('input')).filter(
+                        i => i.offsetParent !== null && i.type !== 'hidden'
+                    );
+                    output.push("VisibleInputs: " + inputs.length);
+                    inputs.forEach((inp, i) => {
+                        output.push("  I[" + i + "] type=" + inp.type + " aria=" + (inp.getAttribute('aria-label')||'') + " ph=" + (inp.placeholder||''));
+                    });
+                    
+                    // All visible textareas
+                    const tas = Array.from(document.querySelectorAll('textarea')).filter(
+                        t => t.offsetParent !== null
+                    );
+                    output.push("VisibleTextareas: " + tas.length);
+                    tas.forEach((ta, i) => {
+                        output.push("  TA[" + i + "] aria=" + (ta.getAttribute('aria-label')||'') + " ph=" + (ta.placeholder||''));
+                    });
+                    
+                    // All headings
+                    const headings = document.querySelectorAll('[role="heading"], h1, h2, h3');
+                    headings.forEach((h, i) => {
+                        output.push("  H[" + i + "] " + h.innerText.substring(0, 100));
+                    });
+                    
+                    // Radio groups
+                    const rgs = document.querySelectorAll('[role="radiogroup"]');
+                    output.push("RadioGroups: " + rgs.length);
+                    rgs.forEach((rg, i) => {
+                        const label = rg.getAttribute('aria-label') || '';
+                        const opts = Array.from(rg.querySelectorAll('[role="radio"]'));
+                        const optLabels = opts.map(o => o.getAttribute('aria-label') || o.innerText.substring(0, 30));
+                        output.push("  RG[" + i + "] label=" + label + " opts=[" + optLabels.join(', ') + "]");
+                    });
+                    
+                    return output.join("\\n");
+                }""")
+                print(f"=== FORM DOM DUMP ===\n{dom_info}\n=== END DOM DUMP ===")
+                logging.info(f"Form DOM dump:\n{dom_info}")
+            except Exception as e:
+                print(f"DOM dump failed: {e}")
+            
+            # Get all visible text inputs for positional fallback
+            visible_inputs = self.page.evaluate("""() => {
+                return Array.from(document.querySelectorAll('input'))
+                    .filter(i => i.offsetParent !== null && (i.type === 'text' || i.type === '' || !i.type))
+                    .map((inp, idx) => ({
+                        index: idx,
+                        type: inp.type,
+                        ariaLabel: inp.getAttribute('aria-label') || '',
+                        placeholder: inp.placeholder || '',
+                        name: inp.name || ''
+                    }));
+            }""")
+            print(f"Found {len(visible_inputs)} visible text inputs")
+            for vi in visible_inputs:
+                print(f"  [{vi['index']}] aria='{vi['ariaLabel']}' ph='{vi['placeholder']}'")
             
             def fill_by_label(label_text_or_list, value, is_date=False):
                 try:
@@ -447,9 +515,100 @@ class MSFormAutomation:
 
             # --- FILLING FIELDS ---
             
-            # 1. Name & Roll (Standard)
-            fill_by_label(["Name of the Student", "Student Name", "Name", "Full Name"], form_data['student_name'])
-            fill_by_label(["Roll Number", "Roll No", "Roll No.", "Student ID"], form_data['roll_number'])
+            # 1. Name & Roll (Standard) - with POSITIONAL FALLBACK
+            name_filled = False
+            roll_filled = False
+            
+            try:
+                name_filled = fill_by_label(["Name of the Student", "Student Name", "Name", "Full Name"], form_data['student_name'])
+            except Exception as e:
+                print(f"Label-based name fill failed: {e}")
+                name_filled = False
+            
+            try:
+                roll_filled = fill_by_label(["Roll Number", "Roll No", "Roll No.", "Student ID"], form_data['roll_number'])
+            except Exception as e:
+                print(f"Label-based roll fill failed: {e}")
+                roll_filled = False
+            
+            # POSITIONAL FALLBACK: If label-based failed, fill by input order
+            if not name_filled or not roll_filled:
+                print("FALLBACK: Trying positional input filling...")
+                try:
+                    # Get all visible text-like inputs using JS
+                    text_inputs = self.page.evaluate("""() => {
+                        return Array.from(document.querySelectorAll('input'))
+                            .filter(i => {
+                                if (i.offsetParent === null) return false;  // not visible
+                                if (i.type === 'hidden' || i.type === 'submit' || i.type === 'button' || i.type === 'checkbox' || i.type === 'radio' || i.type === 'file') return false;
+                                return true;
+                            })
+                            .map((inp, idx) => ({
+                                index: idx,
+                                type: inp.type || 'text',
+                                ariaLabel: inp.getAttribute('aria-label') || '',
+                                tagName: inp.tagName
+                            }));
+                    }""")
+                    
+                    print(f"Positional fallback: found {len(text_inputs)} fillable inputs")
+                    
+                    # Fill by position: 1st input = name, 2nd = roll
+                    # Use Playwright locators with nth-match
+                    fillable = self.page.locator('input:visible').filter(
+                        has_not=self.page.locator('[type="hidden"], [type="submit"], [type="button"], [type="checkbox"], [type="radio"], [type="file"]')
+                    )
+                    
+                    # Alternative: just get all visible inputs that accept text
+                    all_text_inputs = self.page.locator('input[type="text"]:visible, input:not([type]):visible').all()
+                    
+                    if not name_filled and len(all_text_inputs) >= 1:
+                        all_text_inputs[0].fill(form_data['student_name'])
+                        print(f"   POSITIONAL: Filled input[0] with name: {form_data['student_name']}")
+                        name_filled = True
+                    
+                    if not roll_filled and len(all_text_inputs) >= 2:
+                        all_text_inputs[1].fill(form_data['roll_number'])
+                        print(f"   POSITIONAL: Filled input[1] with roll: {form_data['roll_number']}")
+                        roll_filled = True
+                    
+                    if not name_filled:
+                        # Last resort: try filling via JavaScript directly
+                        self.page.evaluate(f"""() => {{
+                            const inputs = Array.from(document.querySelectorAll('input'))
+                                .filter(i => i.offsetParent !== null && i.type !== 'hidden' && i.type !== 'submit' && i.type !== 'button' && i.type !== 'radio' && i.type !== 'checkbox' && i.type !== 'file');
+                            if (inputs.length > 0) {{
+                                const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+                                nativeInputValueSetter.call(inputs[0], '{form_data["student_name"]}');
+                                inputs[0].dispatchEvent(new Event('input', {{ bubbles: true }}));
+                                inputs[0].dispatchEvent(new Event('change', {{ bubbles: true }}));
+                            }}
+                        }}""")
+                        print(f"   JS FALLBACK: Set input[0] value via JS to: {form_data['student_name']}")
+                        name_filled = True
+                    
+                    if not roll_filled:
+                        self.page.evaluate(f"""() => {{
+                            const inputs = Array.from(document.querySelectorAll('input'))
+                                .filter(i => i.offsetParent !== null && i.type !== 'hidden' && i.type !== 'submit' && i.type !== 'button' && i.type !== 'radio' && i.type !== 'checkbox' && i.type !== 'file');
+                            if (inputs.length > 1) {{
+                                const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+                                nativeInputValueSetter.call(inputs[1], '{form_data["roll_number"]}');
+                                inputs[1].dispatchEvent(new Event('input', {{ bubbles: true }}));
+                                inputs[1].dispatchEvent(new Event('change', {{ bubbles: true }}));
+                            }}
+                        }}""")
+                        print(f"   JS FALLBACK: Set input[1] value via JS to: {form_data['roll_number']}")
+                        roll_filled = True
+                        
+                except Exception as e:
+                    print(f"Positional fallback failed: {e}")
+                    # Take screenshot for debugging
+                    try:
+                        self.page.screenshot(path=f'debug_positional_fail_{datetime.now().strftime("%H%M%S")}.png')
+                    except:
+                        pass
+                    raise Exception(f"Could not fill name/roll fields by any method: {e}")
             
             # 2. Radios
             # STRICT: No defaults. Use provided value or empty string.
