@@ -694,10 +694,50 @@ class MSFormAutomation:
             fill_by_label(["Student Contact No.", "Student Contact", "Mobile No.", "Contact No."], form_data.get('student_phone', '') or form_data.get('student_contact', ''))
             fill_by_label(["Student Woxsen Email ID", "Student Email", "Email ID"], form_data.get('student_email', ''))
             
-            # 6. Any other random fields mapping?
-            # (Just in case)
             
-            print("✅ Form filling logic completed.")
+            # 6. CLEANUP PASS: Fill any remaining empty required fields
+            # This is a safety net for fields that failed label detection
+            print("\n=== CLEANUP PASS: Filling remaining empty inputs ===")
+            try:
+                # Get all visible text-like inputs
+                all_inputs = self.page.locator('input[type="text"]:visible, input:not([type]):visible, input[type="email"]:visible, input[type="tel"]:visible, textarea:visible').all()
+                
+                # Collect remaining data that might not have been filled
+                remaining_data = [
+                    form_data.get('parent_phone', ''),
+                    form_data.get('parent_email', ''),
+                    form_data.get('student_phone', ''),
+                    form_data.get('student_email', ''),
+                    form_data.get('reason', ''),
+                    form_data.get('parent_name', ''),
+                    form_data.get('programme', ''),
+                    form_data.get('specialization', ''),
+                ]
+                
+                # Filter out empty values
+                remaining_data = [d for d in remaining_data if d]
+                
+                data_idx = 0
+                filled_count = 0
+                
+                for inp in all_inputs:
+                    try:
+                        current_value = inp.input_value()
+                        if not current_value or current_value.strip() == '':
+                            # This input is empty
+                            if data_idx < len(remaining_data):
+                                inp.fill(remaining_data[data_idx])
+                                print(f"   CLEANUP: Filled empty input with: {remaining_data[data_idx][:50]}")
+                                filled_count += 1
+                                data_idx += 1
+                    except:
+                        pass
+                
+                print(f"✅ Cleanup pass filled {filled_count} empty fields")
+            except Exception as e:
+                print(f"Cleanup pass failed: {e}")
+            
+            print("\n✅ Form filling logic completed.")
             
             # Capture debug screenshot of filled form
             self.page.screenshot(path=f'debug_filled_{datetime.now().strftime("%H%M%S")}.jpg')
