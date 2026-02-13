@@ -69,25 +69,7 @@ from functools import wraps
 import psycopg2
 import psycopg2.extras
 import hashlib
-
-def get_db_connection():
-    db_host = os.getenv('DB_HOST')
-    try:
-        # Standard connection using hostname (Pooler is IPv4)
-        conn = psycopg2.connect(
-            host=db_host,
-            database=os.getenv('DB_NAME'),
-            user=os.getenv('DB_USER', 'postgres.uehkqlamchtdzcusqmhi'), # HARDCODED FIX
-            password=os.getenv('DB_PASSWORD'),
-            port=os.getenv('DB_PORT', 5432),
-            connect_timeout=10,
-            sslmode='require'
-        )
-        print("DEBUG: DB Connection SUCCESS!", flush=True)
-        return conn
-    except Exception as e:
-        print(f"DEBUG: DB Connection FAILED: {e}", flush=True)
-        raise e
+from db import get_db_connection
 
 # Import the automation class (Optional for now)
 # Import the automation class (Optional for now)
@@ -156,20 +138,46 @@ def automation_worker():
     while True:
         task_info = automation_queue.get()
         if task_info is None:
+            print("Worker received None, stopping.", flush=True)
             break
             
         try:
+            print(f"DEBUG: Processing task {task_info['task_id']}...", flush=True)
             logging.info(f"Processing queued task: {task_info['task_id']} for user {task_info['user_id']}")
-            run_automation_async(
-                task_info['task_id'],
-                task_info['form_url'],
-                task_info['email'],
-                task_info['password'],
-                task_info['form_data'],
-                task_info['pdf_path']
-            )
+            
+            # Use subprocess to avoid asyncio conflicts with Playwright Sync API
+            import subprocess
+            
+            # Prepare args
+            worker_script = os.path.join(os.path.dirname(__file__), 'automation_worker.py')
+            
+            cmd = [
+                sys.executable, "-u", worker_script,
+                "--task_id", task_info['task_id'],
+                "--form_url", task_info['form_url'],
+                "--email", task_info['email'],
+                "--password", task_info['password'],
+                "--form_data_json", json.dumps(task_info['form_data']),
+                "--pdf_path", task_info['pdf_path']
+            ]
+            
+            if task_info.get('blob_name'):
+                cmd.extend(["--blob_name", task_info['blob_name']])
+            
+            
+            # Run in separate process with logging
+            print("DEBUG: Opening automation_worker.log...", flush=True)
+            log_file = open('automation_worker.log', 'a')
+            print(f"DEBUG: Launching subprocess: {cmd}", flush=True)
+            
+            # Force UTF-8 for subprocess output
+            env = os.environ.copy()
+            env['PYTHONIOENCODING'] = 'utf-8'
+            
+            subprocess.Popen(cmd, stdout=log_file, stderr=log_file, env=env)
+            
         except Exception as e:
-            logging.error(f"Worker failed processing task {task_info['task_id']}: {e}")
+            logging.error(f"Worker failed launching subprocess for task {task_info['task_id']}: {e}")
         finally:
             automation_queue.task_done()
 
@@ -355,24 +363,33 @@ def auto_submit_from_email():
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
-        # 1. Find all eligible users (Auto-submit enabled, Active subscription)
-        # We join with users table to ensure user account is valid
+        # DEBUG: List all users to check status
+        cur.execute("SELECT id, email, is_active FROM users")
+        all_users = cur.fetchall()
+        logging.info(f"DEBUG: All users in DB: {all_users}")
+
         cur.execute("""
-            SELECT u.id, u.email, u.outlook_password_encrypted, sp.* 
+            SELECT u.id as user_id, u.email, u.outlook_password_encrypted,
+                   sp.full_name, sp.roll_number, sp.school, sp.programme,
+                   sp.specialization, sp.academic_year, sp.student_phone, sp.student_email,
+                   sp.parent1_name, sp.parent1_email, sp.parent1_phone,
+                   sp.parent2_name, sp.parent2_email, sp.parent2_phone,
+                   sp.signature_data, sp.default_reason
             FROM users u
             JOIN subscriptions s ON u.id = s.user_id
             JOIN student_profiles sp ON u.id = sp.user_id
-            WHERE s.is_auto_submit = 1 
+            WHERE s.is_auto_submit IS TRUE 
               AND s.subscription_end >= CURRENT_DATE
-              AND u.is_active = 1
+              AND u.is_active IS TRUE
         """)
         eligible_users = cur.fetchall()
+        logging.info(f"DEBUG: Found {len(eligible_users)} eligible users.")
         
         tasks_created = 0
 
         for user in eligible_users:
             try:
-                user_id = user['id']
+                user_id = user['user_id']
 
                 # Check for existing pending/completed task for this date
                 cur.execute("""
@@ -399,12 +416,18 @@ def auto_submit_from_email():
                 temp_dir = os.path.join(os.getcwd(), 'temp_uploads')
                 os.makedirs(temp_dir, exist_ok=True)
                 pdf_path = os.path.join(temp_dir, f"auto_{user_id}_{datetime.now().strftime('%Y%m%d%H%M%S')}.pdf")
+                logging.info(f"DEBUG: PDF path: {pdf_path}")
                 
                 # Generate PDF using helper
-                pdf_buffer = create_outing_pdf(user, start_date, end_date, out_reason)
+                pdf_buffer = generate_outing_pdf_buffer(user, start_date, end_date, out_reason)
+                logging.info(f"DEBUG: PDF generator returned {type(pdf_buffer)} for user {user_id}")
                 if pdf_buffer:
                     with open(pdf_path, 'wb') as f:
-                        f.write(pdf_buffer.getvalue())
+                        if hasattr(pdf_buffer, 'getvalue'):
+                            f.write(pdf_buffer.getvalue())
+                        else:
+                            logging.error(f"pdf_buffer is not a buffer! type: {type(pdf_buffer)}")
+                            raise Exception(f"Expected buffer, got {type(pdf_buffer)}")
                 else:
                     logging.error(f"Failed to generate PDF for user {user_id}, skipping automation.")
                     continue
@@ -463,7 +486,7 @@ def auto_submit_from_email():
                 tasks_created += 1
 
             except Exception as u_e:
-                logging.error(f"Error preparing task for user {user.get('id')}: {u_e}")
+                logging.error(f"Error preparing task for user {user.get('user_id')}: {u_e}")
 
         return jsonify({
             'success': True, 
@@ -713,9 +736,7 @@ def serve_signature(filename):
 # PDF GENERATION (PROTECTED)
 # ============================================================================
 
-@app.route('/api/generate-pdf', methods=['POST'])
-@login_required
-def create_outing_pdf(profile, start_date, end_date, reason):
+def generate_outing_pdf_buffer(profile, start_date, end_date, reason):
     """Helper to generate PDF bytes with user details and signature"""
     try:
         from reportlab.lib.pagesizes import A4
@@ -850,7 +871,7 @@ def generate_pdf():
         end_date = request.json.get('end_date') if request.json else None
         reason = request.json.get('reason') if request.json else None
         
-        pdf_buffer = create_outing_pdf(profile, start_date, end_date, reason)
+        pdf_buffer = generate_outing_pdf_buffer(profile, start_date, end_date, reason)
         if not pdf_buffer:
              return jsonify({'success': False, 'error': 'Failed to generate PDF'}), 500
 
@@ -935,7 +956,7 @@ def submit_form():
         profile_data = dict(profile)
         profile_data['email'] = user_auth['email']
         
-        pdf_buffer = create_outing_pdf(profile_data, leave_start_date, leave_end_date, reason)
+        pdf_buffer = generate_outing_pdf_buffer(profile_data, leave_start_date, leave_end_date, reason)
         if not pdf_buffer:
             return jsonify({'success': False, 'error': 'Failed to generate PDF'}), 500
         

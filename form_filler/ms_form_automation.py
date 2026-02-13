@@ -121,6 +121,33 @@ class MSFormAutomation:
         """)
         
         logging.info(f"Browser started (saved session: {'yes' if storage_state else 'no'})")
+
+    def wait_for_loading_screen(self):
+        """
+        Wait for any 'Loading...' overlays or spinners to disappear
+        """
+        try:
+            print("⏳ Checking for loading indicators...")
+            # Common MS Forms loading indicators
+            # 1. Overlay with text "Loading"
+            # 2. Spinner divs
+            # 3. Skeleton loaders
+            
+            # Wait for "Loading..." text to detach/disappear
+            self.page.locator('text=Loading...').wait_for(state='detached', timeout=10000)
+            
+            # Wait for specific spinner class if known (often office-form-spinner or similar)
+            # But text=Loading... is usually sufficient
+            
+            # Double check network idle again
+            self.page.wait_for_load_state('networkidle', timeout=5000)
+            print("✅ Loading screen cleared.")
+            return True
+        except Exception:
+            # If timeout waiting for detach, it applies it MIGHT still be there, or it was never there.
+            # We assume it's clear if we don't find it.
+            print("ℹ️ No persistent loading screen found (or cleared).")
+            return True
         
     def microsoft_login(self, email, password):
         """
@@ -130,23 +157,33 @@ class MSFormAutomation:
         try:
             logging.info(f"Attempting login with {email}...")
             
-            # First check if we're already logged in (saved session worked)
-            current_url = self.page.url
-            if 'forms.office.com' in current_url and 'login' not in current_url:
-                logging.info("Already logged in via saved session - skipping login!")
+            # Use a short delay and network idle to let redirects happen
+            try:
+                self.page.wait_for_load_state('networkidle', timeout=8000)
+            except:
+                pass 
+
+            # Explicitly check for Login vs Form
+            # indicators of being on login page
+            on_login_page = False
+            try:
+                if self.page.locator('input[name="loginfmt"]').count() > 0 or 'login.microsoftonline.com' in self.page.url:
+                    on_login_page = True
+            except:
+                pass
+
+            if not on_login_page and 'forms.office.com' in self.page.url:
+                logging.info("Already logged in via saved session (No login input found)!")
                 return True
             
-            # Check if already on login page
-            # Check if already on login page
-            if 'login.microsoftonline.com' in self.page.url:
-                logging.info("Already on Microsoft login page")
-            else:
+            logging.info("Not on form page, or on login page. Proceeding with authentication...")
+            
+            # If not explicitly on login page yet, wait for it
+            if not on_login_page:
                 logging.info("Waiting for redirect to login...")
-                # Increased timeout to 30s for slow redirects
                 self.page.wait_for_url('**/login.microsoftonline.com/**', timeout=30000)
             
             # Enter email
-            # Increased timeout to 30s for slow loads
             email_input = self.page.wait_for_selector('input[type="email"]', timeout=30000)
             email_input.fill(email)
             logging.info(f"Email entered: {email}")
@@ -157,7 +194,6 @@ class MSFormAutomation:
             
             # Enter password
             try:
-                # Increased timeout to 30s
                 password_input = self.page.wait_for_selector('input[type="password"]', timeout=30000)
                 password_input.fill(password)
                 logging.info("Password entered")
@@ -183,8 +219,6 @@ class MSFormAutomation:
             # Check for MFA/2FA
             if self.page.url.find('login.microsoftonline.com') != -1:
                 logging.warning("MFA/2FA detected! Waiting 120s for approval...")
-                
-                # Wait for user to approve MFA (120 seconds max)
                 try:
                     self.page.wait_for_url('https://forms.office.com/**', timeout=120000)
                     logging.info("MFA approved!")
@@ -192,12 +226,15 @@ class MSFormAutomation:
                     raise Exception("MFA approval timeout (120s) - you need to approve the notification on your phone")
             
             # Verify login success
-            self.page.wait_for_load_state('networkidle', timeout=15000)
+            try:
+                self.page.wait_for_load_state('networkidle', timeout=15000)
+            except:
+                pass
             
             if 'forms.office.com' in self.page.url:
                 logging.info("Login successful!")
                 
-                # SAVE SESSION STATE so we don't need MFA next time
+                # SAVE SESSION STATE
                 try:
                     state_file = getattr(self, 'current_state_file', self.STORAGE_STATE_FILE)
                     self.context.storage_state(path=state_file)
@@ -207,7 +244,8 @@ class MSFormAutomation:
                 
                 return True
             else:
-                raise Exception(f"Login failed - stuck on: {self.page.url}")
+                current = self.page.url
+                raise Exception(f"Login failed - stuck on: {current}")
                 
         except Exception as e:
             logging.error(f"Login failed: {str(e)}")
@@ -258,10 +296,13 @@ class MSFormAutomation:
                                     return True
                         
                     print(f"   ⚠️ Could not find input for any of: {labels}")
+                    # CRITICAL FIX: Raise error for mandatory fields to prevent silent skipping
+                    if "Student Name" in labels or "Name of the Student" in labels or "Roll Number" in labels:
+                         raise Exception(f"Critical Field Not Found: {labels[0]}")
                     return False
                 except Exception as e:
                     print(f"   ❌ Error filling {label_text_or_list}: {e}")
-                    return False
+                    raise e
 
             def select_radio(label_text, option_text):
                 try:
@@ -455,7 +496,8 @@ class MSFormAutomation:
             print("⏳ Waiting for file upload section...")
             try:
                 # MS Forms upload button usually has text "Upload file" or "Upload"
-                # We wait for the container or button to ensure the question is loaded
+                # We wait for the "Immersive Reader" button, Question List, or the Submit Button
+                # 'div[data-automation-id="questionItem"]' is very specific to MS Forms
                 self.page.wait_for_selector('text=Upload', timeout=10000)
             except:
                 print("⚠️ 'Upload' text not found, trying generic file input wait...")
@@ -484,7 +526,7 @@ class MSFormAutomation:
 
                 file_chooser = fc_info.value
                 file_chooser.set_files(local_pdf_path)
-                print("✅ PDF uploaded via FileChooser!")
+                print("PDF uploaded via FileChooser!")
 
             except PlaywrightTimeout:
                 print("⚠️ FileChooser timeout. Trying direct input set as last resort...")
@@ -504,29 +546,6 @@ class MSFormAutomation:
             self.page.screenshot(path=f'error_pdf_upload_{datetime.now().strftime("%Y%m%d_%H%M%S")}.png')
             raise
     
-    def submit_form(self):
-        """
-        Submit the form and verify submission
-        """
-        try:
-            print("🚀 Submitting form...")
-            
-            # Find and click submit button
-            submit_button = self.page.locator('button:has-text("Submit")').first
-            submit_button.click()
-            
-            # print("NOTE: Submit button click disabled for testing safety. Uncomment in production.")
-            
-            # Wait for success message
-            time.sleep(2)
-            
-            return True
-                    
-        except Exception as e:
-            print(f"❌ Form submission failed: {str(e)}")
-            self.page.screenshot(path=f'error_submit_{datetime.now().strftime("%Y%m%d_%H%M%S")}.png')
-            raise
-    
     def run_automation(self, form_url, email, password, form_data, pdf_path, status_callback=None, verification_callback=None):
         """
         Complete automation workflow.
@@ -537,8 +556,10 @@ class MSFormAutomation:
             print(f"[{prog}%] {msg}")
             if status_callback:
                 try:
-                    # Capture screenshot for "Live View"
-                    screenshot = self.page.screenshot(type='jpeg', quality=50)
+                    # Capture screenshot for "Live View" (only if page exists)
+                    screenshot = None
+                    if hasattr(self, 'page') and self.page:
+                        screenshot = self.page.screenshot(type='jpeg', quality=50)
                     status_callback(msg, prog, screenshot)
                 except Exception as e:
                     logging.warning(f"Failed to capture screenshot: {e}")
@@ -546,9 +567,9 @@ class MSFormAutomation:
 
         try:
             print("=" * 60)
-            print("🤖 STARTING MICROSOFT FORMS AUTOMATION")
+            print("STARTING MICROSOFT FORMS AUTOMATION")
             print("=" * 60)
-            print(f"⏱️  Human-like delays: {self.min_delay//60}-{self.max_delay//60} minutes between steps")
+            print(f"Human-like delays: {self.min_delay//60}-{self.max_delay//60} minutes between steps")
             
             # Step 1: Start browser
             update_status("Starting browser session...", 10)
@@ -564,15 +585,49 @@ class MSFormAutomation:
             update_status("Authenticating with Microsoft...", 40)
             self.microsoft_login(email, password)
             
-            # Step 4: Fill form
+            print("⏳ Stability Delay: Waiting 5s before accessing form...")
+            time.sleep(5) # Explicit wait for redirect/render as requested by user
+            
+            # EXPLICIT LOADING CHECK
+            self.wait_for_loading_screen()
+            
+            # Step 4: Validate we are actually on the form
+            update_status("Verifying form access...", 50)
+            try:
+                # Wait for specific MS Form elements
+                # 'div[data-automation-id="questionItem"]' is very specific to MS Forms
+                # or 'button:has-text("Submit")'
+                # or 'div:has-text("Hi,")'
+                self.page.wait_for_selector(
+                    'div[data-automation-id="questionItem"], button:has-text("Submit"), div:has-text("Hi,")', 
+                    timeout=20000
+                )
+                
+                # Double check we are NOT on login page
+                if "login.microsoftonline.com" in self.page.url:
+                     raise Exception("Redirected back to Login Page after authentication attempt!")
+                     
+            except PlaywrightTimeout:
+                current_url = self.page.url
+                if "login.microsoftonline.com" in current_url:
+                     raise Exception("Authentication Failed - Stuck on Login Page")
+                title = self.page.title()
+                # Take a screenshot to help debug
+                try:
+                    self.page.screenshot(path="debug_form_load_fail.png")
+                except:
+                    pass
+                raise Exception(f"Form did not load. Current URL: {current_url}, Title: {title}")
+
+            # Step 5: Fill form
             update_status("Filling form data...", 60)
             self.fill_form(form_data)
             
-            # Step 5: Upload PDF
+            # Step 6: Upload PDF
             update_status("Uploading signed PDF...", 80)
             self.upload_pdf(pdf_path)
             
-            # Step 6: Submit (with AI Verification)
+            # Step 7: Submit (with AI Verification)
             if verification_callback:
                 update_status("Verifying with AI...", 90)
             else:
@@ -584,20 +639,35 @@ class MSFormAutomation:
             
             # Keep browser open for a bit
             time.sleep(5)
+            # Cleanup
+            print("Cleaning up...")
+            if hasattr(self, 'browser') and self.browser:
+                self.browser.close()
+                print("Browser closed")
             return True
             
         except Exception as e:
             logging.error("=" * 60)
-            logging.error(f"❌ AUTOMATION FAILED: {str(e)}")
+            logging.error(f"AUTOMATION FAILED: {str(e)}")
+            
+            # Capture failure screenshot
+            if hasattr(self, 'page') and self.page:
+                try:
+                    fail_shot = f'error_{datetime.now().strftime("%Y%m%d_%H%M%S")}.png'
+                    self.page.screenshot(path=fail_shot)
+                    logging.info(f"Saved FAILURE screenshot to: {fail_shot}")
+                except Exception as se:
+                    logging.error(f"Could not save failure screenshot: {se}")
             logging.error(f"Error type: {type(e).__name__}")
             logging.error(f"Full traceback:", exc_info=True)
             logging.error("=" * 60)
+            
+            # Cleanup here too
+            if hasattr(self, 'browser') and self.browser:
+                self.browser.close()
+            
             # Re-raise so api.py can capture the REAL error message
             raise
             
         finally:
-            # Cleanup
-            if self.browser:
-                print("\n🧹 Cleaning up...")
-                self.browser.close()
-                print("✅ Browser closed")
+            pass
