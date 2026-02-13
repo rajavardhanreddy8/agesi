@@ -53,3 +53,4 @@ test_*.pdf
 /fresh_logs.zip
 /final_attempt_logs.zip
 /very_fresh_logs.zip
+backups/
