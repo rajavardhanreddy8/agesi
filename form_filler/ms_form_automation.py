@@ -325,40 +325,98 @@ class MSFormAutomation:
                     labels = label_text_or_list if isinstance(label_text_or_list, list) else [label_text_or_list]
                     
                     for label_text in labels:
-                        # Find the label element containing the text
-                        # MS Forms structure: div[role="heading"] -> spans, or label tags
-                        # We look for a container that has the text, then find the input inside it or near it
                         print(f"🔍 Looking for field: '{label_text}'...")
                         
-                        # Strategy 1: Look for input with aria-label containing text
-                        input_el = self.page.locator(f'input[aria-label*="{label_text}"]')
-                        if input_el.count() > 0 and input_el.first.is_visible():
-                            input_el.first.fill(value)
-                            print(f"   ✅ Filled by aria-label: {label_text} = {value}")
-                            return True
-
-                        # Strategy 2: Look for text checks
-                        # Find the question text, then find the input in the same container
-                        question = self.page.locator(f':text("{label_text}")').first
-                        if question.count() > 0:
-                            # Go up to the question container (usually a div with specific class or role)
-                            # In MS Forms, inputs are usually within the same parent or traverse up/down
-                            # Simplest: Input appearing *after* the label in DOM order
-                            # We use Playwright's layout selectors if possible, or just look for input inside the question wrapper
+                        # Strategy 1: aria-label (case-insensitive partial match)
+                        # Microsoft Forms often uses aria-label for accessibility
+                        try:
+                            # Use JavaScript to find inputs with case-insensitive aria-label match
+                            input_el = self.page.evaluate(f'''() => {{
+                                const searchText = "{label_text}".toLowerCase();
+                                const inputs = Array.from(document.querySelectorAll('input[aria-label]'));
+                                return inputs.find(input => 
+                                    input.getAttribute('aria-label').toLowerCase().includes(searchText)
+                                );
+                            }}''')
                             
-                            # Try finding input inside the same section
-                            section = question.locator("xpath=./ancestor::div[contains(@class, '-question-')]|./ancestor::div[@role='listitem']")
-                            if section.count() > 0:
-                                inp = section.first.locator('input').first
-                                if inp.count() > 0:
+                            if input_el:
+                                # Re-locate the element using Playwright
+                                aria_label = self.page.evaluate('(el) => el.getAttribute("aria-label")', input_el)
+                                inp = self.page.locator(f'input[aria-label="{aria_label}"]').first
+                                if inp.is_visible():
                                     inp.fill(value)
-                                    print(f"   ✅ Filled by section context: {label_text} = {value}")
+                                    print(f"   ✅ Filled by aria-label: {label_text} = {value}")
                                     return True
+                        except Exception as e:
+                            print(f"   Strategy 1 failed: {e}")
                         
+                        # Strategy 2: Find by placeholder (case-insensitive)
+                        try:
+                            placeholders = self.page.locator('input[placeholder]').all()
+                            for inp in placeholders:
+                                placeholder = inp.get_attribute('placeholder') or ''
+                                if label_text.lower() in placeholder.lower():
+                                    if inp.is_visible():
+                                        inp.fill(value)
+                                        print(f"   ✅ Filled by placeholder: {label_text} = {value}")
+                                        return True
+                        except Exception as e:
+                            print(f"   Strategy 2 failed: {e}")
+                        
+                        # Strategy 3: Find text containing label, then find nearest input
+                        # This handles cases where the label is in a div/span near the input
+                        try:
+                            # Case-insensitive text search using regex
+                            pattern = label_text.replace(' ', '\\s*')  # Allow flexible spacing
+                            text_locator = self.page.locator(f'text=/{pattern}/i').first
+                            
+                            if text_locator.count() > 0:
+                                # Try to find input in the same question container
+                                # MS Forms structure: question container > label text + input
+                                container = text_locator.locator('xpath=./ancestor::div[@data-automation-id="questionItem"]').first
+                                
+                                if container.count() > 0:
+                                    # Find input within this container
+                                    inp = container.locator('input[type="text"], input:not([type])').first
+                                    if inp.count() > 0 and inp.is_visible():
+                                        inp.fill(value)
+                                        print(f"   ✅ Filled by container context: {label_text} = {value}")
+                                        return True
+                                
+                                # Fallback: find any input after the text in DOM order
+                                inp = self.page.locator(f'text=/{pattern}/i ~ input, text=/{pattern}/i + input').first
+                                if inp.count() > 0 and inp.is_visible():
+                                    inp.fill(value)
+                                    print(f"   ✅ Filled by DOM proximity: {label_text} = {value}")
+                                    return True
+                        except Exception as e:
+                            print(f"   Strategy 3 failed: {e}")
+                        
+                        # Strategy 4: Brute force - find all visible text inputs and match by nearby text
+                        try:
+                            all_inputs = self.page.locator('input[type="text"], input:not([type])').all()
+                            for inp in all_inputs:
+                                if not inp.is_visible():
+                                    continue
+                                
+                                # Get the parent container
+                                parent_text = inp.evaluate('el => el.closest("div[data-automation-id=\\"questionItem\\"]")?.innerText || ""')
+                                if label_text.lower() in parent_text.lower():
+                                    inp.fill(value)
+                                    print(f"   ✅ Filled by parent text match: {label_text} = {value}")
+                                    return True
+                        except Exception as e:
+                            print(f"   Strategy 4 failed: {e}")
+                    
                     print(f"   ⚠️ Could not find input for any of: {labels}")
                     # CRITICAL FIX: Raise error for mandatory fields to prevent silent skipping
-                    if "Student Name" in labels or "Name of the Student" in labels or "Roll Number" in labels:
-                         raise Exception(f"Critical Field Not Found: {labels[0]}")
+                    if any(keyword in ' '.join(labels).lower() for keyword in ['student name', 'name of the student', 'roll number']):
+                        # Take a screenshot for debugging
+                        try:
+                            self.page.screenshot(path=f'debug_field_not_found_{datetime.now().strftime("%H%M%S")}.png')
+                        except:
+                            pass
+                        raise Exception(f"Critical Field Not Found: {labels[0]}")
                     return False
                 except Exception as e:
                     print(f"   ❌ Error filling {label_text_or_list}: {e}")
