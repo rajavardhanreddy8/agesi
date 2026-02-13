@@ -795,7 +795,80 @@ class MSFormAutomation:
                     raise Exception(f"AI Verification Failed: {reason}")
                 print("✅ AI Verified. Proceeding to submit.")
 
-            print("🚀 Submitting form...")
+            print("🚀 Preparing to submit form...")
+            
+            # PRE-SUBMIT VALIDATION CHECK
+            # Microsoft Forms often shows validation errors inline before you even click Submit
+            # Let's check for errors BEFORE clicking to get better diagnostics
+            print("\n=== PRE-SUBMIT VALIDATION CHECK ===")
+            
+            # Scroll to bottom to trigger any lazy validation
+            try:
+                self.page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
+                time.sleep(1)
+                self.page.evaluate("window.scrollTo(0, 0)")
+                time.sleep(1)
+            except:
+                pass
+            
+            # Check for validation error messages
+            error_selectors = [
+                '.office-form-question-error-message',
+                '[role="alert"]',
+                ':text("This question is required")',
+                ':text("Please enter")',
+                ':text("Required")',
+                '.validation-error'
+            ]
+            
+            has_errors = False
+            error_details = []
+            
+            for selector in error_selectors:
+                try:
+                    errors = self.page.locator(selector)
+                    if errors.count() > 0:
+                        for i in range(min(errors.count(), 10)):  # Max 10 errors
+                            err = errors.nth(i)
+                            if err.is_visible():
+                                err_text = err.inner_text()
+                                error_details.append(err_text)
+                                has_errors = True
+                except:
+                    pass
+            
+            if has_errors:
+                # Take screenshot showing the errors
+                self.page.screenshot(path=f'pre_submit_errors_{datetime.now().strftime("%H%M%S")}.png')
+                
+                # Get all empty visible required inputs to help debug
+                empty_required = []
+                try:
+                    all_inputs = self.page.locator('input[type="text"]:visible, input:not([type]):visible, textarea:visible').all()
+                    for i, inp in enumerate(all_inputs):
+                        try:
+                            val = inp.input_value()
+                            aria = inp.get_attribute('aria-label') or f'Input {i}'
+                            if not val or val.strip() == '':
+                                empty_required.append(aria)
+                        except:
+                            pass
+                except:
+                    pass
+                
+                error_msg = f"PRE-SUBMIT VALIDATION FAILED:\n"
+                error_msg += f"  Visible Errors: {error_details}\n"
+                if empty_required:
+                    error_msg += f"  Empty Required Fields: {empty_required[:10]}"  # Max 10
+                
+                raise Exception(error_msg)
+            
+            print("✅ No validation errors detected pre-submit")
+            
+            # Take pre-submit screenshot for verification
+            self.page.screenshot(path=f'pre_submit_ok_{datetime.now().strftime("%H%M%S")}.png')
+            
+            print("🚀 Clicking Submit button...")
             
             # Click Submit
             submit_btn = self.page.locator('button:has-text("Submit")')
