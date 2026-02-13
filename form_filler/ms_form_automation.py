@@ -493,21 +493,55 @@ class MSFormAutomation:
             def select_radio(label_text, option_text):
                 try:
                     print(f"🔍 Looking for radio: '{label_text}' -> '{option_text}'...")
-                    # Find the choice directly
+                    if not option_text:
+                        print("   ⚠️ No option text provided, skipping radio selection")
+                        return False
+                        
+                    # Strategy 1: Find by role="radio" with aria-label
                     choice = self.page.locator(f'div[role="radio"][aria-label="{option_text}"]')
                     if choice.count() > 0:
                         choice.first.click()
                         print(f"   ✅ Selected radio (aria-label): {option_text}")
                         return True
                     
-                    # Fallback: exact text match
+                    # Strategy 2: Find exact text match
                     choice = self.page.locator(f':text("{option_text}")')
                     if choice.count() > 0:
                         choice.first.click()
                         print(f"   ✅ Selected radio (text): {option_text}")
                         return True
                         
+                    # Strategy 3: Find loose text match (case-insensitive)
+                    pattern = option_text.replace('(', '\\(').replace(')', '\\)')
+                    choice = self.page.locator(f'text=/{pattern}/i')
+                    if choice.count() > 0:
+                        choice.first.click()
+                        print(f"   ✅ Selected radio (regex): {option_text}")
+                        return True
+                        
+                    # Strategy 4: Find any radio button in the question container (if only one question is asked)
+                    # If label_text is found, look for radios inside that container
+                    label_locator = self.page.locator(f'text=/{label_text}/i').first
+                    if label_locator.count() > 0:
+                        container = label_locator.locator('xpath=./ancestor::div[@data-automation-id="questionItem"]').first
+                        if container.count() > 0:
+                            radios = container.locator('[role="radio"]').all()
+                            for radio in radios:
+                                radio_aria = radio.get_attribute('aria-label') or ''
+                                if option_text.lower() in radio_aria.lower():
+                                    radio.click()
+                                    print(f"   ✅ Selected radio in container: {option_text}")
+                                    return True
+                            # If no match in container but radios exist, and we're desperate...
+                            # Maybe print them to debug?
+                            print(f"   ⚠️ Found radios in '{label_text}' container but no match for '{option_text}'")
+                    
                     print(f"   ⚠️ Could not find option '{option_text}'")
+                    # Take screenshot
+                    try:
+                        self.page.screenshot(path=f'debug_radio_fail_{datetime.now().strftime("%H%M%S")}.png')
+                    except:
+                        pass
                     return False
                 except Exception as e:
                     print(f"   ❌ Error selecting {option_text}: {e}")
@@ -616,8 +650,38 @@ class MSFormAutomation:
             
             # 3. Dates
             # Try specific labels first
-            fill_by_label("Leave Start Date", form_data.get('leave_start_date', ''))
-            fill_by_label("Leave End Date", form_data.get('leave_end_date', ''))
+            start_date_filled = False
+            end_date_filled = False
+            
+            try:
+                start_date_filled = fill_by_label("Leave Start Date", form_data.get('leave_start_date', ''), is_date=True)
+            except:
+                pass
+                
+            try:
+                end_date_filled = fill_by_label("Leave End Date", form_data.get('leave_end_date', ''), is_date=True)
+            except:
+                pass
+            
+            # DATE POSITIONAL FALLBACK
+            # If dates weren't filled, try filling 3rd and 4th inputs (assuming 1st=Name, 2nd=Roll)
+            if (not start_date_filled or not end_date_filled) and form_data.get('leave_start_date'):
+                print("FALLBACK: Trying positional date filling...")
+                try:
+                    all_text_inputs = self.page.locator('input[type="text"]:visible, input:not([type]):visible').all()
+                    # We expect Name(0) and Roll(1) to be first. Dates should be next.
+                    
+                    if not start_date_filled and len(all_text_inputs) >= 3:
+                        all_text_inputs[2].fill(form_data['leave_start_date'])
+                        print(f"   POSITIONAL: Filled input[2] with start date: {form_data['leave_start_date']}")
+                        start_date_filled = True
+                        
+                    if not end_date_filled and len(all_text_inputs) >= 4:
+                        all_text_inputs[3].fill(form_data['leave_end_date'])
+                        print(f"   POSITIONAL: Filled input[3] with end date: {form_data['leave_end_date']}")
+                        end_date_filled = True
+                except Exception as e:
+                    print(f"Positional date fallback failed: {e}")
             
             
             # 4. Parent Details
