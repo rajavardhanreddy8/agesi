@@ -43,3 +43,13 @@ screenshots/error_*.png
 
 # Test files
 test_*.pdf
+# Auto-ignored large generated artifacts
+/deploy.zip
+/deploy_fixed.zip
+/latest_logs*.zip
+/logs*.zip
+/form_filler/*.zip
+/app_bundle.js
+/fresh_logs.zip
+/final_attempt_logs.zip
+/very_fresh_logs.zip
