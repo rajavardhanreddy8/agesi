@@ -153,44 +153,91 @@ class MSFormAutomation:
         """
         Handle Microsoft authentication flow
         Saves session state after successful login to avoid MFA next time
+        
+        CRITICAL FIX: The old code checked URL too early (before JS redirect).
+        forms.office.com URL is briefly visible before login redirect fires,
+        causing the bot to falsely think it's already logged in.
+        
+        New approach: Wait for EITHER the login page OR actual form questions
+        to appear, then decide based on what we actually see.
         """
         try:
             logging.info(f"Attempting login with {email}...")
+            logging.info(f"Current URL at login start: {self.page.url}")
             
-            # Use a short delay and network idle to let redirects happen
+            # STEP 1: Wait for the page to ACTUALLY settle.
+            # The key problem was: forms.office.com loads, then JS redirects to login.
+            # networkidle fires BEFORE the JS redirect, so URL is still forms.office.com.
+            # FIX: Wait for EITHER login elements OR form question elements to appear.
+            # This races both possibilities and detects whichever state we're actually in.
+            
+            logging.info("Waiting for page to settle (login page OR form content)...")
+            
             try:
-                self.page.wait_for_load_state('networkidle', timeout=8000)
-            except:
-                pass 
-
-            # Explicitly check for Login vs Form
-            # indicators of being on login page
+                # Race: wait for EITHER the login email input OR the form question container
+                # Whichever appears first tells us the true state
+                self.page.wait_for_selector(
+                    'input[name="loginfmt"], input[type="email"], div[data-automation-id="questionItem"]',
+                    timeout=30000
+                )
+            except PlaywrightTimeout:
+                logging.warning("Neither login page nor form loaded within 30s!")
+                # Take a screenshot for debugging
+                try:
+                    self.page.screenshot(path=f'debug_login_settle_{datetime.now().strftime("%H%M%S")}.png')
+                except:
+                    pass
+            
+            # Now check what actually loaded
+            current_url = self.page.url
+            logging.info(f"Page settled. URL: {current_url}")
+            
+            # Check if we're on the login page
             on_login_page = False
-            try:
-                if self.page.locator('input[name="loginfmt"]').count() > 0 or 'login.microsoftonline.com' in self.page.url:
-                    on_login_page = True
-            except:
-                pass
-
-            if not on_login_page and 'forms.office.com' in self.page.url:
-                logging.info("Already logged in via saved session (No login input found)!")
+            login_input = self.page.locator('input[name="loginfmt"], input[type="email"]')
+            if login_input.count() > 0:
+                on_login_page = True
+                logging.info("Login page detected (email input found)")
+            elif 'login.microsoftonline.com' in current_url:
+                on_login_page = True
+                logging.info("Login page detected (URL contains login.microsoftonline.com)")
+            
+            # Check if actual form questions are visible (proof of being logged in)
+            form_questions = self.page.locator('div[data-automation-id="questionItem"]')
+            if not on_login_page and form_questions.count() > 0:
+                logging.info("Already logged in - form questions are visible! Skipping login.")
                 return True
             
-            logging.info("Not on form page, or on login page. Proceeding with authentication...")
-            
-            # If not explicitly on login page yet, wait for it
+            # If we're not on login page and don't see form questions, 
+            # we might still be redirecting. Wait for login page explicitly.
             if not on_login_page:
-                logging.info("Waiting for redirect to login...")
-                self.page.wait_for_url('**/login.microsoftonline.com/**', timeout=30000)
+                logging.info("Not on login page yet, and no form questions found. Waiting for redirect...")
+                try:
+                    self.page.wait_for_url('**/login.microsoftonline.com/**', timeout=15000)
+                    on_login_page = True
+                except PlaywrightTimeout:
+                    # Maybe we ARE on the form after all, re-check
+                    if form_questions.count() > 0:
+                        logging.info("Form questions appeared during wait! Already logged in.")
+                        return True
+                    else:
+                        # Take screenshot and raise
+                        try:
+                            self.page.screenshot(path=f'debug_login_unknown_{datetime.now().strftime("%H%M%S")}.png')
+                        except:
+                            pass
+                        raise Exception(f"Unknown page state. URL: {self.page.url}")
+            
+            logging.info("On login page. Proceeding with authentication...")
             
             # Enter email
-            email_input = self.page.wait_for_selector('input[type="email"]', timeout=30000)
+            email_input = self.page.wait_for_selector('input[type="email"]', timeout=15000)
             email_input.fill(email)
             logging.info(f"Email entered: {email}")
             
             # Click Next button
             self.page.click('input[type="submit"]')
-            time.sleep(2)
+            time.sleep(3)
             
             # Enter password
             try:
@@ -203,12 +250,16 @@ class MSFormAutomation:
                 time.sleep(3)
                 
             except PlaywrightTimeout:
-                logging.warning("Password field not found - might be SSO or different auth")
-                raise Exception("Authentication method not supported")
+                logging.warning("Password field not found - might be SSO or different auth flow")
+                try:
+                    self.page.screenshot(path=f'debug_no_password_{datetime.now().strftime("%H%M%S")}.png')
+                except:
+                    pass
+                raise Exception("Authentication method not supported - password field not found")
             
             # Handle "Stay signed in?" prompt
             try:
-                stay_signed_in = self.page.wait_for_selector('text=Stay signed in?', timeout=5000)
+                stay_signed_in = self.page.wait_for_selector('text=Stay signed in?', timeout=8000)
                 if stay_signed_in:
                     logging.info("'Stay signed in?' prompt - clicking Yes")
                     self.page.click('input[type="submit"][value="Yes"]')
@@ -217,21 +268,26 @@ class MSFormAutomation:
                 logging.info("No 'Stay signed in?' prompt")
             
             # Check for MFA/2FA
-            if self.page.url.find('login.microsoftonline.com') != -1:
+            if 'login.microsoftonline.com' in self.page.url:
                 logging.warning("MFA/2FA detected! Waiting 120s for approval...")
                 try:
                     self.page.wait_for_url('https://forms.office.com/**', timeout=120000)
                     logging.info("MFA approved!")
                 except PlaywrightTimeout:
-                    raise Exception("MFA approval timeout (120s) - you need to approve the notification on your phone")
+                    raise Exception("MFA approval timeout (120s) - approve the notification on your phone")
             
-            # Verify login success
+            # Verify login success - wait for form to actually load
+            logging.info("Waiting for form to load after login...")
             try:
                 self.page.wait_for_load_state('networkidle', timeout=15000)
             except:
                 pass
             
-            if 'forms.office.com' in self.page.url:
+            # Final verification: are we on the form page?
+            final_url = self.page.url
+            logging.info(f"Final URL after login: {final_url}")
+            
+            if 'forms.office.com' in final_url and 'login' not in final_url:
                 logging.info("Login successful!")
                 
                 # SAVE SESSION STATE
@@ -244,11 +300,15 @@ class MSFormAutomation:
                 
                 return True
             else:
-                current = self.page.url
-                raise Exception(f"Login failed - stuck on: {current}")
+                raise Exception(f"Login failed - ended up on: {final_url}")
                 
         except Exception as e:
             logging.error(f"Login failed: {str(e)}")
+            # Capture screenshot on any login failure
+            try:
+                self.page.screenshot(path=f'debug_login_fail_{datetime.now().strftime("%H%M%S")}.png')
+            except:
+                pass
             raise
     
     def fill_form(self, form_data):
