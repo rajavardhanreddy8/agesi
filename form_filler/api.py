@@ -3,40 +3,43 @@ Flask API to trigger Microsoft Forms automation
 Integrates with your existing PDF generation web app and PostgreSQL database
 """
 
-import httpx
-import supabase
-# print(f"DEBUG: httpx version: {httpx.__version__}", flush=True)
-# print(f"DEBUG: supabase version: {supabase.__version__}", flush=True)
-
-from flask import Flask, request, jsonify
-from flask_cors import CORS
+import sys
+import os
+import logging
 import threading
 import json
-import os
-import sys
-import logging
-import os
-import logging
-print("DEBUG: API.PY MODULE LOADING...", flush=True)
+import queue
 from datetime import datetime, timedelta
-from cryptography.fernet import Fernet
-from dotenv import load_dotenv
-# Force override of environment variables from .env file
-import os
+from functools import wraps
 from pathlib import Path
 
-# Force clear existing variables to ensure .env is read
-# if 'RAZORPAY_KEY_ID' in os.environ:
-#     del os.environ['RAZORPAY_KEY_ID']
-# if 'RAZORPAY_KEY_SECRET' in os.environ:
-#     del os.environ['RAZORPAY_KEY_SECRET']
+# Third-party imports
+import httpx
+import supabase
+from flask import Flask, request, jsonify, send_file, send_from_directory
+from flask_cors import CORS
+from dotenv import load_dotenv
+import razorpay
+import psycopg2
+import psycopg2.extras
+from .db import get_db_connection
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('automation.log'),
+        logging.StreamHandler()
+    ]
+)
+
+print("DEBUG: API.PY MODULE LOADING...", flush=True)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 env_path = BASE_DIR / '.env'
 print(f"DEBUG: Loading .env from: {env_path}", flush=True)
 # CRITICAL FIX: Do NOT override system env vars (Azure settings take first priority)
-load_dotenv(dotenv_path=env_path, override=False)
-
 load_dotenv(dotenv_path=env_path, override=False)
 
 # Add mail_agent to path for Grok Service
@@ -53,7 +56,6 @@ print(f"DEBUG: Loaded DB_HOST: {os.getenv('DB_HOST')}", flush=True)
 print(f"DEBUG: Loaded RAZORPAY_KEY_ID: {os.getenv('RAZORPAY_KEY_ID')}", flush=True)
 print("="*50, flush=True)
 
-import razorpay
 # Initialize Razorpay Client Global
 razorpay_key_id = os.getenv('RAZORPAY_KEY_ID')
 razorpay_key_secret = os.getenv('RAZORPAY_KEY_SECRET')
@@ -65,13 +67,7 @@ else:
     print("WARNING: Razorpay keys not found in environment", flush=True)
     razorpay_client = None
 
-from functools import wraps
-import psycopg2
-import psycopg2.extras
-import hashlib
-from db import get_db_connection
 
-# Import the automation class (Optional for now)
 # Import the automation class (Optional for now)
 try:
     try:
@@ -82,7 +78,6 @@ except ImportError:
     MSFormAutomation = None
     logging.warning("Playwright not installed or module not found. Automation features disabled.")
 
-# Import authentication system (Supabase-based, no password required!)
 # Import authentication system (Supabase-based, no password required!)
 try:
     from form_filler.auth_system_v2 import (
@@ -103,7 +98,6 @@ except ImportError:
         get_user_profile, supabase, login_required
     )
 
-load_dotenv()
 
 app = Flask(__name__)
 # Configure CORS with explicit allowed origins
@@ -117,19 +111,9 @@ allow_origins = [
 CORS(app, resources={r"/*": {"origins": allow_origins}}, supports_credentials=True)
 app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY', 'your-secret-key')
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler('automation.log'),
-        logging.StreamHandler()
-    ]
-)
 
 # Store active automation tasks
 automation_tasks = {}
-import queue
 
 # Global Automation Queue for Scalability
 automation_queue = queue.Queue()
@@ -728,7 +712,6 @@ def reverify_credentials():
 
 @app.route('/signatures/<path:filename>')
 def serve_signature(filename):
-    from flask import send_from_directory
     return send_from_directory(os.path.abspath('signatures'), filename)
 
 
@@ -875,7 +858,6 @@ def generate_pdf():
         if not pdf_buffer:
              return jsonify({'success': False, 'error': 'Failed to generate PDF'}), 500
 
-        from flask import send_file
         return send_file(
             pdf_buffer,
             mimetype='application/pdf',
