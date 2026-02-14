@@ -954,6 +954,11 @@ class MSFormAutomation:
         Supports both local file paths and URLs
         """
         try:
+            # Handle None or empty pdf_path
+            if not pdf_path:
+                print("⚠️ No PDF path provided, skipping upload")
+                return True
+                
             print(f"📤 Uploading PDF: {pdf_path}")
             
             # Check if pdf_path is a URL
