@@ -647,19 +647,28 @@ class MSFormAutomation:
             # 2. Radios
             # STRICT: No defaults. Use provided value or empty string.
             select_radio("School Name", form_data.get('school') or '')
+            select_radio("Academic Session", form_data.get('academic_session') or '')
             
             # 3. Dates
-            # Try specific labels first
+            # This form only has "Leave Start Date" (no End Date field)
             start_date_filled = False
-            end_date_filled = False
+            end_date_filled = True  # No end date field on this form
+            
+            # Convert date to M/d/yyyy format
+            start_date_val = form_data.get('leave_start_date', '')
+            if start_date_val:
+                # Try to convert to M/d/yyyy if not already
+                for sep in ['/', '.', '-']:
+                    parts = start_date_val.split(sep)
+                    if len(parts) == 3:
+                        if len(parts[0]) == 4:  # YYYY-MM-DD
+                            start_date_val = f"{int(parts[1])}/{int(parts[2])}/{parts[0]}"
+                        elif int(parts[0]) > 12:  # DD/MM/YYYY
+                            start_date_val = f"{int(parts[1])}/{int(parts[0])}/{parts[2]}"
+                        break
             
             try:
-                start_date_filled = fill_by_label("Leave Start Date", form_data.get('leave_start_date', ''), is_date=True)
-            except:
-                pass
-                
-            try:
-                end_date_filled = fill_by_label("Leave End Date", form_data.get('leave_end_date', ''), is_date=True)
+                start_date_filled = fill_by_label(["Leave Start Date", "Date"], start_date_val, is_date=True)
             except:
                 pass
             
@@ -730,47 +739,102 @@ class MSFormAutomation:
             fill_by_label(["Student Woxsen Email ID", "Student Email", "Email ID"], form_data.get('student_email', ''))
             
             
-            # 6. CLEANUP PASS: Fill any remaining empty required fields
-            # This is a safety net for fields that failed label detection
-            print("\n=== CLEANUP PASS: Filling remaining empty inputs ===")
+            # 6. SMART CLEANUP PASS: Fill remaining empty inputs using question context
+            # Instead of blindly filling, read each question's text and match to correct data
+            print("\n=== SMART CLEANUP PASS ===")
             try:
-                # Get all visible text-like inputs
-                all_inputs = self.page.locator('input[type="text"]:visible, input:not([type]):visible, input[type="email"]:visible, input[type="tel"]:visible, textarea:visible').all()
+                # Also convert dates to M/d/yyyy format for any date we're about to fill
+                def to_ms_date(date_str):
+                    """Convert various date formats to M/d/yyyy"""
+                    if not date_str: return ''
+                    # Try DD/MM/YYYY or DD.MM.YYYY or DD-MM-YYYY
+                    for sep in ['/', '.', '-']:
+                        parts = date_str.split(sep)
+                        if len(parts) == 3:
+                            # Could be DD/MM/YYYY or YYYY-MM-DD or M/d/yyyy
+                            if len(parts[0]) == 4:  # YYYY-MM-DD
+                                return f"{int(parts[1])}/{int(parts[2])}/{parts[0]}"
+                            elif int(parts[0]) > 12:  # DD/MM/YYYY (day > 12)
+                                return f"{int(parts[1])}/{int(parts[0])}/{parts[2]}"
+                            else:  # Could be M/d/yyyy already or ambiguous
+                                return date_str  # Keep as-is
+                    return date_str
                 
-                # Collect remaining data that might not have been filled
-                remaining_data = [
-                    form_data.get('parent_phone', ''),
-                    form_data.get('parent_email', ''),
-                    form_data.get('student_phone', ''),
-                    form_data.get('student_email', ''),
-                    form_data.get('reason', ''),
-                    form_data.get('parent_name', ''),
-                    form_data.get('programme', ''),
-                    form_data.get('specialization', ''),
-                ]
+                # Get all question containers
+                containers = self.page.locator('div[data-automation-id="questionItem"]').all()
+                print(f"Found {len(containers)} question containers")
                 
-                # Filter out empty values
-                remaining_data = [d for d in remaining_data if d]
-                
-                data_idx = 0
-                filled_count = 0
-                
-                for inp in all_inputs:
+                for i, container in enumerate(containers):
                     try:
-                        current_value = inp.input_value()
-                        if not current_value or current_value.strip() == '':
-                            # This input is empty
-                            if data_idx < len(remaining_data):
-                                inp.fill(remaining_data[data_idx])
-                                print(f"   CLEANUP: Filled empty input with: {remaining_data[data_idx][:50]}")
-                                filled_count += 1
-                                data_idx += 1
-                    except:
-                        pass
+                        # Read question text
+                        question_text = container.inner_text().lower()
+                        question_short = question_text[:100].replace('\n', ' ')
+                        
+                        # Find inputs in this container
+                        inputs = container.locator('input[type="text"]:visible, input:not([type]):visible, textarea:visible').all()
+                        
+                        for inp in inputs:
+                            try:
+                                current_val = inp.input_value()
+                                if current_val and current_val.strip():
+                                    continue  # Already filled, skip
+                                
+                                # Determine what data this field needs based on question text
+                                fill_value = None
+                                
+                                if any(kw in question_text for kw in ['name of the student', 'student name', 'full name']):
+                                    fill_value = form_data.get('student_name', '')
+                                elif any(kw in question_text for kw in ['roll number', 'roll no', 'student id']):
+                                    fill_value = form_data.get('roll_number', '')
+                                elif any(kw in question_text for kw in ['start date', 'from date', 'leaving date']):
+                                    fill_value = to_ms_date(form_data.get('leave_start_date', ''))
+                                elif any(kw in question_text for kw in ['end date', 'return date', 'to date']):
+                                    fill_value = to_ms_date(form_data.get('leave_end_date', ''))
+                                elif 'date' in question_text:
+                                    # Generic date field - fill with start date if start not filled, else end
+                                    if not start_date_filled:
+                                        fill_value = to_ms_date(form_data.get('leave_start_date', ''))
+                                        start_date_filled = True
+                                    elif not end_date_filled:
+                                        fill_value = to_ms_date(form_data.get('leave_end_date', ''))
+                                        end_date_filled = True
+                                elif any(kw in question_text for kw in ['parent', 'father', 'mother', 'guardian']):
+                                    if 'email' in question_text:
+                                        fill_value = form_data.get('parent_email', '')
+                                    elif any(kw in question_text for kw in ['contact', 'phone', 'mobile', 'no.']):
+                                        fill_value = form_data.get('parent_phone', '') or form_data.get('parent_contact', '')
+                                    else:
+                                        fill_value = form_data.get('parent_name', '')
+                                elif any(kw in question_text for kw in ['student contact', 'student phone', 'student mobile']):
+                                    fill_value = form_data.get('student_phone', '') or form_data.get('student_contact', '')
+                                elif any(kw in question_text for kw in ['student email', 'woxsen email', 'student woxsen']):
+                                    fill_value = form_data.get('student_email', '')
+                                elif any(kw in question_text for kw in ['reason', 'purpose', 'why']):
+                                    fill_value = form_data.get('reason', '')
+                                elif any(kw in question_text for kw in ['programme', 'program', 'course']):
+                                    fill_value = form_data.get('programme', '')
+                                elif any(kw in question_text for kw in ['specialization', 'branch', 'major']):
+                                    fill_value = form_data.get('specialization', '')
+                                elif any(kw in question_text for kw in ['session', 'year', 'batch']):
+                                    fill_value = form_data.get('academic_session', '')
+                                elif 'email' in question_text:
+                                    fill_value = form_data.get('student_email', '')
+                                elif any(kw in question_text for kw in ['contact', 'phone', 'mobile']):
+                                    fill_value = form_data.get('student_phone', '')
+                                    
+                                if fill_value:
+                                    inp.fill(fill_value)
+                                    print(f"   SMART FILL Q[{i}]: '{question_short}' -> {fill_value}")
+                                else:
+                                    print(f"   SKIP Q[{i}]: '{question_short}' (no matching data)")
+                            except Exception as e:
+                                print(f"   Error filling input in Q[{i}]: {e}")
+                    except Exception as e:
+                        print(f"   Error processing container {i}: {e}")
                 
-                print(f"✅ Cleanup pass filled {filled_count} empty fields")
+                print("✅ Smart cleanup pass completed")
             except Exception as e:
-                print(f"Cleanup pass failed: {e}")
+                print(f"Smart cleanup pass failed: {e}")
             
             print("\n✅ Form filling logic completed.")
             

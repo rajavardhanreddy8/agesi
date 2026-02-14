@@ -979,11 +979,15 @@ def submit_form():
         # 5. Prepare Automation Data
         # Convert YYYY-MM-DD to DD.MM.YYYY for form compatibility
         def format_date_for_form(date_str):
+            """Convert YYYY-MM-DD to M/d/yyyy for Microsoft Forms"""
             if not date_str: return ''
             try:
                 parts = date_str.split('-')  # YYYY-MM-DD
                 if len(parts) == 3:
-                    return f"{parts[2]}.{parts[1]}.{parts[0]}"  # DD.MM.YYYY
+                    year = parts[0]
+                    month = str(int(parts[1]))   # Remove leading zero: 02 -> 2
+                    day = str(int(parts[2]))     # Remove leading zero: 05 -> 5
+                    return f"{month}/{day}/{year}"  # M/d/yyyy format
                 return date_str
             except:
                 return date_str
