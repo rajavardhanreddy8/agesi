@@ -1325,6 +1325,20 @@ SUBSCRIPTION_PLANS = {
             'priority_support': False,
             'data_backup': True
         }
+    },
+    'premium': {
+        'name': 'Premium Plan',
+        'price': 180,
+        'currency': 'INR',
+        'duration_days': 120, # 4 Months
+        'features': {
+            'monthly_submissions': 9999,
+            'auto_submit': True,
+            'email_notifications': True,
+            'sms_notifications': True,
+            'priority_support': True,
+            'data_backup': True
+        }
     }
 }
 
