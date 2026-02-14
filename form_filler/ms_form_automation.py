@@ -14,14 +14,23 @@ from datetime import datetime
 from pathlib import Path
 
 # Configure logging
+# Force UTF-8 for file handler to support emojis
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('automation.log'),
+        logging.FileHandler('automation.log', encoding='utf-8', mode='a'),
         logging.StreamHandler()
     ]
 )
+
+# Force stdout to utf-8 to prevent console crashes on Windows
+import sys
+if sys.stdout.encoding.lower() != 'utf-8':
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')
+    except:
+        pass
 
 class MSFormAutomation:
     # Path to persist login session across runs
@@ -365,6 +374,14 @@ class MSFormAutomation:
                         output.push("  RG[" + i + "] label=" + label + " opts=[" + optLabels.join(', ') + "]");
                     });
                     
+                    // Buttons
+                    const btns = document.querySelectorAll('button, div[role="button"]');
+                    output.push("Buttons: " + btns.length);
+                    btns.forEach((btn, i) => {
+                        const txt = btn.innerText.substring(0, 30).replace(/\\n/g, ' ');
+                        output.push("  BTN[" + i + "] txt='" + txt + "' aria='" + (btn.getAttribute('aria-label')||'') + "'");
+                    });
+                    
                     return output.join("\\n");
                 }""")
                 print(f"=== FORM DOM DUMP ===\n{dom_info}\n=== END DOM DUMP ===")
@@ -492,23 +509,23 @@ class MSFormAutomation:
 
             def select_radio(label_text, option_text):
                 try:
-                    print(f"🔍 Looking for radio: '{label_text}' -> '{option_text}'...")
+                    logging.info(f"🔍 Looking for radio: '{label_text}' -> '{option_text}'...")
                     if not option_text:
-                        print("   ⚠️ No option text provided, skipping radio selection")
+                        logging.warning("   ⚠️ No option text provided, skipping radio selection")
                         return False
                         
                     # Strategy 1: Find by role="radio" with aria-label
                     choice = self.page.locator(f'div[role="radio"][aria-label="{option_text}"]')
                     if choice.count() > 0:
                         choice.first.click()
-                        print(f"   ✅ Selected radio (aria-label): {option_text}")
+                        logging.info(f"   ✅ Selected radio (aria-label): {option_text}")
                         return True
                     
                     # Strategy 2: Find exact text match
                     choice = self.page.locator(f':text("{option_text}")')
                     if choice.count() > 0:
                         choice.first.click()
-                        print(f"   ✅ Selected radio (text): {option_text}")
+                        logging.info(f"   ✅ Selected radio (text): {option_text}")
                         return True
                         
                     # Strategy 3: Find loose text match (case-insensitive)
@@ -516,7 +533,7 @@ class MSFormAutomation:
                     choice = self.page.locator(f'text=/{pattern}/i')
                     if choice.count() > 0:
                         choice.first.click()
-                        print(f"   ✅ Selected radio (regex): {option_text}")
+                        logging.info(f"   ✅ Selected radio (regex): {option_text}")
                         return True
                         
                     # Strategy 4: Find any radio button in the question container (if only one question is asked)
@@ -530,13 +547,13 @@ class MSFormAutomation:
                                 radio_aria = radio.get_attribute('aria-label') or ''
                                 if option_text.lower() in radio_aria.lower():
                                     radio.click()
-                                    print(f"   ✅ Selected radio in container: {option_text}")
+                                    logging.info(f"   ✅ Selected radio in container: {option_text}")
                                     return True
                             # If no match in container but radios exist, and we're desperate...
                             # Maybe print them to debug?
-                            print(f"   ⚠️ Found radios in '{label_text}' container but no match for '{option_text}'")
+                            logging.warning(f"   ⚠️ Found radios in '{label_text}' container but no match for '{option_text}'")
                     
-                    print(f"   ⚠️ Could not find option '{option_text}'")
+                    logging.warning(f"   ⚠️ Could not find option '{option_text}'")
                     # Take screenshot
                     try:
                         self.page.screenshot(path=f'debug_radio_fail_{datetime.now().strftime("%H%M%S")}.png')
@@ -544,7 +561,7 @@ class MSFormAutomation:
                         pass
                     return False
                 except Exception as e:
-                    print(f"   ❌ Error selecting {option_text}: {e}")
+                    logging.error(f"   ❌ Error selecting {option_text}: {e}")
                     return False
 
             # --- FILLING FIELDS ---
@@ -648,27 +665,42 @@ class MSFormAutomation:
             # STRICT: No defaults. Use provided value or empty string.
             select_radio("School Name", form_data.get('school') or '')
             select_radio("Academic Session", form_data.get('academic_session') or '')
+            # PDF Format has "Programme Name" as radio (BBA, MBBA, BCom etc.)
+            select_radio("Programme Name", form_data.get('programme') or '')
             
             # 3. Dates
             # This form only has "Leave Start Date" (no End Date field)
             start_date_filled = False
             end_date_filled = True  # No end date field on this form
             
-            # Convert date to M/d/yyyy format
-            start_date_val = form_data.get('leave_start_date', '')
-            if start_date_val:
-                # Try to convert to M/d/yyyy if not already
+            # 3. Dates
+            # Try specific labels first
+            start_date_filled = False
+            end_date_filled = False
+            
+            # Convert date to M/d/yyyy format for both Start and End
+            def format_date_mdy(d_str):
+                if not d_str: return ''
                 for sep in ['/', '.', '-']:
-                    parts = start_date_val.split(sep)
+                    parts = d_str.split(sep)
                     if len(parts) == 3:
                         if len(parts[0]) == 4:  # YYYY-MM-DD
-                            start_date_val = f"{int(parts[1])}/{int(parts[2])}/{parts[0]}"
+                            return f"{int(parts[1])}/{int(parts[2])}/{parts[0]}"
                         elif int(parts[0]) > 12:  # DD/MM/YYYY
-                            start_date_val = f"{int(parts[1])}/{int(parts[0])}/{parts[2]}"
-                        break
+                            return f"{int(parts[1])}/{int(parts[0])}/{parts[2]}"
+                return d_str
+
+            start_date_val = format_date_mdy(form_data.get('leave_start_date', ''))
+            end_date_val = format_date_mdy(form_data.get('leave_end_date', ''))
             
             try:
                 start_date_filled = fill_by_label(["Leave Start Date", "Date"], start_date_val, is_date=True)
+            except:
+                pass
+                
+            try:
+                # PDF Format has "Leave End date"
+                end_date_filled = fill_by_label(["Leave End Date", "Leave End date"], end_date_val, is_date=True)
             except:
                 pass
             
@@ -931,7 +963,13 @@ class MSFormAutomation:
                             err = errors.nth(i)
                             if err.is_visible():
                                 err_text = err.inner_text()
-                                error_details.append(err_text)
+                                # Try to find parent question container for context
+                                try:
+                                    parent_question = err.locator('xpath=ancestor::*[@data-automation-id="questionItem"]').first
+                                    question_text = parent_question.locator('[role="heading"]').first.inner_text()
+                                    error_details.append(f"{err_text} (in: {question_text[:50]})")
+                                except:
+                                    error_details.append(err_text)
                                 has_errors = True
                 except:
                     pass
@@ -1023,7 +1061,7 @@ class MSFormAutomation:
                 print("⚠️ No PDF path provided, skipping upload")
                 return True
                 
-            print(f"📤 Uploading PDF: {pdf_path}")
+            logging.info(f"📤 Uploading PDF: {pdf_path}")
             
             # Check if pdf_path is a URL
             is_url = pdf_path.startswith('http://') or pdf_path.startswith('https://')
@@ -1033,7 +1071,7 @@ class MSFormAutomation:
                 import requests
                 import tempfile
                 
-                print(f"📥 Downloading PDF from URL...")
+                logging.info(f"📥 Downloading PDF from URL...")
                 response = requests.get(pdf_path, timeout=30)
                 response.raise_for_status()
                 
@@ -1043,7 +1081,7 @@ class MSFormAutomation:
                 temp_file.close()
                 
                 local_pdf_path = temp_file.name
-                print(f"✓ Downloaded to: {local_pdf_path}")
+                logging.info(f"✓ Downloaded to: {local_pdf_path}")
             else:
                 # Verify local file exists
                 if not os.path.exists(pdf_path):
@@ -1051,14 +1089,14 @@ class MSFormAutomation:
                 local_pdf_path = pdf_path
             
             # 1. Wait for Upload Section
-            print("⏳ Waiting for file upload section...")
+            logging.info("⏳ Waiting for file upload section...")
             try:
                 # MS Forms upload button usually has text "Upload file" or "Upload"
                 # We wait for the "Immersive Reader" button, Question List, or the Submit Button
                 # 'div[data-automation-id="questionItem"]' is very specific to MS Forms
                 self.page.wait_for_selector('text=Upload', timeout=10000)
             except:
-                print("⚠️ 'Upload' text not found, trying generic file input wait...")
+                logging.warning("⚠️ 'Upload' text not found, trying generic file input wait...")
 
             # 2. Trigger Upload via FileChooser
             # This is more robust for MS Forms where input[type=file] might be hidden or lazy-loaded
@@ -1066,42 +1104,58 @@ class MSFormAutomation:
                 with self.page.expect_file_chooser(timeout=10000) as fc_info:
                     # Click the "Upload" button to trigger the dialog
                     # We try a few likely selectors
-                    upload_btn = self.page.locator('button:has-text("Upload"), div[role="button"]:has-text("Upload"), span:has-text("Upload")')
+                    upload_btn = self.page.locator('button[aria-label^="Upload file"], button[aria-label*="File number limit"], button:has-text("Upload file"), div[role="button"]:has-text("Upload file"), button:has-text("Upload"), div[role="button"]:has-text("Upload")')
                     
                     if upload_btn.count() > 0:
-                        print("🖱️ Clicking 'Upload' button...")
-                        upload_btn.first.click()
+                        btn_txt = upload_btn.first.inner_text()
+                        logging.info(f"🖱️ Clicking 'Upload' button (text='{btn_txt}')...")
+                        upload_btn.first.click(force=True)
                     else:
                         # Fallback: try to find the generic input again if button fails
-                        print("⚠️ Upload button not found via text. Trying generic input...")
+                        logging.warning("⚠️ Upload button not found via text. Trying generic input...")
                         file_input = self.page.locator('input[type="file"]')
                         if file_input.count() > 0:
                             file_input.first.set_input_files(local_pdf_path)
-                            print("✅ PDF uploaded via direct input (fallback).")
+                            logging.info("✅ PDF uploaded via direct input (fallback).")
+                            time.sleep(15) # Wait for upload
                             return True
                         else:
                              raise Exception("Neither Upload button nor file input found.")
 
                 file_chooser = fc_info.value
                 file_chooser.set_files(local_pdf_path)
-                print("PDF uploaded via FileChooser!")
+                logging.info("PDF uploaded via FileChooser!")
+                
+                # Wait for upload completion indicator (file name display)
+                pdf_name = os.path.basename(local_pdf_path)
+                logging.info(f"⏳ Waiting for upload completion indicator (file name: {pdf_name})...")
+                try:
+                    # MS Forms usually shows the file name after successful upload
+                    self.page.wait_for_selector(f'text="{pdf_name}"', timeout=10000)
+                    logging.info("✅ Upload confirmed - file name is visible!")
+                except PlaywrightTimeout:
+                    logging.warning("⚠️ File name not visible, but continuing (upload might still work)...")
 
             except PlaywrightTimeout:
-                print("⚠️ FileChooser timeout. Trying direct input set as last resort...")
+                logging.warning("⚠️ FileChooser timeout. Trying direct input set as last resort...")
                 # Last resort: maybe input is there but event didn't fire?
                 file_input = self.page.locator('input[type="file"]')
                 if file_input.count() > 0:
                     file_input.first.set_input_files(local_pdf_path)
-                    print("✅ PDF uploaded via direct input (last resort).")
+                    logging.info("✅ PDF uploaded via direct input (last resort).")
                 else:
                     raise Exception("File upload failed: FileChooser timed out and input[type='file'] not found.")
             
             # Wait for upload to complete
-            time.sleep(5)  # Give it time to upload and scan
+            logging.info("⏳ Waiting 15s for PDF to process...")
+            time.sleep(15)  # INCREASED WAIT: Give it time to upload and scan
                 
         except Exception as e:
-            print(f"❌ PDF upload failed: {str(e)}")
-            self.page.screenshot(path=f'error_pdf_upload_{datetime.now().strftime("%Y%m%d_%H%M%S")}.png')
+            logging.error(f"❌ PDF upload failed: {str(e)}")
+            try:
+                self.page.screenshot(path=f'error_pdf_upload_{datetime.now().strftime("%Y%m%d_%H%M%S")}.png')
+            except:
+                pass
             raise
     
     def run_automation(self, form_url, email, password, form_data, pdf_path, status_callback=None, verification_callback=None):
