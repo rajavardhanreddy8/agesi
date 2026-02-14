@@ -747,7 +747,7 @@ def get_profile():
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         cur.execute("""
-            SELECT u.email, sp.* 
+            SELECT u.email, u.is_admin, sp.* 
             FROM users u 
             JOIN student_profiles sp ON u.id = sp.user_id 
             WHERE u.id = %s
