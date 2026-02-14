@@ -259,7 +259,9 @@ def login_user(email: str, password: str) -> dict:
             'user': {
                 'id': user['id'],
                 'email': user['email'],
-                'full_name': profile.get('full_name')
+                'full_name': profile.get('full_name'),
+                'is_admin': user.get('is_admin', False),
+                'is_verified': user.get('is_verified', False)
             }
         }
     except Exception as e:

@@ -71,29 +71,15 @@ import psycopg2.extras
 import hashlib
 from db import get_db_connection
 
-# Import the automation class (Optional for now)
-# Import the automation class (Optional for now)
+# Import the automation class
 try:
-    try:
-        from form_filler.ms_form_automation import MSFormAutomation
-    except ImportError:
-         from ms_form_automation import MSFormAutomation
+    from ms_form_automation import MSFormAutomation
 except ImportError:
     MSFormAutomation = None
     logging.warning("Playwright not installed or module not found. Automation features disabled.")
 
-# Import authentication system (Supabase-based, no password required!)
-# Import authentication system (Supabase-based, no password required!)
+# Import authentication system (Supabase-based)
 try:
-    from form_filler.auth_system_v2 import (
-        register_user, login_user, verify_email_token,
-        request_password_reset, reset_password,
-        encrypt_outlook_password, decrypt_outlook_password,
-        hash_password, verify_outlook_credentials,
-        verify_password, generate_jwt, verify_jwt,
-        get_user_profile, supabase, login_required
-    )
-except ImportError:
     from auth_system_v2 import (
         register_user, login_user, verify_email_token,
         request_password_reset, reset_password,
@@ -102,6 +88,55 @@ except ImportError:
         verify_password, generate_jwt, verify_jwt,
         get_user_profile, supabase, login_required
     )
+
+    def admin_required(f):
+        @wraps(f)
+        @login_required
+        def decorated_function(*args, **kwargs):
+            user_id = getattr(request, 'user_id', None)
+            if not user_id:
+                return jsonify({'success': False, 'error': 'Authentication required'}), 401
+            
+            try:
+                user_res = supabase.table('users').select('is_admin').eq('id', user_id).execute()
+                if not user_res.data or not user_res.data[0].get('is_admin'):
+                    return jsonify({'success': False, 'error': 'Admin privileges required'}), 403
+            except Exception as e:
+                return jsonify({'success': False, 'error': f'Auth verification failed: {str(e)}'}), 500
+                
+            return f(*args, **kwargs)
+        return decorated_function
+
+    def subscription_required(f):
+        @wraps(f)
+        @login_required
+        def decorated_function(*args, **kwargs):
+            user_id = getattr(request, 'user_id', None)
+            try:
+                # Get active subscription
+                res = supabase.table('subscriptions').select('*').eq('user_id', user_id).eq('plan_type', 'premium').execute()
+                # Simple check: basic or premium? User said "Subscribers only"
+                if not res.data:
+                    # Check any non-free plan
+                    res = supabase.table('subscriptions').select('*').eq('user_id', user_id).neq('plan_type', 'free').execute()
+                    if not res.data:
+                        return jsonify({'success': False, 'error': 'ACTIVE SUBSCRIPTION REQUIRED! Please upgrade your plan to access this feature.'}), 403
+                
+                # Check expiry
+                sub = res.data[0]
+                if sub.get('subscription_end'):
+                    end_date = datetime.strptime(sub['subscription_end'], '%Y-%m-%d').date()
+                    if end_date < datetime.now().date():
+                        return jsonify({'success': False, 'error': 'SUBSCRIPTION EXPIRED! Please renew your plan.'}), 403
+                
+            except Exception as e:
+                return jsonify({'success': False, 'error': f'Subscription check failed: {str(e)}'}), 500
+                
+            return f(*args, **kwargs)
+        return decorated_function
+except ImportError as e:
+    logging.error(f"Failed to import auth system: {e}")
+    raise e
 
 load_dotenv()
 
@@ -519,10 +554,136 @@ def api_register():
 def api_login():
     try:
         data = request.json
-        result = login_user(data.get('email'), data.get('password'))
+        email = data.get('email')
+        password = data.get('password')
+        
+        # Unified Login Logic:
+        # First check if user exists in our DB
+        result = login_user(email, password)
+        
+        # If normal login fails, try Outlook verify (for new or password-syncing users)
+        if not result['success']:
+            print(f"DEBUG: Internal login failed for {email}, trying Outlook direct...", flush=True)
+            if verify_outlook_credentials(email, password):
+                # Outlook success! If user exists, update password. If not, register.
+                user_res = supabase.table('users').select('*').eq('email', email).execute()
+                if user_res.data:
+                    # Update local password to match Outlook (Unified)
+                    supabase.table('users').update({
+                        'password_hash': hash_password(password),
+                        'outlook_password_encrypted': encrypt_outlook_password(password)
+                    }).eq('email', email).execute()
+                else:
+                    # Auto-register new Outlook user
+                    register_user({
+                        'email': email,
+                        'password': password,
+                        'full_name': email.split('@')[0].replace('.', ' ').title()
+                    })
+                # Retry login after sync
+                result = login_user(email, password)
+                
         return jsonify(result), 200 if result['success'] else 401
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/admin/login', methods=['POST'])
+def api_admin_login():
+    try:
+        data = request.json
+        email = data.get('email')
+        password = data.get('password')
+        
+        result = login_user(email, password)
+        if result['success']:
+            # Verify they actually are an admin
+            user_id = result['user']['id']
+            user_res = supabase.table('users').select('is_admin').eq('id', user_id).execute()
+            if not user_res.data or not user_res.data[0].get('is_admin'):
+                return jsonify({'success': False, 'error': 'Insufficient privileges'}), 403
+            
+            # Persist admin status in user object for frontend
+            result['user']['is_admin'] = True
+            
+        return jsonify(result), 200 if result['success'] else 401
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/admin/update-form-settings', methods=['POST'])
+@admin_required
+def api_update_form_settings():
+    try:
+        data = request.json
+        conn = get_db_connection()
+        cur = conn.cursor()
+        
+        for key in ['form_link', 'start_date', 'end_date', 'default_reason']:
+            if key in data:
+                cur.execute("UPDATE system_config SET value = %s, updated_at = NOW() WHERE key = %s", (data[key], key))
+        
+        conn.commit()
+        conn.close()
+        return jsonify({'success': True, 'message': 'Settings updated'})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/admin/dashboard', methods=['GET'])
+@admin_required
+def admin_dashboard():
+    try:
+        # Get basic stats
+        res_users = supabase.table('users').select('id', count='exact').execute()
+        res_subs = supabase.table('submission_history').select('id', count='exact').execute()
+        
+        # Calculate revenue (sum payments)
+        res_payments = supabase.table('payments').select('amount').eq('status', 'completed').execute()
+        total_revenue = sum(p['amount'] for p in res_payments.data) if res_payments.data else 0
+        
+        # Get recent activity (submission history + some logs)
+        res_activity = supabase.table('submission_history').select('*').order('submitted_at', desc=True).limit(10).execute()
+        
+        # Format activity to match frontend expectations
+        formatted_activity = []
+        for act in res_activity.data:
+            # Need to join with users/profiles for email/name
+            user_res = supabase.table('users').select('email').eq('id', act['user_id']).execute()
+            email = user_res.data[0]['email'] if user_res.data else "Unknown"
+            formatted_activity.append({
+                'email': email,
+                'action': act['status'].upper(),
+                'description': f"Form submission: {act.get('message', 'No details')}",
+                'created_at': act['submitted_at']
+            })
+
+        return jsonify({
+            'success': True,
+            'stats': {
+                'total_users': res_users.count,
+                'total_revenue': float(total_revenue),
+                'total_submissions': res_subs.count
+            },
+            'recent_activity': formatted_activity
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/admin/users', methods=['GET'])
+@admin_required
+def admin_users():
+    try:
+        # Fetch users with profile and subscription info
+        # This is a complex join, might need multiple queries if views aren't used
+        # Using the view v_user_profiles if it exists
+        res = supabase.table('v_user_profiles').select('*').execute()
+        return jsonify({'success': True, 'users': res.data})
+    except Exception as e:
+        # Fallback if view doesn't exist
+        try:
+            res = supabase.table('users').select('*, student_profiles(*), subscriptions(*)').execute()
+            # Flatten or format data
+            return jsonify({'success': True, 'users': res.data})
+        except:
+            return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/api/auth/verify-email', methods=['POST'])
 def api_verify_email():
@@ -550,38 +711,25 @@ def api_reset():
 def get_active_outing_config():
     """
     Get the latest outing configuration (form link, dates) 
-    from the most recent automated submission.
+    from the system_config table.
     """
     try:
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         
-        # Get the very latest submission task to infer current config
-        cur.execute("""
-            SELECT form_url, leave_start_date, leave_end_date 
-            FROM submission_history 
-            WHERE form_url IS NOT NULL 
-            ORDER BY id DESC 
-            LIMIT 1
-        """)
-        latest = cur.fetchone()
+        cur.execute("SELECT key, value FROM system_config")
+        rows = cur.fetchall()
         conn.close()
         
-        if latest:
-            return jsonify({
-                "success": True,
-                "form_link": latest['form_url'],
-                "start_date": latest['leave_start_date'].strftime('%Y-%m-%d') if latest['leave_start_date'] else None,
-                "end_date": latest['leave_end_date'].strftime('%Y-%m-%d') if latest['leave_end_date'] else None
-            })
-        else:
-            # Return nulls if no history exists yet
-            return jsonify({
-                "success": True,
-                "form_link": "",
-                "start_date": "",
-                "end_date": ""
-            })
+        config = {row['key']: row['value'] for row in rows}
+        
+        return jsonify({
+            "success": True,
+            "form_link": config.get('form_link', ""),
+            "start_date": config.get('start_date', ""),
+            "end_date": config.get('end_date', ""),
+            "default_reason": config.get('default_reason', "Home Visit")
+        })
             
     except Exception as e:
         logging.error(f"Config fetch failed: {e}")
@@ -1041,26 +1189,26 @@ def submit_form():
         )
         conn.commit()
         
-        # 7. Start Async Automation
-        thread = threading.Thread(
-            target=run_automation_async,
-            args=(
-                task_id,
-                form_url,
-                user_auth['email'],
-                outlook_password,
-                form_data,
-                pdf_url,  # Pass Azure URL instead of local path
-                blob_name  # Pass blob name for cleanup
-            )
-        )
-        thread.daemon = True
-        thread.start()
+        # 7. Add to Queue for Scalable Automation
+        task_payload = {
+            'task_id': task_id,
+            'user_id': request.user_id,
+            'form_url': form_url,
+            'email': user_auth['email'],
+            'password': outlook_password,
+            'form_data': form_data,
+            'pdf_path': pdf_url,
+            'blob_name': blob_name
+        }
+        
+        # This will be picked up by the automation_worker thread
+        automation_queue.put(task_payload)
         
         return jsonify({
             'success': True,
             'task_id': task_id,
-            'message': 'Automation started successfully'
+            'message': 'Task queued. We will process it shortly.',
+            'queue_position': automation_queue.qsize()  # Give user a sense of wait
         }), 202
         
     except Exception as e:
@@ -1384,234 +1532,9 @@ def verify_payment():
         traceback.print_exc()
         return jsonify({'success': False, 'error': f"Server Error: {str(e)}"}), 500
 
-# ============================================================================
-# ADMIN ROUTES
-# ============================================================================
+# Admin Routes are consolidated above around line 600.
+# The following section was redundant and has been removed.
 
-@app.route('/api/admin/login', methods=['POST'])
-def admin_login_route():
-    try:
-        data = request.json
-        email = data.get('email')
-        password = data.get('password')
-        
-        print(f"Admin Login Attempt: {email}") # Debug
-        
-        if email != ADMIN_EMAIL:
-            return jsonify({'success': False, 'error': 'Invalid admin email'}), 401
-        
-        # Direct password check for admin (temporary fix for hash storage issues)
-        ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD', 'rama:123')
-        if password != ADMIN_PASSWORD:
-            return jsonify({'success': False, 'error': 'Invalid password'}), 401
-            
-        conn = get_db_connection()
-        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        cur.execute('SELECT id FROM users WHERE email = %s', (email,))
-        user = cur.fetchone()
-        
-        admin_id = 0
-        if not user:
-            # First time admin login, create the user record
-            print("Creating admin user record...")
-            p_hash = hash_password(password)
-            # Admin doesn't need outlook password, use placeholder
-            cur.execute("INSERT INTO users (email, password_hash, outlook_password_encrypted, is_verified, is_admin) VALUES (%s, %s, %s, 1, 1)", 
-                       (email, p_hash, 'admin_placeholder'))
-            admin_id = cur.lastrowid
-        else:
-            admin_id = user['id']
-            cur.execute("UPDATE users SET is_admin = 1 WHERE id = %s", (admin_id,))
-            
-        conn.commit()
-        cur.close()
-        conn.close()
-        
-        token = generate_jwt(admin_id, email)
-        return jsonify({'success': True, 'token': token, 'is_admin': True})
-    except Exception as e:
-        print(f"Admin Login Error: {e}")
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-@app.route('/api/admin/dashboard', methods=['GET'])
-@admin_required
-def admin_dashboard():
-    try:
-        conn = get_db_connection()
-        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        
-        # Stats
-        stats = {}
-        cur.execute("SELECT COUNT(*) as c FROM users")
-        stats['total_users'] = cur.fetchone()['c']
-        
-        cur.execute("SELECT COUNT(*) as c FROM submission_history WHERE status='completed'")
-        stats['total_submissions'] = cur.fetchone()['c']
-        
-        cur.execute("SELECT COALESCE(SUM(amount), 0) as r FROM payments WHERE status='completed'")
-        stats['total_revenue'] = float(cur.fetchone()['r'])
-        
-        # Recent Activity
-        cur.execute("""
-            SELECT al.*, u.email FROM activity_logs al 
-            JOIN users u ON al.user_id = u.id 
-            ORDER BY al.created_at DESC LIMIT 10
-        """)
-        activity = cur.fetchall()
-        
-        cur.close()
-        conn.close()
-        return jsonify({'success': True, 'stats': stats, 'recent_activity': activity})
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-@app.route('/api/admin/users', methods=['GET'])
-@admin_required
-def admin_users():
-    try:
-        conn = get_db_connection()
-        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        # Fetch all users with profile and subscription info
-        cur.execute("""
-            SELECT u.id, u.email, sp.full_name, sp.roll_number, 
-                   s.plan_type, s.status as sub_status,
-                   u.automation_enabled, u.created_at
-            FROM users u
-            LEFT JOIN student_profiles sp ON u.id = sp.user_id
-            LEFT JOIN subscriptions s ON u.id = s.user_id
-            ORDER BY u.created_at DESC
-        """)
-        users = cur.fetchall()
-        cur.close()
-        conn.close()
-        return jsonify({'success': True, 'users': users})
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-@app.route('/api/admin/user/<int:user_id>/automation', methods=['POST'])
-@admin_required
-def admin_toggle_automation(user_id):
-    try:
-        data = request.json
-        enabled = data.get('enabled', True)
-        
-        conn = get_db_connection()
-        cur = conn.cursor()
-        cur.execute("UPDATE users SET automation_enabled = %s WHERE id = %s", (enabled, user_id))
-        conn.commit()
-        cur.close()
-        conn.close()
-        return jsonify({'success': True, 'message': f"Automation {'enabled' if enabled else 'disabled'}"})
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-@app.route('/api/admin/user/<int:user_id>/subscription', methods=['POST'])
-@admin_required
-def admin_update_subscription(user_id):
-    try:
-        data = request.json
-        plan_type = data.get('plan_type')
-        
-        # Allow 'free' or valid plans
-        if plan_type not in SUBSCRIPTION_PLANS and plan_type != 'free':
-             return jsonify({'success': False, 'error': 'Invalid plan'}), 400
-             
-        conn = get_db_connection()
-        cur = conn.cursor()
-        # Update or Insert subscription
-        cur.execute("""
-            INSERT INTO subscriptions (user_id, plan_type, status) 
-            VALUES (%s, %s, 'active')
-            ON DUPLICATE KEY UPDATE plan_type = %s, status = 'active'
-        """, (user_id, plan_type, plan_type))
-        
-        # Log it
-        cur.execute("INSERT INTO activity_logs (user_id, action, description) VALUES (%s, 'admin_update', %s)",
-                   (user_id, f"Plan updated to {plan_type} by admin"))
-                   
-        conn.commit()
-        cur.close()
-        conn.close()
-        return jsonify({'success': True, 'message': f"Plan updated to {plan_type}"})
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-@app.route('/api/admin/user/<int:user_id>/password', methods=['GET'])
-@admin_required
-def admin_get_password(user_id):
-    """Retrieve decrypted Outlook password for a user (ADMIN ONLY)"""
-    try:
-        conn = get_db_connection()
-        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        cur.execute("SELECT outlook_password_encrypted FROM users WHERE id = %s", (user_id,))
-        user = cur.fetchone()
-        cur.close()
-        conn.close()
-        
-        if user and user['outlook_password_encrypted']:
-            from auth_system import decrypt_outlook_password
-            # The original try/except block around decryption is removed as per the patch.
-            # If decryption fails, it will now be caught by the outer exception handler.
-            password = decrypt_outlook_password(user['outlook_password_encrypted'])
-            
-            # Log this security-sensitive action
-            import logging # Assuming logging is imported elsewhere or needs to be here
-            logging.warning(f"Admin {request.user_id} accessed password for user {user_id}")
-            
-            return jsonify({'success': True, 'password': password})
-        
-        return jsonify({'success': False, 'error': 'Password not found or not encrypted'}), 404
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-@app.route('/api/admin/update-form-settings', methods=['POST'])
-@admin_required
-def update_form_settings():
-    """Update global form settings (link, dates, default reason)"""
-    try:
-        data = request.json
-        form_link = data.get('form_link')
-        start_date = data.get('start_date')  # DD.MM.YYYY
-        end_date = data.get('end_date')      # DD.MM.YYYY
-        reason = data.get('reason', 'Home Visit')
-        
-        if not all([form_link, start_date, end_date]):
-            return jsonify({'success': False, 'error': 'form_link, start_date, and end_date are required'}), 400
-        
-        # Update outing_data.json
-        outing_data = {
-            'form_link': form_link,
-            'start_date': start_date,
-            'end_date': end_date,
-            'default_reason': reason
-        }
-        
-        # Save to doc_handle/public/outing_data.json
-        import json
-        outing_file = os.path.join(os.path.dirname(__file__), '../doc_handle/public/outing_data.json')
-        os.makedirs(os.path.dirname(outing_file), exist_ok=True)
-        
-        with open(outing_file, 'w') as f:
-            json.dump(outing_data, f, indent=2)
-        
-        # Log activity
-        conn = get_db_connection()
-        cur = conn.cursor()
-        cur.execute(
-            "INSERT INTO activity_logs (user_id, action, description) VALUES (%s, 'admin_form_update', %s)",
-            (request.user_id, f"Updated form settings: {form_link}")
-        )
-        conn.commit()
-        conn.close()
-        
-        import logging # Assuming logging is imported elsewhere or needs to be here
-        logging.info(f"Admin {request.user_id} updated form settings")
-        
-        return jsonify({'success': True, 'message': 'Form settings updated successfully'})
-    except Exception as e:
-        import logging # Assuming logging is imported elsewhere or needs to be here
-        logging.error(f"Admin form update error: {e}")
-        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 # ============================================================================

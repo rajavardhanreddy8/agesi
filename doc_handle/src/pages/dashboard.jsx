@@ -372,6 +372,9 @@ const Dashboard = () => {
                         </div>
                         <div style={s.btnGroup}>
                             <button onClick={() => navigate('/profile')} style={s.btnSecondary}><Edit3 size={18} /> Edit Profile</button>
+                            {profile?.is_admin && (
+                                <button onClick={() => window.location.href = '/admin/dashboard'} style={{ ...s.btnSecondary, background: 'rgba(239, 68, 68, 0.2)', color: '#f87171' }}>🛡️ Admin Portal</button>
+                            )}
                             <button onClick={() => navigate('/plans')} style={{ ...s.btnSecondary, background: 'rgba(245, 158, 11, 0.2)', color: '#fbbf24' }}>Upgrage Plan</button>
                         </div>
                     </div>
