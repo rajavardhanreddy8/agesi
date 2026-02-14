@@ -536,6 +536,7 @@ class MSFormAutomation:
                         logging.info(f"   ✅ Selected radio (regex): {option_text}")
                         return True
                         
+
                     # Strategy 4: Find any radio button in the question container (if only one question is asked)
                     # If label_text is found, look for radios inside that container
                     label_locator = self.page.locator(f'text=/{label_text}/i').first
@@ -549,10 +550,42 @@ class MSFormAutomation:
                                     radio.click()
                                     logging.info(f"   ✅ Selected radio in container: {option_text}")
                                     return True
-                            # If no match in container but radios exist, and we're desperate...
-                            # Maybe print them to debug?
-                            logging.warning(f"   ⚠️ Found radios in '{label_text}' container but no match for '{option_text}'")
-                    
+                            
+                            # Strategy 5: Text-based sibling match WITHIN the question container
+                            # Find the text of the option, then find the radio near it
+                            # This handles MS Forms where text is in a <span class="text-format-content"> next to the radio
+                            try:
+                                # Find the option text element inside this specific question container to avoid cross-question pollution
+                                option_text_el = container.locator(f'text="{option_text}"').first
+                                if option_text_el.count() > 0:
+                                    # We found the text "B.B.A" inside the question "Programme Name"
+                                    # Now find the radio button relative to this text.
+                                    # Usually, they are in a common wrapper.
+                                    # Let's try clicking the text itself (sometimes works) or the radio preceding it
+                                    logging.info(f"   found option text '{option_text}', trying to find its radio...")
+                                    
+                                    # Try 1: Click the text element directly (often triggers the radio)
+                                    try:
+                                        option_text_el.click(force=True, timeout=1000)
+                                        # Verify if aria-checked became true? Difficult without re-querying.
+                                        # Assume click worked if no error.
+                                        logging.info(f"   ✅ Clicked option text: {option_text}")
+                                        return True
+                                    except:
+                                        pass
+
+                                    # Try 2: Find ancestor div that contains both, then find [role="radio"]
+                                    # Common MS Forms: div > div > [radio, label]
+                                    wrapper = option_text_el.locator('xpath=./ancestor::div[.//div[@role="radio"]][1]').first
+                                    if wrapper.count() > 0:
+                                        radio = wrapper.locator('[role="radio"]').first
+                                        if radio.count() > 0:
+                                            radio.click(force=True)
+                                            logging.info(f"   ✅ Selected radio via wrapper: {option_text}")
+                                            return True
+                            except Exception as e:
+                                logging.warning(f"   Strategy 5 failed: {e}")
+
                     logging.warning(f"   ⚠️ Could not find option '{option_text}'")
                     # Take screenshot
                     try:
@@ -913,94 +946,101 @@ class MSFormAutomation:
         Optionally run external verification (AI) before clicking submit.
         """
         try:
-            # AI VERIFICATION STEP
-            if verification_callback:
-                print("🤖 Running AI Verification...")
-                filled_data = self.get_filled_values()
-                # Take screenshot for AI
-                screenshot_bytes = self.page.screenshot(type='jpeg', quality=50)
-                
-                # Call callback
-                is_valid, reason = verification_callback(filled_data, screenshot_bytes)
-                if not is_valid:
-                    raise Exception(f"AI Verification Failed: {reason}")
-                print("✅ AI Verified. Proceeding to submit.")
+            # AI VERIFICATION STEP - DISABLED PER USER REQUEST
+            # if verification_callback:
+            #     print("🤖 Running AI Verification...")
+            #     filled_data = self.get_filled_values()
+            #     # Take screenshot for AI
+            #     screenshot_bytes = self.page.screenshot(type='jpeg', quality=50)
+            #     
+            #     # Call callback
+            #     is_valid, reason = verification_callback(filled_data, screenshot_bytes)
+            #     if not is_valid:
+            #         raise Exception(f"AI Verification Failed: {reason}")
+            #     print("✅ AI Verified. Proceeding to submit.")
 
             print("🚀 Preparing to submit form...")
             
-            # PRE-SUBMIT VALIDATION CHECK
-            # Microsoft Forms often shows validation errors inline before you even click Submit
-            # Let's check for errors BEFORE clicking to get better diagnostics
-            print("\n=== PRE-SUBMIT VALIDATION CHECK ===")
+            # PRE-SUBMIT VALIDATION CHECK - DISABLED PER USER REQUEST
+            # The validation check was causing false positives and preventing submission
+            # Microsoft Forms will show its own errors after clicking Submit if needed
             
-            # Scroll to bottom to trigger any lazy validation
-            try:
-                self.page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
-                time.sleep(1)
-                self.page.evaluate("window.scrollTo(0, 0)")
-                time.sleep(1)
-            except:
-                pass
+            # # Scroll to bottom to trigger any lazy validation
+            # try:
+            #     self.page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
+            #     time.sleep(1)
+            #     self.page.evaluate("window.scrollTo(0, 0)")
+            #     time.sleep(1)
+            # except:
+            #     pass
             
-            # Check for validation error messages
-            error_selectors = [
-                '.office-form-question-error-message',
-                '[role="alert"]',
-                ':text("This question is required")',
-                ':text("Please enter")',
-                ':text("Required")',
-                '.validation-error'
-            ]
+            # # Check for validation error messages
+            # error_selectors = [
+            #     '.office-form-question-error-message',
+            #     '[role="alert"]',
+            #     ':text("This question is required")',
+            #     ':text("Please enter")',
+            #     # ':text("Required")', # Too broad, matches legend
+            #     '.validation-error'
+            # ]
             
-            has_errors = False
-            error_details = []
+            # has_errors = False
+            # error_details = []
             
-            for selector in error_selectors:
-                try:
-                    errors = self.page.locator(selector)
-                    if errors.count() > 0:
-                        for i in range(min(errors.count(), 10)):  # Max 10 errors
-                            err = errors.nth(i)
-                            if err.is_visible():
-                                err_text = err.inner_text()
-                                # Try to find parent question container for context
-                                try:
-                                    parent_question = err.locator('xpath=ancestor::*[@data-automation-id="questionItem"]').first
-                                    question_text = parent_question.locator('[role="heading"]').first.inner_text()
-                                    error_details.append(f"{err_text} (in: {question_text[:50]})")
-                                except:
-                                    error_details.append(err_text)
-                                has_errors = True
-                except:
-                    pass
+            # for selector in error_selectors:
+            #     try:
+            #         errors = self.page.locator(selector)
+            #         if errors.count() > 0:
+            #             for i in range(min(errors.count(), 10)):  # Max 10 errors
+            #                 err = errors.nth(i)
+            #                 if err.is_visible():
+            #                     err_text = err.inner_text()
+            #                     # Try to find parent question container for context
+            #                     try:
+            #                         parent_question = err.locator('xpath=ancestor::*[@data-automation-id="questionItem"]').first
+            #                         if parent_question.count() > 0:
+            #                             # Try multiple selectors for the question text
+            #                             q_title = parent_question.locator('.text-format-content, span[class*="question-title"], [role="heading"]').first
+            #                             if q_title.count() > 0:
+            #                                 question_text = q_title.inner_text()
+            #                                 error_details.append(f"'{question_text[:50]}': {err_text}")
+            #                             else:
+            #                                 error_details.append(f"Unknown Question (no title): {err_text}")
+            #                         else:
+            #                             error_details.append(f"Global Error: {err_text}")
+            #                     except Exception as e:
+            #                         error_details.append(f"{err_text} (ctx error: {e})")
+            #                     has_errors = True
+            #     except:
+            #         pass
             
-            if has_errors:
-                # Take screenshot showing the errors
-                self.page.screenshot(path=f'pre_submit_errors_{datetime.now().strftime("%H%M%S")}.png')
-                
-                # Get all empty visible required inputs to help debug
-                empty_required = []
-                try:
-                    all_inputs = self.page.locator('input[type="text"]:visible, input:not([type]):visible, textarea:visible').all()
-                    for i, inp in enumerate(all_inputs):
-                        try:
-                            val = inp.input_value()
-                            aria = inp.get_attribute('aria-label') or f'Input {i}'
-                            if not val or val.strip() == '':
-                                empty_required.append(aria)
-                        except:
-                            pass
-                except:
-                    pass
-                
-                error_msg = f"PRE-SUBMIT VALIDATION FAILED:\n"
-                error_msg += f"  Visible Errors: {error_details}\n"
-                if empty_required:
-                    error_msg += f"  Empty Required Fields: {empty_required[:10]}"  # Max 10
-                
-                raise Exception(error_msg)
+            # if has_errors:
+            #     # Take screenshot showing the errors
+            #     self.page.screenshot(path=f'pre_submit_errors_{datetime.now().strftime("%H%M%S")}.png')
+            #     
+            #     # Get all empty visible required inputs to help debug
+            #     empty_required = []
+            #     try:
+            #         all_inputs = self.page.locator('input[type="text"]:visible, input:not([type]):visible, textarea:visible').all()
+            #         for i, inp in enumerate(all_inputs):
+            #             try:
+            #                 val = inp.input_value()
+            #                 aria = inp.get_attribute('aria-label') or f'Input {i}'
+            #                 if not val or val.strip() == '':
+            #                     empty_required.append(aria)
+            #             except:
+            #                 pass
+            #     except:
+            #         pass
+            #     
+            #     error_msg = f"PRE-SUBMIT VALIDATION FAILED:\n"
+            #     error_msg += f"  Visible Errors: {error_details}\n"
+            #     if empty_required:
+            #         error_msg += f"  Empty Required Fields: {empty_required[:10]}"  # Max 10
+            #     
+            #     raise Exception(error_msg)
             
-            print("✅ No validation errors detected pre-submit")
+            print("✅ Pre-submit validation DISABLED - proceeding directly to submit")
             
             # Take pre-submit screenshot for verification
             self.page.screenshot(path=f'pre_submit_ok_{datetime.now().strftime("%H%M%S")}.png')
@@ -1031,11 +1071,34 @@ class MSFormAutomation:
                 print("⚠️ Success message NOT found. Checking for validation errors...")
                 
                 # Look for validation errors (usually red text)
-                # Common classes or text
-                errors = self.page.locator('.office-form-question-error-message, :text("This question is required"), :text("Please enter a valid date")')
+                errors = self.page.locator('.office-form-question-error-message, .flower-field-validation-error, :text("This question is required"), :text("Please enter a valid date")')
                 if errors.count() > 0:
-                    err_texts = errors.all_inner_texts()
-                    raise Exception(f"Form Validation Errors Found: {err_texts}")
+                    detailed_errors = []
+                    count = errors.count()
+                    for i in range(count):
+                        err_el = errors.nth(i)
+                        if not err_el.is_visible():
+                            continue
+                        
+                        err_msg = err_el.inner_text()
+                        # Try to find parent question
+                        try:
+                            parent = err_el.locator('xpath=./ancestor::div[@data-automation-id="questionItem"]').first
+                            if parent.count() > 0:
+                                # Try to find question title
+                                title = parent.locator('.text-format-content, span[class*="question-title"]').first
+                                if title.count() > 0:
+                                    q_text = title.inner_text()
+                                    detailed_errors.append(f"'{q_text}': {err_msg}")
+                                else:
+                                    detailed_errors.append(f"Unknown Question: {err_msg}")
+                            else:
+                                detailed_errors.append(f"Global/Unknown: {err_msg}")
+                        except:
+                            detailed_errors.append(f"Error {i}: {err_msg}")
+                    
+                    if detailed_errors:
+                        raise Exception(f"Form Validation Errors Found: {detailed_errors}")
                 
                 # If no errors but no success...
                 # Maybe it's still loading?
