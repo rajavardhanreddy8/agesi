@@ -669,17 +669,52 @@ class MSFormAutomation:
                 print("FALLBACK: Trying positional date filling...")
                 try:
                     all_text_inputs = self.page.locator('input[type="text"]:visible, input:not([type]):visible').all()
-                    # We expect Name(0) and Roll(1) to be first. Dates should be next.
                     
+                    # Method A: Positional (3rd and 4th inputs)
+                    # We expect Name(0) and Roll(1) to be first. Dates should be next.
                     if not start_date_filled and len(all_text_inputs) >= 3:
-                        all_text_inputs[2].fill(form_data['leave_start_date'])
-                        print(f"   POSITIONAL: Filled input[2] with start date: {form_data['leave_start_date']}")
-                        start_date_filled = True
+                        # Check if it looks like a date field
+                        aria = all_text_inputs[2].get_attribute('aria-label') or ''
+                        place = all_text_inputs[2].get_attribute('placeholder') or ''
+                        if 'date' in aria.lower() or 'date' in place.lower() or 'start' in aria.lower():
+                            all_text_inputs[2].fill(form_data['leave_start_date'])
+                            print(f"   POSITIONAL: Filled input[2] with start date: {form_data['leave_start_date']}")
+                            start_date_filled = True
                         
                     if not end_date_filled and len(all_text_inputs) >= 4:
-                        all_text_inputs[3].fill(form_data['leave_end_date'])
-                        print(f"   POSITIONAL: Filled input[3] with end date: {form_data['leave_end_date']}")
-                        end_date_filled = True
+                        aria = all_text_inputs[3].get_attribute('aria-label') or ''
+                        place = all_text_inputs[3].get_attribute('placeholder') or ''
+                        if 'date' in aria.lower() or 'date' in place.lower() or 'end' in aria.lower():
+                            all_text_inputs[3].fill(form_data['leave_end_date'])
+                            print(f"   POSITIONAL: Filled input[3] with end date: {form_data['leave_end_date']}")
+                            end_date_filled = True
+                            
+                    # Method B: Search for ANY input containing "date" in label/placeholder
+                    if not start_date_filled or not end_date_filled:
+                        print("   GENERIC DATE SEARCH: Looking for any 'date' inputs...")
+                        for inp in all_text_inputs:
+                            if not inp.is_visible(): continue
+                            
+                            # Skip if already filled
+                            if inp.input_value(): continue
+                            
+                            aria = (inp.get_attribute('aria-label') or '').lower()
+                            place = (inp.get_attribute('placeholder') or '').lower()
+                            
+                            # Identify start/end intent
+                            is_start = 'start' in aria or 'from' in aria
+                            is_end = 'end' in aria or 'to' in aria
+                            is_generic = 'date' in aria or 'date' in place
+                            
+                            if not start_date_filled and (is_start or (is_generic and not end_date_filled)):
+                                inp.fill(form_data['leave_start_date'])
+                                print(f"   GENERIC: Found potential START date field: {aria}")
+                                start_date_filled = True
+                            elif not end_date_filled and (is_end or (is_generic and start_date_filled)):
+                                inp.fill(form_data['leave_end_date'])
+                                print(f"   GENERIC: Found potential END date field: {aria}")
+                                end_date_filled = True
+                                
                 except Exception as e:
                     print(f"Positional date fallback failed: {e}")
             
