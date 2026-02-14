@@ -44,7 +44,32 @@ const Dashboard = () => {
         try {
             const res = await api.get('/profile');
             if (res.data.success) {
-                setProfile(res.data.profile);
+                const userProfile = res.data.profile;
+                setProfile(userProfile);
+
+                // PAYWALL ENFORCEMENT
+                // Check if user has an active basic or premium plan
+                // We can check this via a separate API call or if profile includes sub info
+                // Let's call the subscription/current endpoint to be sure
+                try {
+                    const subRes = await api.get('/subscription/current');
+                    if (subRes.data.success) {
+                        const plan = subRes.data.subscription;
+                        if (!plan || (plan.plan_type !== 'basic' && plan.plan_type !== 'premium')) {
+                            // No valid plan, redirect to payment
+                            console.log("No active plan found, redirecting to plans...");
+                            navigate('/plans');
+                            return;
+                        }
+                    } else {
+                        navigate('/plans');
+                        return;
+                    }
+                } catch (subErr) {
+                    console.error("Failed to verify subscription:", subErr);
+                    navigate('/plans');
+                    return;
+                }
             }
         } catch (error) {
             console.error(error);

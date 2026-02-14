@@ -12,7 +12,12 @@ export const auth = {
         const response = await api.post('/auth/login', credentials);
         if (response.data.success) {
             localStorage.setItem('token', response.data.token);
-            localStorage.setItem('user', JSON.stringify(response.data.user));
+            // Ensure is_admin is part of the stored user object
+            const user = response.data.user;
+            if (response.data.is_admin) {
+                user.is_admin = true;
+            }
+            localStorage.setItem('user', JSON.stringify(user));
         }
         return response.data;
     },
