@@ -1698,6 +1698,23 @@ def diagnostic_check():
         
     return jsonify(status)
 
+@app.route('/api/admin/worker-log', methods=['GET'])
+def get_worker_log():
+    """Get the last N lines of the worker log."""
+    try:
+        api_dir = os.path.dirname(os.path.abspath(__file__))
+        log_file = os.path.join(api_dir, 'automation_worker.log')
+        
+        if not os.path.exists(log_file):
+            return jsonify({'success': False, 'error': 'Log file not found'}), 404
+            
+        with open(log_file, 'r', encoding='utf-8') as f:
+            # Read all lines (or last 200 for brevity)
+            lines = f.readlines()
+            return jsonify({'success': True, 'log': lines[-200:]})
+    except Exception as e:
+         return jsonify({'success': False, 'error': str(e)}), 500
+
 def recover_pending_tasks():
     """
     On startup, check DB for 'pending' tasks and re-queue them.
