@@ -925,79 +925,74 @@ def serve_signature(filename):
 # PDF GENERATION (PROTECTED)
 # ============================================================================
 
-def generate_outing_pdf_buffer(profile, start_date, end_date, reason):
-    """Helper to generate PDF bytes with user details and signature"""
-    try:
-        from reportlab.lib.pagesizes import A4
-        from reportlab.pdfgen import canvas
-        from reportlab.lib.utils import ImageReader
-        import io
-        import base64
+from create_pdf import generate_parent_consent_pdf
 
+def generate_outing_pdf_buffer(profile, start_date, end_date, reason):
+    """Helper to generate PDF bytes with user details and signature using new layout"""
+    try:
+        import io
+        
         buffer = io.BytesIO()
-        c = canvas.Canvas(buffer, pagesize=A4)
-        width, height = A4
         
-        # Title
-        c.setFont("Helvetica-Bold", 16)
-        c.drawCentredString(width/2, height - 50, "OUTING CONSENT FORM")
+        # safely get student name/details
+        student_name = profile.get('full_name') or profile.get('student_name', '')
         
-        # Student Details
-        c.setFont("Helvetica-Bold", 12)
-        c.drawString(50, height - 100, "Student Details:")
-        c.setFont("Helvetica", 11)
-        y = height - 120
-        details = [
-            f"Name: {profile.get('full_name', '')}",
-            f"Roll Number: {profile.get('roll_number', '')}",
-            f"School: {profile.get('school', '')}",
-            f"Programme: {profile.get('programme', '')} - {profile.get('specialization', '')}",
-            f"Academic Year: {profile.get('academic_year', '')}",
-            f"Student Phone: {profile.get('student_phone', '')}",
-            f"Student Email: {profile.get('email', '')}",
-        ]
-        for detail in details:
-            c.drawString(70, y, detail)
-            y -= 18
+        # Prepare data dict for the new generator
+        # Map 'parent1' and 'parent2' from existing DB schema to what PDF needs
+        pdf_data = {
+            "student_name": student_name,
+            "student_id": profile.get('roll_number', ''),
+            "roll_number": profile.get('roll_number', ''),
+            "programme": profile.get('programme', ''),
+            "specialization": profile.get('specialization', ''),
+            "academic_year": profile.get('academic_year', '2024-25'),
+            
+            # Parent details - prioritize 'parent1' keys if they exist in DB profile
+            "parent_name": profile.get('parent1_name') or profile.get('parent_name', ''), 
+            "parent_phone": profile.get('parent1_phone') or profile.get('parent_phone', ''),
+            "parent_email": profile.get('parent1_email') or profile.get('parent_email', ''),
+            
+            # Specific table fields
+            "father_name": profile.get('parent1_name') or profile.get('father_name', ''),
+            "mother_name": profile.get('parent2_name') or profile.get('mother_name', ''),
+            
+            # Outing Details
+            "leave_start_date": start_date,
+            "leave_end_date": end_date,
+            "leave_date_text": start_date, # approximate
+            "return_date_text": end_date, # approximate
+            "reason": reason,
+            "purpose": reason,
+            
+            # Contact string for table
+            "student_contact": f"{student_name}, {profile.get('email', '')}, {profile.get('student_phone', '')}",
+            
+            # Date of generation
+            "date": datetime.now().strftime('%d-%m-%Y'),
+        }
         
-        # Date & Reason Details
-        y -= 10
-        c.setFont("Helvetica-Bold", 12)
-        c.drawString(50, y, "Outing Details:")
-        c.setFont("Helvetica", 11)
-        y -= 20
-        c.drawString(70, y, f"Start Date: {start_date or 'To be filled'}")
-        y -= 18
-        c.drawString(70, y, f"End Date: {end_date or 'To be filled'}")
-        y -= 18
-        c.drawString(70, y, f"Reason: {reason or 'Home Visit'}")
+        # Handle signature path logic
+        if profile.get('signature_path'):
+             # Try absolute path first if it exists
+            sig_path = profile['signature_path']
+            if os.path.exists(sig_path):
+                 pdf_data['signature_path'] = sig_path
+            else:
+                 # Check relative to CWD
+                 abs_sig_path = os.path.abspath(sig_path)
+                 if os.path.exists(abs_sig_path):
+                     pdf_data['signature_path'] = abs_sig_path
+
+        generate_parent_consent_pdf(buffer, pdf_data)
         
-        # Parent Details
-        y -= 30
-        c.setFont("Helvetica-Bold", 12)
-        c.drawString(50, y, "Father's Details:")
-        c.setFont("Helvetica", 11)
-        y -= 20
-        c.drawString(70, y, f"Name: {profile.get('parent1_name', '')}")
-        y -= 18
-        c.drawString(70, y, f"Email: {profile.get('parent1_email', '')}")
-        y -= 18
-        c.drawString(70, y, f"Phone: {profile.get('parent1_phone', '')}")
+        buffer.seek(0)
+        return buffer
         
-        # Mother Details (if available)
-        y -= 30
-        if profile.get('parent2_name'):
-            c.setFont("Helvetica-Bold", 12)
-            c.drawString(50, y, "Mother's Details:")
-            c.setFont("Helvetica", 11)
-            y -= 20
-            c.drawString(70, y, f"Name: {profile.get('parent2_name', '')}")
-            y -= 18
-            c.drawString(70, y, f"Email: {profile.get('parent2_email', '')}")
-            y -= 18
-            c.drawString(70, y, f"Phone: {profile.get('parent2_phone', '')}")
-        
-        # Signature
+    except Exception as e:
+        print(f"PDF Generation Error: {e}", flush=True)
+        import traceback
+        traceback.print_exc()
+        return None
         y -= 40
         c.setFont("Helvetica-Bold", 12)
         c.drawString(50, y, "Student Signature:")
