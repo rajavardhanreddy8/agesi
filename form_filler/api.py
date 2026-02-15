@@ -262,13 +262,11 @@ worker_thread.start()
 # Recovery on startup
 _recovery_done = False
 def init_app_background():
-    global _recovery_done
-    if not _recovery_done:
-        recover_pending_tasks()
-        _recovery_done = True
+    # Deprecated: now manually triggered via endpoint for debugging stability
+    pass
 
 # Call recovery at module level so it runs in Gunicorn
-init_app_background()
+# init_app_background()
 
 class AutomationTask:
     """Track automation task status"""
@@ -1687,6 +1685,7 @@ def recover_pending_tasks():
     try:
         print("RECOVERY: Checking for pending detailed tasks...", flush=True)
         conn = get_db_connection()
+        print("RECOVERY: Got DB connection", flush=True)
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         
         # We need to join with users to get credentials (email, password)
@@ -1697,8 +1696,10 @@ def recover_pending_tasks():
             JOIN users u ON s.user_id = u.id
             WHERE s.status = 'pending'
         """
+        print(f"RECOVERY: Executing query: {query}", flush=True)
         cur.execute(query)
         pending_tasks = cur.fetchall()
+        print(f"RECOVERY: Found {len(pending_tasks)} pending tasks", flush=True)
         cur.close()
         conn.close()
         
