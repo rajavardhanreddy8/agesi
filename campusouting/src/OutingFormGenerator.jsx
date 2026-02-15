@@ -358,8 +358,8 @@ Return only the JSON object:`
 
             if (result.success) {
                 setTaskId(result.task_id);
-                setSubmissionStatus(`Automation started! Task ID: ${result.task_id}. Please wait...`);
-                pollStatus(result.task_id);
+                setSubmissionStatus(`✅ Request Queued! We will email you upon completion. You can safely close this page now.`);
+                // pollStatus(result.task_id); // Removed polling to allow "Click & Leave" experience
             } else {
                 setSubmissionStatus(`Error: ${result.error}`);
             }
