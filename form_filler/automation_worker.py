@@ -85,11 +85,46 @@ def run_worker(task_id, form_url, email, password, form_data, pdf_path, blob_nam
                  return True, "Grok Service not available"
              return verify_form_data_with_groq(scraped_data, form_data)
 
+        # Handle PDF URL (download if needed)
+        local_pdf_path = pdf_path
+        temp_pdf_created = False
+        
+        if pdf_path.startswith(('http://', 'https://')):
+            print(f"DEBUG: Downloading PDF from {pdf_path}")
+            import requests
+            import tempfile
+            
+            try:
+                response = requests.get(pdf_path, timeout=30)
+                if response.status_code == 200:
+                    # Create temp file
+                    fd, temp_path = tempfile.mkstemp(suffix=".pdf")
+                    os.close(fd)
+                    with open(temp_path, 'wb') as f:
+                        f.write(response.content)
+                    local_pdf_path = temp_path
+                    temp_pdf_created = True
+                    print(f"DEBUG: Saved to temp file {local_pdf_path}")
+                else:
+                    update_db_status(task_id, 'failed', f"Failed to download PDF: {response.status_code}")
+                    return
+            except Exception as e:
+                 update_db_status(task_id, 'failed', f"PDF Download Error: {str(e)}")
+                 return
+
         success = automation.run_automation(
-            form_url, email, password, form_data, pdf_path,
+            form_url, email, password, form_data, local_pdf_path,
             status_callback=status_callback,
             verification_callback=verification_wrapper
         )
+        
+        # Cleanup temp file
+        if temp_pdf_created and os.path.exists(local_pdf_path):
+            try:
+                os.remove(local_pdf_path)
+                print(f"DEBUG: Removed temp PDF {local_pdf_path}")
+            except:
+                pass
         
         if success:
             update_db_status(task_id, 'completed', 'Automation Success')
