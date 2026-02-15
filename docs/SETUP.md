@@ -35,8 +35,8 @@ psql -U postgres -f database/schema.sql
    ```
    Server runs on http://localhost:5000.
 
-## 4. Frontend Setup (`doc_handle/`)
-1. Navigate to `doc_handle/` directory.
+## 4. Frontend Setup (`campusouting/`)
+1. Navigate to `campusouting/` directory.
 2. Install dependencies:
    ```bash
    npm install

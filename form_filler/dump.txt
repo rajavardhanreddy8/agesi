@@ -1,0 +1,59 @@
+demo
+Student (UG) Weekend Outing Form Details
+Hi, GUNTAKA RAJAVARDHAN REDDY. When you submit this form, the owner will see your name and email address.
+Required
+1.
+Name of the Student
+2.
+Roll Number
+3.
+School Name
+School of Business
+School of Technology
+School of Arts and Design
+School of Architecture and Planning
+School of Liberal Arts and Humanities
+School of Law
+School of Sciences
+4.
+Academic Session
+2020-2025
+2021-2026
+2022-2025
+2022-2026
+2022-2027
+2023-2026
+2023-2027
+2023-2028
+2024-2028
+2024-2029
+2025-2028
+2025-2029
+2025-2030
+5.
+Specialization
+6.
+Reasons for Leave
+7.
+Leave Start Date
+
+8.
+Parents Contact No.
+9.
+Parents Email ID
+10.
+Student Contact No.
+11.
+Student Woxsen Email ID
+12.
+Attach Application by parent in Prescribed Format
+ (Non-anonymous question
+)
+Upload file
+File number limit: 1
+Single file size limit: 10MB
+Allowed file types: PDF
+Submit
+This content is created by the owner of the form. The data you submit will be sent to the form owner. Microsoft is not responsible for the privacy or security practices of its customers, including those of this form owner. Never give out your password.
+Microsoft Forms | AI-Powered surveys, quizzes and pollsCreate my own form
+Privacy and cookies | Terms of use

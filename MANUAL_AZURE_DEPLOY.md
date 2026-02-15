@@ -61,7 +61,7 @@ Since Azure Container Registry was blocked by your student subscription, here's 
 
 ---
 
-## Option 2: Deploy Frontend (doc_handle) to Azure Static Web Apps
+## Option 2: Deploy Frontend (campusouting) to Azure Static Web Apps
 
 This is perfect for React/Vite apps and is **FREE** for students!
 
@@ -77,7 +77,7 @@ This is perfect for React/Vite apps and is **FREE** for students!
 4. Link your GitHub repo and select:
    - **Branch**: main
    - **Build Presets**: React
-   - **App location**: `/doc_handle`
+   - **App location**: `/campusouting`
    - **Output location**: `dist`
 5. Click **Review + Create** → **Create**
 
@@ -89,7 +89,7 @@ After creation, Azure will automatically build and deploy your frontend whenever
 
 If Azure continues to block resources, try these free platforms:
 
-### Frontend (doc_handle)
+### Frontend (campusouting)
 - **Vercel**: [vercel.com](https://vercel.com) - Connect GitHub, auto-deploy
 - **Netlify**: [netlify.com](https://netlify.com) - Similar to Vercel
 

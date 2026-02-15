@@ -19,7 +19,7 @@ See [docs/SETUP.md](docs/SETUP.md) for detailed installation instructions.
 - **Database**: PostgreSQL (Users, Profiles, History)
 
 ## New Directory Structure
-- `doc_handle/`: React Frontend (Port 5173)
+- `campusouting/`: React Frontend (Port 5173)
 - `form_filler/`: Flask Backend (Port 5000)
 - `database/`: SQL Schema and migrations
 - `docs/`: Documentation
