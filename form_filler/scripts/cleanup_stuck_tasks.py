@@ -2,6 +2,11 @@
 import psycopg2
 import os
 from dotenv import load_dotenv
+from datetime import datetime, timedelta
+import pytz
+
+# IST Timezone
+IST = pytz.timezone('Asia/Kolkata')
 
 def cleanup_stuck_tasks():
     load_dotenv()
@@ -21,7 +26,8 @@ def cleanup_stuck_tasks():
         
         rowcount = cur.rowcount
         conn.commit()
-        print(f"✅ Cleared {rowcount} stuck tasks.")
+        now_ist = datetime.now(IST).strftime('%Y-%m-%d %H:%M:%S IST')
+        print(f"✅ [{now_ist}] Cleared {rowcount} stuck tasks (running >30 min).")
         
         conn.close()
     except Exception as e:

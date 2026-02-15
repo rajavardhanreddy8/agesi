@@ -3,6 +3,10 @@ import psycopg2
 import os
 from dotenv import load_dotenv
 from datetime import datetime
+import pytz
+
+# IST Timezone
+IST = pytz.timezone('Asia/Kolkata')
 
 def get_running_tasks():
     load_dotenv()
@@ -27,14 +31,18 @@ def get_running_tasks():
             for task in tasks:
                 task_id, status, submitted_at, error = task
                 if submitted_at and submitted_at.tzinfo is None:
-                    # If DB returns naive, assume UTC or local depending on DB config. 
-                    # Here assuming submitted_at is naive UTC from Postgres
-                    import pytz
+                    # If DB returns naive, assume UTC from Postgres
                     submitted_at = submitted_at.replace(tzinfo=pytz.UTC)
-                
-                now = datetime.now().astimezone()
-                duration = now - submitted_at
-                print(f"ID: {task_id} | Status: {status} | Started: {submitted_at} | Duration: {duration}")
+
+                # Convert to IST for display
+                if submitted_at:
+                    submitted_at_ist = submitted_at.astimezone(IST)
+                else:
+                    submitted_at_ist = None
+
+                now = datetime.now(IST)
+                duration = now - submitted_at_ist if submitted_at_ist else None
+                print(f"ID: {task_id} | Status: {status} | Started (IST): {submitted_at_ist} | Duration: {duration}")
         
         conn.close()
     except Exception as e:

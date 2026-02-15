@@ -19,11 +19,26 @@ import os
 import logging
 print("DEBUG: API.PY MODULE LOADING...", flush=True)
 from datetime import datetime, timedelta
+import pytz
 from cryptography.fernet import Fernet
 from dotenv import load_dotenv
 # Force override of environment variables from .env file
 import os
 from pathlib import Path
+
+# ===== TIMEZONE CONFIGURATION FOR INDIA (IST) =====
+IST = pytz.timezone('Asia/Kolkata')
+
+def get_ist_now():
+    """Get current time in Indian Standard Time (IST, UTC+5:30)"""
+    return datetime.now(IST)
+
+def format_ist_timestamp(dt=None):
+    """Format timestamp in IST with readable format"""
+    if dt is None:
+        dt = get_ist_now()
+    return dt.strftime('%Y-%m-%d %H:%M:%S IST')
+# ===== END TIMEZONE CONFIGURATION =====
 
 # Force clear existing variables to ensure .env is read
 # if 'RAZORPAY_KEY_ID' in os.environ:
@@ -48,7 +63,7 @@ except ImportError:
     verify_form_data_with_groq = None
 
 print("="*50, flush=True)
-print(f"DEBUG: STARTING APP - {datetime.now().isoformat()}", flush=True)
+print(f"DEBUG: STARTING APP - {format_ist_timestamp()}", flush=True)
 print(f"DEBUG: Loaded DB_HOST: {os.getenv('DB_HOST')}", flush=True)
 print(f"DEBUG: Loaded RAZORPAY_KEY_ID: {os.getenv('RAZORPAY_KEY_ID')}", flush=True)
 print("="*50, flush=True)
@@ -175,85 +190,119 @@ automation_queue = queue.Queue()
 def automation_worker():
     """Background worker that processes automation tasks from the queue."""
     print("RECOVERY: Background worker thread started.", flush=True)
+    logging.info("Automation worker thread started and ready to process tasks")
+
     # Get the directory where api.py is located (form_filler directory)
     api_dir = os.path.dirname(os.path.abspath(__file__))
 
+    worker_crash_count = 0
+    max_consecutive_crashes = 5
+
     while True:
-        task_info = automation_queue.get()
-        if task_info is None:
-            print("Worker received None, stopping.", flush=True)
-            break
-
         try:
-            print(f"DEBUG: Processing task {task_info['task_id']}...", flush=True)
-            logging.info(f"Processing queued task: {task_info['task_id']} for user {task_info['user_id']}")
+            # Use timeout to prevent indefinite blocking
+            # If queue is empty, timeout after 30 seconds and reset crash counter
+            task_info = automation_queue.get(timeout=30)
 
-            # Use subprocess to avoid asyncio conflicts with Playwright Sync API
-            import subprocess
+            if task_info is None:
+                print("Worker received None, stopping.", flush=True)
+                logging.info("Worker received stop signal (None)")
+                break
 
-            # Prepare args - use absolute path for worker script
-            worker_script = os.path.join(api_dir, 'automation_worker.py')
+            # Reset crash counter on successful task retrieval
+            worker_crash_count = 0
 
-            cmd = [
-                sys.executable, "-u", worker_script,
-                "--task_id", task_info['task_id'],
-                "--form_url", task_info['form_url'],
-                "--email", task_info['email'],
-                "--password", task_info['password'],
-                "--form_data_json", json.dumps(task_info['form_data']),
-                "--pdf_path", task_info['pdf_path']
-            ]
+            try:
+                print(f"DEBUG: Processing task {task_info['task_id']}...", flush=True)
+                logging.info(f"Processing queued task: {task_info['task_id']} for user {task_info['user_id']}")
 
-            if task_info.get('blob_name'):
-                cmd.extend(["--blob_name", task_info['blob_name']])
+                # Use subprocess to avoid asyncio conflicts with Playwright Sync API
+                import subprocess
 
-            # Log file with absolute path
-            log_file_path = os.path.join(api_dir, 'automation_worker.log')
-            print(f"DEBUG: Log file path: {log_file_path}", flush=True)
+                # Prepare args - use absolute path for worker script
+                worker_script = os.path.join(api_dir, 'automation_worker.py')
 
-            # Force UTF-8 for subprocess output
-            env = os.environ.copy()
-            env['PYTHONIOENCODING'] = 'utf-8'
+                cmd = [
+                    sys.executable, "-u", worker_script,
+                    "--task_id", task_info['task_id'],
+                    "--form_url", task_info['form_url'],
+                    "--email", task_info['email'],
+                    "--password", task_info['password'],
+                    "--form_data_json", json.dumps(task_info['form_data']),
+                    "--pdf_path", task_info['pdf_path']
+                ]
 
-            print(f"DEBUG: Launching subprocess: {' '.join(cmd[:4])}...", flush=True)
+                if task_info.get('blob_name'):
+                    cmd.extend(["--blob_name", task_info['blob_name']])
 
-            # Open log file and launch subprocess with explicit working directory
-            with open(log_file_path, 'a', encoding='utf-8') as log_file:
-                # Write separator and timestamp
-                log_file.write(f"\n{'='*60}\n")
-                log_file.write(f"Task: {task_info['task_id']} at {datetime.now().isoformat()}\n")
-                log_file.write(f"{'='*60}\n")
-                log_file.flush()
+                # Log file with absolute path
+                log_file_path = os.path.join(api_dir, 'automation_worker.log')
+                print(f"DEBUG: Log file path: {log_file_path}", flush=True)
 
-                # Launch subprocess with cwd set to form_filler directory
-                process = subprocess.Popen(
-                    cmd,
-                    stdout=log_file,
-                    stderr=log_file,
-                    env=env,
-                    cwd=api_dir  # Critical: Set working directory to form_filler
-                )
+                # Force UTF-8 for subprocess output
+                env = os.environ.copy()
+                env['PYTHONIOENCODING'] = 'utf-8'
 
-            # Log the PID for tracking
-            logging.info(f"Launched subprocess PID {process.pid} for task {task_info['task_id']}")
-            print(f"DEBUG: Subprocess started with PID {process.pid}", flush=True)
+                print(f"DEBUG: Launching subprocess: {' '.join(cmd[:4])}...", flush=True)
+
+                # Open log file and launch subprocess with explicit working directory
+                with open(log_file_path, 'a', encoding='utf-8') as log_file:
+                    # Write separator and timestamp
+                    log_file.write(f"\n{'='*60}\n")
+                    log_file.write(f"Task: {task_info['task_id']} at {format_ist_timestamp()}\n")
+                    log_file.write(f"{'='*60}\n")
+                    log_file.flush()
+
+                    # Launch subprocess with cwd set to form_filler directory
+                    process = subprocess.Popen(
+                        cmd,
+                        stdout=log_file,
+                        stderr=log_file,
+                        env=env,
+                        cwd=api_dir  # Critical: Set working directory to form_filler
+                    )
+
+                # Log the PID for tracking
+                logging.info(f"Launched subprocess PID {process.pid} for task {task_info['task_id']}")
+                print(f"DEBUG: Subprocess started with PID {process.pid}", flush=True)
+
+            except Exception as e:
+                logging.error(f"Worker failed launching subprocess for task {task_info['task_id']}: {e}", exc_info=True)
+                # Update DB to failed status if subprocess can't start
+                try:
+                    conn = get_db_connection()
+                    cur = conn.cursor()
+                    cur.execute(
+                        "UPDATE submission_history SET status = 'failed', error_details = %s WHERE task_id = %s",
+                        (f"Subprocess launch failed: {str(e)}", task_info['task_id'])
+                    )
+                    conn.commit()
+                    conn.close()
+                except Exception as db_e:
+                    logging.error(f"Failed to update DB status: {db_e}", exc_info=True)
+            finally:
+                automation_queue.task_done()
+
+        except queue.Empty:
+            # Queue is empty and timeout expired - this is normal, worker is idle
+            print(f"DEBUG: Worker idle (no tasks in queue)", flush=True)
+            worker_crash_count = 0
+            continue
 
         except Exception as e:
-            logging.error(f"Worker failed launching subprocess for task {task_info['task_id']}: {e}")
-            # Update DB to failed status if subprocess can't start
-            try:
-                conn = get_db_connection()
-                cur = conn.cursor()
-                cur.execute(
-                    "UPDATE submission_history SET status = 'failed', error_details = %s WHERE task_id = %s",
-                    (f"Subprocess launch failed: {str(e)}", task_info['task_id'])
-                )
-                conn.commit()
-                conn.close()
-            except Exception as db_e:
-                logging.error(f"Failed to update DB status: {db_e}")
-        finally:
-            automation_queue.task_done()
+            # Catch any unexpected errors to prevent worker from crashing
+            worker_crash_count += 1
+            logging.error(f"CRITICAL: Automation worker encountered unexpected error ({worker_crash_count}/{max_consecutive_crashes}): {e}", exc_info=True)
+            print(f"ERROR: Worker error (attempt {worker_crash_count}/{max_consecutive_crashes}): {e}", flush=True)
+
+            if worker_crash_count >= max_consecutive_crashes:
+                logging.error(f"CRITICAL: Automation worker crashed {max_consecutive_crashes} times. Stopping worker.")
+                print(f"CRITICAL: Worker stopping after {max_consecutive_crashes} consecutive crashes", flush=True)
+                break
+
+            # Brief sleep before retrying to avoid rapid crash loops
+            import time
+            time.sleep(2)
 
 # Start the worker thread
 worker_thread = threading.Thread(target=automation_worker, daemon=True)
@@ -498,7 +547,7 @@ def auto_submit_from_email():
                 # Create Specific PDF with Reason
                 temp_dir = os.path.join(os.getcwd(), 'temp_uploads')
                 os.makedirs(temp_dir, exist_ok=True)
-                pdf_path = os.path.join(temp_dir, f"auto_{user_id}_{datetime.now().strftime('%Y%m%d%H%M%S')}.pdf")
+                pdf_path = os.path.join(temp_dir, f"auto_{user_id}_{get_ist_now().strftime('%Y%m%d%H%M%S')}.pdf")
                 logging.info(f"DEBUG: PDF path: {pdf_path}")
                 
                 # Generate PDF using helper
@@ -534,9 +583,8 @@ def auto_submit_from_email():
                     'leave_start_date': start_date,
                     'leave_end_date': end_date
                 }
-
                 # Create Task
-                task_id = f"auto_{user_id}_{datetime.now().strftime('%Y%m%d%H%M%S')}"
+                task_id = f"auto_{user_id}_{get_ist_now().strftime('%Y%m%d%H%M%S')}"
                 task = AutomationTask(task_id, user_id)
                 automation_tasks[task_id] = task
 
@@ -1014,9 +1062,9 @@ def generate_outing_pdf_buffer(profile, start_date, end_date, reason):
             
             # Contact string for table
             "student_contact": f"{student_name}, {profile.get('email', '')}, {profile.get('student_phone', '')}",
-            
+
             # Date of generation
-            "date": datetime.now().strftime('%d-%m-%Y'),
+            "date": get_ist_now().strftime('%d-%m-%Y'),
         }
         
         # Handle signature path logic
@@ -1196,7 +1244,7 @@ def submit_form():
         try:
             from azure_storage_helper import upload_to_azure_blob
             
-            filename = f"outing_{request.user_id}_{datetime.now().strftime('%Y%m%d%H%M%S')}.pdf"
+            filename = f"outing_{request.user_id}_{get_ist_now().strftime('%Y%m%d%H%M%S')}.pdf"
             upload_result = upload_to_azure_blob(pdf_buffer, filename)
             
             blob_name = upload_result['blob_name']
@@ -1243,9 +1291,9 @@ def submit_form():
             'leave_start_date': format_date_for_form(leave_start_date),
             'leave_end_date': format_date_for_form(leave_end_date)
         }
-        
+
         # 6. Create Task & Log to DB
-        task_id = f"task_{request.user_id}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        task_id = f"task_{request.user_id}_{get_ist_now().strftime('%Y%m%d_%H%M%S')}"
         task = AutomationTask(task_id, request.user_id)
         automation_tasks[task_id] = task
         
@@ -1656,11 +1704,15 @@ def health_check():
         db_status = "connected"
     except Exception as e:
         db_status = f"error: {str(e)}"
-    
+
+    # Check if worker thread is alive
+    worker_status = "running" if worker_thread.is_alive() else "dead"
+
     return jsonify({
         'status': 'healthy',
         'database': db_status,
-        'timestamp': datetime.now().isoformat(),
+        'worker_thread': worker_status,
+        'timestamp': format_ist_timestamp(),
         'queue_size': automation_queue.qsize(),
         'last_recovery_error': _last_recovery_error,
         'api_file': __file__,
