@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /app
 
 # Copy requirements first to leverage caching
-COPY requirements.txt .
+COPY form_filler/requirements.txt .
 
 # Install Python dependencies
 # Chunk 1: Small/Core dependencies
@@ -35,7 +35,12 @@ RUN playwright install chromium
 RUN playwright install-deps chromium
 
 # Copy the rest of the application
-COPY . .
+COPY form_filler form_filler
+COPY mail_agent mail_agent
+# COPY .env is risky if file missing in repo. Use Env Vars.
+
+# Set working directory to form_filler for api.py
+WORKDIR /app/form_filler
 
 # Expose port (Cloud Run sets $PORT env var, we'll default to 8080)
 ENV PORT=8080
