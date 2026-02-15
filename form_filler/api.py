@@ -1709,8 +1709,10 @@ def verify_payment():
 # HEALTH CHECK (FOR RAILWAY/DOCKER)
 # ============================================================================
 
-# Track last recovery error for health check
+# Track last recovery info for health check
 _last_recovery_error = None
+_last_recovery_time = None
+_recovery_count = 0
 
 @app.route('/health', methods=['GET'])
 def health_check():
@@ -1736,6 +1738,8 @@ def health_check():
         'timestamp': format_ist_timestamp(),
         'queue_size': automation_queue.qsize(),
         'last_recovery_error': _last_recovery_error,
+        'last_recovery_time': _last_recovery_time,
+        'recovery_count': _recovery_count,
         'api_file': __file__,
         'version': 'v5-force-deploy'
     })
@@ -1776,23 +1780,12 @@ def get_worker_log():
     """Get the last N lines of the worker log + Debug Info."""
     try:
         api_dir = os.path.dirname(os.path.abspath(__file__))
-        log_file = os.path.join(api_dir, 'automation_worker.log')
-        
-        debug_info = {
-            'api_dir': api_dir,
-            'cwd': os.getcwd(),
-            'sys.path': sys.path,
-            'listdir_app': [],
-            'listdir_mail_agent': 'not_found'
-        }
-        
-        try:
-            app_dir = os.path.dirname(api_dir) # /app
-            debug_info['listdir_app'] = os.listdir(app_dir)
-            if os.path.exists(os.path.join(app_dir, 'mail_agent')):
-                debug_info['listdir_mail_agent'] = os.listdir(os.path.join(app_dir, 'mail_agent'))
-        except Exception as e:
-            debug_info['listdir_error'] = str(e)
+        # Allow choosing which log to read
+        log_type = request.args.get('file', 'worker')
+        if log_type == 'main':
+            log_file = os.path.join(api_dir, 'automation.log')
+        else:
+            log_file = os.path.join(api_dir, 'automation_worker.log')
 
         lines = []
         if os.path.exists(log_file):
@@ -1810,8 +1803,10 @@ def recover_pending_tasks():
     On startup, check DB for 'pending' tasks and re-queue them.
     This handles cases where the app restarted (clearing memory queue) but tasks weren't processed.
     """
-    global _last_recovery_error
+    global _last_recovery_error, _last_recovery_time, _recovery_count
     try:
+        _last_recovery_time = format_ist_timestamp()
+        _recovery_count += 1
         print("RECOVERY: Checking for pending detailed tasks...", flush=True)
         conn = get_db_connection()
         print("RECOVERY: Got DB connection", flush=True)
