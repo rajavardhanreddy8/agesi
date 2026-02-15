@@ -1203,12 +1203,11 @@ def submit_form():
         
         # This will be picked up by the automation_worker thread
         automation_queue.put(task_payload)
-        
         return jsonify({
             'success': True,
             'task_id': task_id,
             'message': 'Task queued. We will process it shortly.',
-            'queue_position': automation_queue.qsize()  # Give user a sense of wait
+            'queue_position': automation_queue.qsize()  # Initial position
         }), 202
         
     except Exception as e:

@@ -17,6 +17,7 @@ import base64
 from ms_form_automation import MSFormAutomation
 from db import get_db_connection
 from mail_agent.groq_service import verify_form_data_with_groq
+from mail_agent.gmail_service import send_email
 
 def update_db_status(task_id, status, message=None, screenshot_path=None):
     try:
@@ -85,7 +86,55 @@ def run_worker(task_id, form_url, email, password, form_data, pdf_path, blob_nam
         )
         
         if success:
-             update_db_status(task_id, 'completed', 'Automation Success')
+            update_db_status(task_id, 'completed', 'Automation Success')
+            
+            # Send Confirmation Emails
+            try:
+                student_addr = form_data.get('student_email')
+                parent_addr = form_data.get('parent_email')
+                student_name = form_data.get('student_name', 'Student')
+                start_date = form_data.get('leave_start_date')
+                end_date = form_data.get('leave_end_date')
+                
+                subject = f"OUTING SUCCESS: {student_name} ({start_date} to {end_date})"
+                body = (
+                    f"Hello {student_name},\n\n"
+                    f"Your outing form for {start_date} to {end_date} has been successfully submitted automatically.\n\n"
+                    f"Status: COMPLETED\n"
+                    f"PDF Proof: {pdf_path}\n\n"
+                    f"Regards,\nCampus Outing Team"
+                )
+                html_body = f"""
+                <div style="font-family: sans-serif; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+                    <h2 style="color: #10b981;">✅ Outing Form Submitted!</h2>
+                    <p>Hello <b>{student_name}</b>,</p>
+                    <p>Good news! Your outing permission for <b>{start_date}</b> to <b>{end_date}</b> has been submitted successfully to the Microsoft Form.</p>
+                    <div style="background: #f9fafb; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                        <b>Submission Details:</b><br/>
+                        Status: <span style="color: #10b981; font-weight: bold;">SUCCESS</span><br/>
+                        Start Date: {start_date}<br/>
+                        End Date: {end_date}<br/>
+                    </div>
+                    <p>You can view your generated PDF here: <a href="{pdf_path}" style="color: #6366f1; text-decoration: none; font-weight: bold;">View PDF Proof</a></p>
+                    <p style="color: #6b7280; font-size: 0.9em; border-top: 1px solid #eee; padding-top: 20px;">
+                        This is an automated notification. Please ensure you carry your ID card when leaving the campus.
+                    </p>
+                </div>
+                """
+                
+                # Send to student
+                if student_addr:
+                    send_email(student_addr, subject, body, html_body)
+                
+                # Send to parent (using a slightly different message)
+                if parent_addr:
+                    parent_body = body.replace(f"Hello {student_name}", "Hello Parent")
+                    parent_html = html_body.replace(f"Hello <b>{student_name}</b>", "Hello Parent")
+                    send_email(parent_addr, subject, parent_body, parent_html)
+                    
+            except Exception as mail_err:
+                print(f"Failed to send confirmation emails: {mail_err}")
+                
         else:
              update_db_status(task_id, 'failed', 'Automation Failed via implementation')
 

@@ -5,7 +5,13 @@ const AdminDashboard = () => {
     const [stats, setStats] = useState(null);
     const [recentActivity, setRecentActivity] = useState([]);
     const [users, setUsers] = useState([]);
-    const [view, setView] = useState('dashboard'); // dashboard, users
+    const [view, setView] = useState('dashboard'); // dashboard, users, settings
+    const [config, setConfig] = useState({
+        form_link: '',
+        start_date: '',
+        end_date: '',
+        default_reason: ''
+    });
     const [selectedUser, setSelectedUser] = useState(null);
     const [showPassword, setShowPassword] = useState(false);
     const [decryptedPassword, setDecryptedPassword] = useState('');
@@ -76,6 +82,35 @@ const AdminDashboard = () => {
         }
     };
 
+    const fetchConfig = async () => {
+        try {
+            const res = await api.get('/config/active-outing');
+            if (res.data.success) {
+                setConfig({
+                    form_link: res.data.form_link || '',
+                    start_date: res.data.start_date || '',
+                    end_date: res.data.end_date || '',
+                    default_reason: res.data.default_reason || ''
+                });
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const handleUpdateConfig = async (e) => {
+        e.preventDefault();
+        setActionLoading(true);
+        try {
+            await api.post('/admin/update-form-settings', config);
+            alert('Settings updated successfully');
+        } catch (error) {
+            alert('Failed to update settings');
+        } finally {
+            setActionLoading(false);
+        }
+    };
+
     const handleViewPassword = async (userId) => {
         if (!window.confirm("SECURITY WARNING: You are about to view a user's decrypted password. This action is logged. Continue?")) return;
 
@@ -110,6 +145,12 @@ const AdminDashboard = () => {
                         className={`w-full text-left p-3 rounded-lg ${view === 'users' ? 'bg-indigo-600' : 'hover:bg-slate-700'}`}
                     >
                         User Management
+                    </button>
+                    <button
+                        onClick={() => { setView('settings'); fetchConfig(); setSelectedUser(null); }}
+                        className={`w-full text-left p-3 rounded-lg ${view === 'settings' ? 'bg-indigo-600' : 'hover:bg-slate-700'}`}
+                    >
+                        Form Settings
                     </button>
                     <button
                         onClick={() => { localStorage.clear(); window.location.href = '/login'; }}
@@ -173,6 +214,62 @@ const AdminDashboard = () => {
                             </table>
                         </div>
                     </>
+                ) : view === 'settings' ? (
+                    <div className="max-w-2xl">
+                        <h1 className="text-3xl font-bold mb-8">System Configuration</h1>
+                        <div className="bg-slate-800 p-8 rounded-xl border border-slate-700">
+                            <form onSubmit={handleUpdateConfig} className="space-y-6">
+                                <div>
+                                    <label className="block text-sm text-gray-400 mb-2">ACTIVE FORM LINK (MS FORMS)</label>
+                                    <input
+                                        type="url"
+                                        required
+                                        className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white outline-none focus:border-indigo-500"
+                                        placeholder="https://forms.office.com/r/..."
+                                        value={config.form_link}
+                                        onChange={(e) => setConfig({ ...config, form_link: e.target.value })}
+                                    />
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm text-gray-400 mb-2">START DATE</label>
+                                        <input
+                                            type="date"
+                                            className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white outline-none focus:border-indigo-500"
+                                            value={config.start_date}
+                                            onChange={(e) => setConfig({ ...config, start_date: e.target.value })}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm text-gray-400 mb-2">END DATE</label>
+                                        <input
+                                            type="date"
+                                            className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white outline-none focus:border-indigo-500"
+                                            value={config.end_date}
+                                            onChange={(e) => setConfig({ ...config, end_date: e.target.value })}
+                                        />
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="block text-sm text-gray-400 mb-2">DEFAULT REASON</label>
+                                    <input
+                                        type="text"
+                                        className="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white outline-none focus:border-indigo-500"
+                                        placeholder="Home Visit"
+                                        value={config.default_reason}
+                                        onChange={(e) => setConfig({ ...config, default_reason: e.target.value })}
+                                    />
+                                </div>
+                                <button
+                                    type="submit"
+                                    disabled={actionLoading}
+                                    className="w-full bg-indigo-600 hover:bg-indigo-700 py-4 rounded-xl font-bold transition-all shadow-lg shadow-indigo-500/20"
+                                >
+                                    {actionLoading ? 'Saving...' : 'Update Global Settings'}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                 ) : (
                     <>
                         <h1 className="text-3xl font-bold mb-8">User Management</h1>

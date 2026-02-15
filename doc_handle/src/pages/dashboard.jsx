@@ -20,7 +20,8 @@ const Dashboard = () => {
         taskId: null,
         status: null, // 'pending', 'running', 'completed', 'failed'
         message: '',
-        progress: 0
+        progress: 0,
+        queuePosition: null
     });
     const [reverifyModal, setReverifyModal] = useState({
         show: false,
@@ -176,7 +177,13 @@ const Dashboard = () => {
             const res = await api.post('/submit-form', payload);
 
             if (res.data.success && res.data.task_id) {
-                setSubmission(prev => ({ ...prev, taskId: res.data.task_id, status: 'pending', message: 'Task queued...' }));
+                setSubmission(prev => ({
+                    ...prev,
+                    taskId: res.data.task_id,
+                    status: 'pending',
+                    message: 'Task queued...',
+                    queuePosition: res.data.queue_position
+                }));
 
                 // Poll for status
                 let retryCount = 0;
@@ -203,7 +210,8 @@ const Dashboard = () => {
                             ...prev,
                             status: task.status,
                             message: task.message || task.status,
-                            progress: task.progress || 0
+                            progress: task.progress || 0,
+                            queuePosition: task.queue_position !== undefined ? task.queue_position : prev.queuePosition
                         }));
 
                         if (task.status === 'completed') {

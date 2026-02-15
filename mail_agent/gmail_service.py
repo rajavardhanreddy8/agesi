@@ -13,7 +13,10 @@ from bs4 import BeautifulSoup
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # If modifying these scopes, delete the file token.json.
-SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
+SCOPES = [
+    'https://www.googleapis.com/auth/gmail.readonly',
+    'https://www.googleapis.com/auth/gmail.send'
+]
 
 def get_gmail_service():
     """
@@ -144,3 +147,41 @@ def get_latest_email_content(sender_email):
         "links": links,
         "form_links": [l for l in links if "forms.office.com" in l or "docs.google.com" in l or "forms.gle" in l]
     }
+
+def send_email(to, subject, body, html_body=None):
+    """Send an email using Gmail API"""
+    try:
+        from email.mime.text import MIMEText
+        from email.mime.multipart import MIMEMultipart
+        import base64
+
+        service = get_gmail_service()
+        
+        if html_body:
+            message = MIMEMultipart('alternative')
+            message['Subject'] = subject
+            message['From'] = 'me'
+            message['To'] = to
+            
+            part1 = MIMEText(body, 'plain')
+            part2 = MIMEText(html_body, 'html')
+            message.attach(part1)
+            message.attach(part2)
+        else:
+            message = MIMEText(body)
+            message['to'] = to
+            message['from'] = 'me'
+            message['subject'] = subject
+
+        raw_message = base64.urlsafe_b64encode(message.as_bytes()).decode('utf-8')
+        
+        send_result = service.users().messages().send(
+            userId='me', 
+            body={'raw': raw_message}
+        ).execute()
+        
+        print(f"✓ Email sent to {to}. Message ID: {send_result['id']}")
+        return True
+    except Exception as e:
+        print(f"❌ Failed to send email: {e}")
+        return False
