@@ -17,3 +17,4 @@ razorpay==1.4.1
 reportlab
 Pillow
 azure-storage-blob
+groq
