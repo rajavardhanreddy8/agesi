@@ -1807,6 +1807,12 @@ def get_worker_log():
         else:
             lines = ["Log file not found"]
             
+        debug_info = {
+            'api_dir': api_dir,
+            'cwd': os.getcwd(),
+            'sys.path': sys.path
+        }
+            
         return jsonify({'success': True, 'log': lines, 'debug': debug_info})
     except Exception as e:
          return jsonify({'success': False, 'error': str(e)}), 500
