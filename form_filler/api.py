@@ -1785,8 +1785,22 @@ def diagnostic_env():
         'PORT': os.getenv('PORT'),
         'PYTHONPATH': os.getenv('PYTHONPATH'),
         'api_dir': os.path.dirname(os.path.abspath(__file__)),
-        'cwd': os.getcwd()
-    })
+        'cwd': os.getcwd(),
+        'pip_list': [],
+        'requirements_txt': ''
+    }
+    
+    try:
+        import subprocess
+        data['pip_list'] = subprocess.check_output([sys.executable, '-m', 'pip', 'list']).decode().split('\n')
+        req_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'requirements.txt')
+        if os.path.exists(req_path):
+            with open(req_path, 'r') as f:
+                data['requirements_txt'] = f.read()
+    except Exception as e:
+        data['error'] = str(e)
+        
+    return jsonify(data)
 
 @app.route('/api/admin/worker-log', methods=['GET'])
 def get_worker_log():
