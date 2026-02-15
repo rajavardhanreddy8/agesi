@@ -1774,6 +1774,19 @@ def diagnostic_check():
         status['db_connection'] = str(e)
         
     return jsonify(status)
+    
+@app.route('/api/admin/env', methods=['GET'])
+def diagnostic_env():
+    """Sanitized env dump for debugging"""
+    return jsonify({
+        'DB_HOST': os.getenv('DB_HOST'),
+        'DB_NAME': os.getenv('DB_NAME'),
+        'DB_USER': os.getenv('DB_USER'),
+        'PORT': os.getenv('PORT'),
+        'PYTHONPATH': os.getenv('PYTHONPATH'),
+        'api_dir': os.path.dirname(os.path.abspath(__file__)),
+        'cwd': os.getcwd()
+    })
 
 @app.route('/api/admin/worker-log', methods=['GET'])
 def get_worker_log():
@@ -1823,7 +1836,14 @@ def recover_pending_tasks():
         print(f"RECOVERY: Executing query: {query}", flush=True)
         cur.execute(query)
         pending_tasks = cur.fetchall()
-        print(f"RECOVERY: Found {len(pending_tasks)} pending tasks", flush=True)
+        print(f"RECOVERY: Found {len(pending_tasks)} pending tasks via JOIN", flush=True)
+        
+        # Diagnostic: check without JOIN if join returned 0
+        if len(pending_tasks) == 0:
+            cur.execute("SELECT count(*) FROM submission_history WHERE status IN ('pending', 'queued')")
+            raw_count = cur.fetchone()['count']
+            print(f"RECOVERY DIAGNOSTIC: Found {raw_count} tasks in submission_history WITHOUT join", flush=True)
+            
         cur.close()
         conn.close()
         
