@@ -175,7 +175,7 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler(os.path.join(api_dir, 'automation.log')),
+        logging.FileHandler(os.path.join(api_dir, 'automation.log'), encoding='utf-8'),
         logging.StreamHandler()
     ]
 )
@@ -1741,7 +1741,7 @@ def health_check():
         'last_recovery_time': _last_recovery_time,
         'recovery_count': _recovery_count,
         'api_file': __file__,
-        'version': 'v7-fixed-diags'
+        'version': 'v8-deps-fixed'
     })
 
 @app.route('/api/admin/recover', methods=['POST'])
