@@ -1,5 +1,8 @@
 import os
-from groq import Groq
+try:
+    from groq import Groq
+except ImportError:
+    Groq = None
 from dotenv import load_dotenv
 
 load_dotenv()
