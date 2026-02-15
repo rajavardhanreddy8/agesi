@@ -1700,18 +1700,35 @@ def diagnostic_check():
 
 @app.route('/api/admin/worker-log', methods=['GET'])
 def get_worker_log():
-    """Get the last N lines of the worker log."""
+    """Get the last N lines of the worker log + Debug Info."""
     try:
         api_dir = os.path.dirname(os.path.abspath(__file__))
         log_file = os.path.join(api_dir, 'automation_worker.log')
         
-        if not os.path.exists(log_file):
-            return jsonify({'success': False, 'error': 'Log file not found'}), 404
+        debug_info = {
+            'api_dir': api_dir,
+            'cwd': os.getcwd(),
+            'sys.path': sys.path,
+            'listdir_app': [],
+            'listdir_mail_agent': 'not_found'
+        }
+        
+        try:
+            app_dir = os.path.dirname(api_dir) # /app
+            debug_info['listdir_app'] = os.listdir(app_dir)
+            if os.path.exists(os.path.join(app_dir, 'mail_agent')):
+                debug_info['listdir_mail_agent'] = os.listdir(os.path.join(app_dir, 'mail_agent'))
+        except Exception as e:
+            debug_info['listdir_error'] = str(e)
+
+        lines = []
+        if os.path.exists(log_file):
+            with open(log_file, 'r', encoding='utf-8') as f:
+                lines = f.readlines()[-200:]
+        else:
+            lines = ["Log file not found"]
             
-        with open(log_file, 'r', encoding='utf-8') as f:
-            # Read all lines (or last 200 for brevity)
-            lines = f.readlines()
-            return jsonify({'success': True, 'log': lines[-200:]})
+        return jsonify({'success': True, 'log': lines, 'debug': debug_info})
     except Exception as e:
          return jsonify({'success': False, 'error': str(e)}), 500
 
