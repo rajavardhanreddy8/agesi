@@ -1676,6 +1676,28 @@ def manual_recover():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
+@app.route('/api/admin/diagnose', methods=['GET'])
+def diagnostic_check():
+    """Check worker health and queue status."""
+    global _last_recovery_error, worker_thread
+    status = {
+        'queue_size': automation_queue.qsize(),
+        'worker_alive': worker_thread.is_alive(),
+        'last_error': _last_recovery_error,
+        'tasks_in_memory': len(automation_tasks),
+        'db_connection': 'unknown'
+    }
+    
+    # Test DB connection
+    try:
+        conn = get_db_connection()
+        conn.close()
+        status['db_connection'] = 'ok'
+    except Exception as e:
+        status['db_connection'] = str(e)
+        
+    return jsonify(status)
+
 def recover_pending_tasks():
     """
     On startup, check DB for 'pending' tasks and re-queue them.
