@@ -1788,7 +1788,7 @@ def diagnostic_env():
         'cwd': os.getcwd(),
         'pip_list': [],
         'requirements_txt': ''
-    }
+    })
     
     try:
         import subprocess
