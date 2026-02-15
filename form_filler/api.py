@@ -153,11 +153,14 @@ CORS(app, resources={r"/*": {"origins": allow_origins}}, supports_credentials=Tr
 app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY', 'your-secret-key')
 
 # Configure logging
+# Get the directory where api.py is located
+api_dir = os.path.dirname(os.path.abspath(__file__))
+
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('automation.log'),
+        logging.FileHandler(os.path.join(api_dir, 'automation.log')),
         logging.StreamHandler()
     ]
 )
@@ -170,22 +173,27 @@ import queue
 automation_queue = queue.Queue()
 
 def automation_worker():
+    """Background worker that processes automation tasks from the queue."""
+    print("RECOVERY: Background worker thread started.", flush=True)
+    # Get the directory where api.py is located (form_filler directory)
+    api_dir = os.path.dirname(os.path.abspath(__file__))
+
     while True:
         task_info = automation_queue.get()
         if task_info is None:
             print("Worker received None, stopping.", flush=True)
             break
-            
+
         try:
             print(f"DEBUG: Processing task {task_info['task_id']}...", flush=True)
             logging.info(f"Processing queued task: {task_info['task_id']} for user {task_info['user_id']}")
-            
+
             # Use subprocess to avoid asyncio conflicts with Playwright Sync API
             import subprocess
-            
-            # Prepare args
-            worker_script = os.path.join(os.path.dirname(__file__), 'automation_worker.py')
-            
+
+            # Prepare args - use absolute path for worker script
+            worker_script = os.path.join(api_dir, 'automation_worker.py')
+
             cmd = [
                 sys.executable, "-u", worker_script,
                 "--task_id", task_info['task_id'],
@@ -195,30 +203,72 @@ def automation_worker():
                 "--form_data_json", json.dumps(task_info['form_data']),
                 "--pdf_path", task_info['pdf_path']
             ]
-            
+
             if task_info.get('blob_name'):
                 cmd.extend(["--blob_name", task_info['blob_name']])
-            
-            
-            # Run in separate process with logging
-            print("DEBUG: Opening automation_worker.log...", flush=True)
-            log_file = open('automation_worker.log', 'a')
-            print(f"DEBUG: Launching subprocess: {cmd}", flush=True)
-            
+
+            # Log file with absolute path
+            log_file_path = os.path.join(api_dir, 'automation_worker.log')
+            print(f"DEBUG: Log file path: {log_file_path}", flush=True)
+
             # Force UTF-8 for subprocess output
             env = os.environ.copy()
             env['PYTHONIOENCODING'] = 'utf-8'
-            
-            subprocess.Popen(cmd, stdout=log_file, stderr=log_file, env=env)
-            
+
+            print(f"DEBUG: Launching subprocess: {' '.join(cmd[:4])}...", flush=True)
+
+            # Open log file and launch subprocess with explicit working directory
+            with open(log_file_path, 'a', encoding='utf-8') as log_file:
+                # Write separator and timestamp
+                log_file.write(f"\n{'='*60}\n")
+                log_file.write(f"Task: {task_info['task_id']} at {datetime.now().isoformat()}\n")
+                log_file.write(f"{'='*60}\n")
+                log_file.flush()
+
+                # Launch subprocess with cwd set to form_filler directory
+                process = subprocess.Popen(
+                    cmd,
+                    stdout=log_file,
+                    stderr=log_file,
+                    env=env,
+                    cwd=api_dir  # Critical: Set working directory to form_filler
+                )
+
+            # Log the PID for tracking
+            logging.info(f"Launched subprocess PID {process.pid} for task {task_info['task_id']}")
+            print(f"DEBUG: Subprocess started with PID {process.pid}", flush=True)
+
         except Exception as e:
             logging.error(f"Worker failed launching subprocess for task {task_info['task_id']}: {e}")
+            # Update DB to failed status if subprocess can't start
+            try:
+                conn = get_db_connection()
+                cur = conn.cursor()
+                cur.execute(
+                    "UPDATE submission_history SET status = 'failed', error_details = %s WHERE task_id = %s",
+                    (f"Subprocess launch failed: {str(e)}", task_info['task_id'])
+                )
+                conn.commit()
+                conn.close()
+            except Exception as db_e:
+                logging.error(f"Failed to update DB status: {db_e}")
         finally:
             automation_queue.task_done()
 
 # Start the worker thread
 worker_thread = threading.Thread(target=automation_worker, daemon=True)
 worker_thread.start()
+
+# Recovery on startup
+_recovery_done = False
+def init_app_background():
+    global _recovery_done
+    if not _recovery_done:
+        recover_pending_tasks()
+        _recovery_done = True
+
+# Call recovery at module level so it runs in Gunicorn
+init_app_background()
 
 class AutomationTask:
     """Track automation task status"""
@@ -286,7 +336,7 @@ def run_automation_async(task_id, form_url, email, password, form_data, pdf_path
                 conn_inner = get_db_connection()
                 cur_inner = conn_inner.cursor()
                 cur_inner.execute(
-                    "UPDATE submission_history SET status_message = %s WHERE task_id = %s",
+                    "UPDATE submission_history SET message = %s WHERE task_id = %s",
                     (msg, task_id)
                 )
                 conn_inner.commit()
@@ -1592,6 +1642,9 @@ def verify_payment():
 # HEALTH CHECK (FOR RAILWAY/DOCKER)
 # ============================================================================
 
+# Track last recovery error for health check
+_last_recovery_error = None
+
 @app.route('/health', methods=['GET'])
 def health_check():
     """Health check endpoint for Railway/Docker deployment monitoring"""
@@ -1610,22 +1663,33 @@ def health_check():
         'status': 'healthy',
         'database': db_status,
         'timestamp': datetime.now().isoformat(),
-        'queue_size': automation_queue.qsize()
+        'queue_size': automation_queue.qsize(),
+        'last_recovery_error': _last_recovery_error,
+        'api_file': __file__,
+        'version': 'v5-force-deploy'
     })
 
-
+@app.route('/api/admin/recover', methods=['POST'])
+def manual_recover():
+    """Manually trigger task recovery."""
+    try:
+        recover_pending_tasks()
+        return jsonify({'success': True, 'msg': 'Recovery triggered', 'queue_size': automation_queue.qsize()})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 def recover_pending_tasks():
     """
     On startup, check DB for 'pending' tasks and re-queue them.
     This handles cases where the app restarted (clearing memory queue) but tasks weren't processed.
     """
+    global _last_recovery_error
     try:
         print("RECOVERY: Checking for pending detailed tasks...", flush=True)
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         
-        # We need to join with users to get credentials
+        # We need to join with users to get credentials (email, password)
         # We also need form_data which we just added to schema
         query = """
             SELECT s.*, u.email, u.outlook_password_encrypted 
@@ -1687,7 +1751,8 @@ def recover_pending_tasks():
         print(f"RECOVERY: Restored {count} pending tasks to queue.", flush=True)
         
     except Exception as e:
-        print(f"RECOVERY FAILED: {e}", flush=True)
+        _last_recovery_error = str(e)
+        print(f"RECOVERY: Error recovering tasks: {e}", flush=True)
 
 
 if __name__ == '__main__':
@@ -1695,8 +1760,8 @@ if __name__ == '__main__':
     os.makedirs('temp_uploads', exist_ok=True)
     os.makedirs('signatures', exist_ok=True)
     
-    # Recover tasks before starting server
-    recover_pending_tasks()
+    # Recover tasks moved to module level for Gunicorn
+    # recover_pending_tasks()
     
     # Get port from environment (Railway sets PORT)
     port = int(os.getenv('PORT', 5000))
