@@ -1337,6 +1337,14 @@ def submit_form():
         
         # This will be picked up by the automation_worker thread
         automation_queue.put(task_payload)
+
+        # Update status in DB to 'queued' now that it's in the queue
+        cur.execute(
+            "UPDATE submission_history SET status = 'queued' WHERE task_id = %s",
+            (task_id,)
+        )
+        conn.commit()
+
         return jsonify({
             'success': True,
             'task_id': task_id,
