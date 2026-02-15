@@ -109,7 +109,8 @@ def verify_outlook_credentials(email: str, password: str) -> tuple:
         from playwright.sync_api import sync_playwright
     except ImportError:
         print("Playwright not installed, skipping verification")
-        return True, None # Bypass verification if playwright missing
+        return True, None  # Bypass verification if playwright missing
+
     try:
         with sync_playwright() as p:
             # IMPORTANT: --no-sandbox is required for Docker environments
@@ -118,33 +119,35 @@ def verify_outlook_credentials(email: str, password: str) -> tuple:
                 args=[
                     '--no-sandbox',
                     '--disable-setuid-sandbox',
-                    '--disable-dev-shm-usage', # Critical for Docker to prevent crashes
-                    '--disable-gpu' # Often needed in container
+                    '--disable-dev-shm-usage',  # Critical for Docker to prevent crashes
+                    '--disable-gpu',  # Often needed in container
                 ],
-                timeout=30000 
+                timeout=30000
             )
             page = browser.new_page()
-            page.goto('https://login.microsoftonline.com')
+            page.goto('https://login.microsoftonline.com', timeout=30000)
             page.fill('input[type="email"]', email)
-            page.click('input[type="submit"]')
+            page.click('input[type="submit"]', timeout=5000)
             page.wait_for_timeout(2000)
             page.fill('input[type="password"]', password)
-            page.click('input[type="submit"]')
+            page.click('input[type="submit"]', timeout=5000)
             page.wait_for_timeout(3000)
-            
+
             success = ('login.microsoftonline.com/common/reprocess' in page.url or
                        'office.com' in page.url or
                        'MFA' in page.content() or
                        'Stay signed in' in page.content())
             browser.close()
-            
+
             if success:
                 return True, None
             else:
                 return False, "Invalid credentials or login failed"
     except Exception as e:
-        print(f"Outlook verification failed: {e}")
-        return False, f"Verification system error: {str(e)}"
+        error_msg = f"Outlook verification failed: {str(e)}"
+        print(error_msg)
+        logging.error(error_msg, exc_info=True)
+        return False, error_msg
 
 # ============================================================================
 # SUPABASE AUTH FUNCTIONS

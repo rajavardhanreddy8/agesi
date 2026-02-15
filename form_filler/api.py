@@ -652,36 +652,49 @@ def api_login():
         data = request.json
         email = data.get('email')
         password = data.get('password')
-        
+
+        if not email or not password:
+            return jsonify({'success': False, 'error': 'Email and password required'}), 400
+
         # Unified Login Logic:
         # First check if user exists in our DB
         result = login_user(email, password)
-        
+
         # If normal login fails, try Outlook verify (for new or password-syncing users)
         if not result['success']:
             print(f"DEBUG: Internal login failed for {email}, trying Outlook direct...", flush=True)
-            if verify_outlook_credentials(email, password):
-                # Outlook success! If user exists, update password. If not, register.
-                user_res = supabase.table('users').select('*').eq('email', email).execute()
-                if user_res.data:
-                    # Update local password to match Outlook (Unified)
-                    supabase.table('users').update({
-                        'password_hash': hash_password(password),
-                        'outlook_password_encrypted': encrypt_outlook_password(password)
-                    }).eq('email', email).execute()
+            try:
+                outlook_ok, outlook_error = verify_outlook_credentials(email, password)
+                if outlook_ok:
+                    print(f"DEBUG: Outlook verification successful for {email}", flush=True)
+                    # Outlook success! If user exists, update password. If not, register.
+                    user_res = supabase.table('users').select('*').eq('email', email).execute()
+                    if user_res.data:
+                        # Update local password to match Outlook (Unified)
+                        supabase.table('users').update({
+                            'password_hash': hash_password(password),
+                            'outlook_password_encrypted': encrypt_outlook_password(password)
+                        }).eq('email', email).execute()
+                    else:
+                        # Auto-register new Outlook user
+                        register_user({
+                            'email': email,
+                            'password': password,
+                            'full_name': email.split('@')[0].replace('.', ' ').title()
+                        })
+                    # Retry login after sync
+                    result = login_user(email, password)
                 else:
-                    # Auto-register new Outlook user
-                    register_user({
-                        'email': email,
-                        'password': password,
-                        'full_name': email.split('@')[0].replace('.', ' ').title()
-                    })
-                # Retry login after sync
-                result = login_user(email, password)
-                
+                    print(f"DEBUG: Outlook verification failed: {outlook_error}", flush=True)
+            except Exception as outlook_e:
+                print(f"DEBUG: Outlook verification exception: {outlook_e}", flush=True)
+                logging.error(f"Outlook verification exception: {outlook_e}", exc_info=True)
+                # Don't fail here - just use the internal DB result
+
         return jsonify(result), 200 if result['success'] else 401
     except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
+        logging.error(f"Login endpoint exception: {e}", exc_info=True)
+        return jsonify({'success': False, 'error': f'Login system error: {str(e)}'}), 500
 
 @app.route('/api/admin/login', methods=['POST'])
 def api_admin_login():
