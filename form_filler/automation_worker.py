@@ -66,12 +66,18 @@ def run_worker(task_id, form_url, email, password, form_data, pdf_path, blob_nam
             
             # Simple screenshot handling: Save to file
             if screenshot_bytes:
-                timestamp = 0 # Unique ID
                 import time
+                # Ensure directory exists
+                os.makedirs('screenshots', exist_ok=True)
+                
                 filename = f"screenshots/{task_id}_{int(time.time())}.jpg"
                 with open(filename, "wb") as f:
                     f.write(screenshot_bytes)
-                # We could update DB with this filename if we added a column
+                
+                # Update DB with screenshot path
+                update_db_status(task_id, None, msg, screenshot_path=filename)
+            else:
+                update_db_status(task_id, None, msg)
         
         def verification_wrapper(scraped_data, screenshot_bytes):
              if not verify_form_data_with_groq:

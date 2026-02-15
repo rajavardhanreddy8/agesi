@@ -660,7 +660,8 @@ def admin_dashboard():
             'stats': {
                 'total_users': res_users.count,
                 'total_revenue': float(total_revenue),
-                'total_submissions': res_subs.count
+                'total_submissions': res_subs.count,
+                'queue_size': automation_queue.qsize() if 'automation_queue' in globals() else 0
             },
             'recent_activity': formatted_activity
         })
@@ -684,6 +685,46 @@ def admin_users():
             return jsonify({'success': True, 'users': res.data})
         except:
             return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/admin/submissions', methods=['GET'])
+@admin_required
+def admin_submissions():
+    """Get full submission history for admins"""
+    try:
+        # Get last 100 submissions
+        res = supabase.table('submission_history')\
+            .select('*, users(email), student_profiles(full_name, roll_number)')\
+            .order('submitted_at', desc=True)\
+            .limit(100)\
+            .execute()
+            
+        return jsonify({
+            'success': True, 
+            'submissions': res.data
+        })
+    except Exception as e:
+        logging.error(f"Failed to fetch submissions: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/admin/screenshot/<task_id>', methods=['GET'])
+@admin_required
+def admin_screenshot(task_id):
+    """Serve automation screenshots"""
+    try:
+        # Get submission details to verify screenshot exists
+        res = supabase.table('submission_history').select('screenshot_path').eq('task_id', task_id).execute()
+        if not res.data or not res.data[0]['screenshot_path']:
+            return "No screenshot available", 404
+            
+        path = res.data[0]['screenshot_path']
+        # Verify path is within form_filler/screenshots, or absolute path
+        # The automation worker might save nicely
+        if os.path.exists(path):
+             return send_file(path)
+        
+        return "File not found", 404
+    except Exception as e:
+        return str(e), 500
 
 @app.route('/api/auth/verify-email', methods=['POST'])
 def api_verify_email():

@@ -5,13 +5,14 @@ const AdminDashboard = () => {
     const [stats, setStats] = useState(null);
     const [recentActivity, setRecentActivity] = useState([]);
     const [users, setUsers] = useState([]);
-    const [view, setView] = useState('dashboard'); // dashboard, users, settings
+    const [view, setView] = useState('dashboard'); // dashboard, users, settings, submissions
     const [config, setConfig] = useState({
         form_link: '',
         start_date: '',
         end_date: '',
         default_reason: ''
     });
+    const [submissions, setSubmissions] = useState([]);
     const [selectedUser, setSelectedUser] = useState(null);
     const [showPassword, setShowPassword] = useState(false);
     const [decryptedPassword, setDecryptedPassword] = useState('');
@@ -38,6 +39,15 @@ const AdminDashboard = () => {
         try {
             const res = await api.get('/admin/users');
             setUsers(res.data.users);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const fetchSubmissions = async () => {
+        try {
+            const res = await api.get('/admin/submissions');
+            setSubmissions(res.data.submissions);
         } catch (error) {
             console.error(error);
         }
@@ -153,6 +163,12 @@ const AdminDashboard = () => {
                         Form Settings
                     </button>
                     <button
+                        onClick={() => { setView('submissions'); fetchSubmissions(); setSelectedUser(null); }}
+                        className={`w-full text-left p-3 rounded-lg ${view === 'submissions' ? 'bg-indigo-600' : 'hover:bg-slate-700'}`}
+                    >
+                        Automation Logs
+                    </button>
+                    <button
                         onClick={() => { localStorage.clear(); window.location.href = '/login'; }}
                         className="w-full text-left p-3 rounded-lg hover:bg-red-900/50 text-red-400 mt-8"
                     >
@@ -180,6 +196,10 @@ const AdminDashboard = () => {
                             <div className="bg-slate-800 p-6 rounded-xl border border-slate-700">
                                 <div className="text-gray-400 mb-2">Total Submissions</div>
                                 <div className="text-3xl font-bold text-indigo-400">{stats.total_submissions}</div>
+                            </div>
+                            <div className="bg-slate-800 p-6 rounded-xl border border-slate-700">
+                                <div className="text-gray-400 mb-2">Automation Queue</div>
+                                <div className="text-3xl font-bold text-amber-400">{stats.queue_size || 0}</div>
                             </div>
                         </div>
 
@@ -270,6 +290,51 @@ const AdminDashboard = () => {
                             </form>
                         </div>
                     </div>
+                ) : view === 'submissions' ? (
+                    <>
+                        <h1 className="text-3xl font-bold mb-8">Automation Submissions</h1>
+                        <div className="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden">
+                            <table className="w-full text-left">
+                                <thead className="bg-slate-900/50 text-gray-400">
+                                    <tr>
+                                        <th className="p-4">Student</th>
+                                        <th className="p-4">Roll</th>
+                                        <th className="p-4">Status</th>
+                                        <th className="p-4">Details</th>
+                                        <th className="p-4">Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-700">
+                                    {submissions.map((sub, i) => (
+                                        <tr key={i} className="hover:bg-slate-700/50">
+                                            <td className="p-4">
+                                                <div className="font-bold">{sub.student_profiles?.full_name || 'N/A'}</div>
+                                                <div className="text-xs text-gray-500">{sub.users?.email}</div>
+                                            </td>
+                                            <td className="p-4 text-sm font-mono">{sub.student_profiles?.roll_number}</td>
+                                            <td className="p-4">
+                                                <span className={`px-2 py-1 rounded-full text-xs font-bold ${sub.status === 'completed' ? 'bg-green-900 text-green-300' :
+                                                    sub.status === 'failed' ? 'bg-red-900 text-red-300' :
+                                                        'bg-amber-900 text-amber-300'
+                                                    }`}>
+                                                    {sub.status.toUpperCase()}
+                                                </span>
+                                            </td>
+                                            <td className="p-4 text-sm text-gray-300">
+                                                {sub.message || sub.error || 'Processing...'}
+                                                {sub.screenshot_path && (
+                                                    <div className="mt-1">
+                                                        <a href={`/api/admin/screenshot/${sub.task_id}`} target="_blank" className="text-indigo-400 hover:underline text-xs">View Screenshot</a>
+                                                    </div>
+                                                )}
+                                            </td>
+                                            <td className="p-4 text-gray-500 text-sm">{new Date(sub.submitted_at).toLocaleString()}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </>
                 ) : (
                     <>
                         <h1 className="text-3xl font-bold mb-8">User Management</h1>

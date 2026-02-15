@@ -1331,8 +1331,21 @@ class MSFormAutomation:
                     fail_shot = f'error_{datetime.now().strftime("%Y%m%d_%H%M%S")}.png'
                     self.page.screenshot(path=fail_shot)
                     logging.info(f"Saved FAILURE screenshot to: {fail_shot}")
+                    
+                    # ALSO send to callback if available so it updates DB
+                    if status_callback:
+                        screenshot_bytes = self.page.screenshot(type='jpeg', quality=50)
+                        status_callback(f"FAILED: {str(e)}", 0, screenshot_bytes)
+                        
                 except Exception as se:
                     logging.error(f"Could not save failure screenshot: {se}")
+                    # Try to report failure without screenshot
+                    if status_callback:
+                        try:
+                            status_callback(f"FAILED: {str(e)}", 0, None)
+                        except:
+                            pass
+
             logging.error(f"Error type: {type(e).__name__}")
             logging.error(f"Full traceback:", exc_info=True)
             logging.error("=" * 60)
