@@ -1207,14 +1207,16 @@ def submit_form():
         cur.execute(
             """
             INSERT INTO submission_history 
-            (user_id, task_id, form_url, leave_start_date, leave_end_date, status, pdf_path, ip_address)
-            VALUES (%s, %s, %s, %s, %s, 'pending', %s, %s)
+            (user_id, task_id, form_url, leave_start_date, leave_end_date, status, pdf_path, ip_address, form_data, blob_name)
+            VALUES (%s, %s, %s, %s, %s, 'pending', %s, %s, %s, %s)
             """,
             (
                 request.user_id, task_id, form_url,
                 leave_start_date, leave_end_date,
                 pdf_url,  # Store Azure URL instead of local path
-                request.remote_addr
+                request.remote_addr,
+                psycopg2.extras.Json(form_data),
+                blob_name
             )
         )
         
@@ -1612,10 +1614,89 @@ def health_check():
     })
 
 
+
+def recover_pending_tasks():
+    """
+    On startup, check DB for 'pending' tasks and re-queue them.
+    This handles cases where the app restarted (clearing memory queue) but tasks weren't processed.
+    """
+    try:
+        print("RECOVERY: Checking for pending detailed tasks...", flush=True)
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        
+        # We need to join with users to get credentials
+        # We also need form_data which we just added to schema
+        query = """
+            SELECT s.*, u.email, u.outlook_password_encrypted 
+            FROM submission_history s
+            JOIN users u ON s.user_id = u.id
+            WHERE s.status = 'pending'
+        """
+        cur.execute(query)
+        pending_tasks = cur.fetchall()
+        cur.close()
+        conn.close()
+        
+        count = 0
+        for row in pending_tasks:
+            try:
+                # Decrypt password
+                password = decrypt_outlook_password(row['outlook_password_encrypted'])
+                
+                # Reconstruct payload
+                # Ideally, form_data is in the row (new schema)
+                # If not (old tasks), we might have trouble.
+                
+                form_data = row.get('form_data')
+                
+                if not form_data:
+                    # Fallback for old tasks without stored form_data:
+                    # We can try to reconstruct it from profile if we really want,
+                    # but 'reason' is missing. 
+                    # For now, skip or log warning.
+                    print(f"RECOVERY WARNING: Task {row['task_id']} has no saved form_data. Skipping.", flush=True)
+                    continue
+                    
+                task_payload = {
+                    'task_id': row['task_id'],
+                    'user_id': row['user_id'],
+                    'form_url': row['form_url'],
+                    'email': row['email'],
+                    'password': password,
+                    'form_data': form_data,
+                    'pdf_path': row['pdf_path'],
+                    'blob_name': row.get('blob_name')
+                }
+                
+                # Add to queue
+                automation_queue.put(task_payload)
+                
+                # Re-add to memory for status tracking
+                if row['task_id'] not in automation_tasks:
+                    task = AutomationTask(row['task_id'], row['user_id'])
+                    task.status = 'pending' 
+                    task.message = 'Recovered from restart'
+                    automation_tasks[row['task_id']] = task
+                    
+                count += 1
+                
+            except Exception as e:
+                print(f"RECOVERY ERROR for task {row.get('task_id')}: {e}", flush=True)
+                
+        print(f"RECOVERY: Restored {count} pending tasks to queue.", flush=True)
+        
+    except Exception as e:
+        print(f"RECOVERY FAILED: {e}", flush=True)
+
+
 if __name__ == '__main__':
     os.makedirs('screenshots', exist_ok=True)
     os.makedirs('temp_uploads', exist_ok=True)
     os.makedirs('signatures', exist_ok=True)
+    
+    # Recover tasks before starting server
+    recover_pending_tasks()
     
     # Get port from environment (Railway sets PORT)
     port = int(os.getenv('PORT', 5000))
