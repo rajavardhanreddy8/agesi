@@ -1741,7 +1741,7 @@ def health_check():
         'last_recovery_time': _last_recovery_time,
         'recovery_count': _recovery_count,
         'api_file': __file__,
-        'version': 'v6-diagnostics'
+        'version': 'v7-fixed-diags'
     })
 
 @app.route('/api/admin/recover', methods=['POST'])
