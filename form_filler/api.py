@@ -1407,11 +1407,7 @@ def task_live_view(task_id):
 @app.route('/api/task-status/<task_id>', methods=['GET'])
 @login_required # Optional: restrict to task owner?
 def get_task_status(task_id):
-    # Check memory first
-    if task_id in automation_tasks:
-        return jsonify({'success': True, 'task': automation_tasks[task_id].to_dict()})
-        
-    # Check DB if not in memory (for history)
+    # Check DB first (Source of Truth for worker updates)
     try:
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
@@ -1423,6 +1419,10 @@ def get_task_status(task_id):
              return jsonify({'success': True, 'task': dict(task)})
     except:
         pass
+
+    # Check memory secondary (for very fresh tasks not yet committed?)
+    if task_id in automation_tasks:
+        return jsonify({'success': True, 'task': automation_tasks[task_id].to_dict()})
         
     return jsonify({'success': False, 'error': 'Task not found'}), 404
     
