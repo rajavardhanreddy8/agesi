@@ -8,7 +8,7 @@ import supabase
 # print(f"DEBUG: httpx version: {httpx.__version__}", flush=True)
 # print(f"DEBUG: supabase version: {supabase.__version__}", flush=True)
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import threading
 import json
@@ -1919,6 +1919,10 @@ def recover_pending_tasks():
         _last_recovery_error = str(e)
         print(f"RECOVERY: Error recovering tasks: {e}", flush=True)
 
+
+@app.route('/signatures/<path:filename>')
+def serve_signatures(filename):
+    return send_from_directory(os.path.join(app.root_path, 'signatures'), filename)
 
 if __name__ == '__main__':
     os.makedirs('screenshots', exist_ok=True)
