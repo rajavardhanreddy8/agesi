@@ -203,18 +203,23 @@ export default function OutingFormGenerator() {
                 reason: formData.purpose
             }));
 
-            // Override content type to undefined so browser sets boundary
-            const res = await api.post('/submit-form', fd, {
-                headers: { 'Content-Type': 'multipart/form-data' }
-            });
+            // CRITICAL: Do NOT set Content-Type for FormData!
+            // The browser must set it automatically with the multipart boundary
+            // Setting it manually will break the upload
+            const res = await api.post('/submit-form', fd);
 
             if (res.data.success) {
                 setTaskId(res.data.task_id);
                 setSubmissionStatus('Automation Running...');
                 pollStatus(res.data.task_id);
+            } else {
+                setSubmissionStatus(`Failed: ${res.data.error || 'Unknown error'}`);
             }
         } catch (e) {
-            setSubmissionStatus(`Error: ${e.response?.data?.error || e.message}`);
+            console.error('Submission error:', e);
+            const errorMsg = e.response?.data?.error || e.response?.data?.message || e.message || 'Unknown error';
+            const errorDetails = e.response?.data?.details || '';
+            setSubmissionStatus(`❌ Failed: ${errorMsg}${errorDetails ? ` - ${errorDetails}` : ''}`);
         }
     };
 

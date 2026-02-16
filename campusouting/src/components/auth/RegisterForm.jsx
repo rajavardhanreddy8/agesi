@@ -13,7 +13,7 @@ export const RegisterForm = () => {
         rollNumber: '',
         school: 'School of Technology',
         academicYear: '2024-2028',
-        programme: 'B.Tech',
+        programme: '',
         specialization: '',
         studentPhone: '',
         studentEmail: '',
@@ -266,14 +266,22 @@ export const RegisterForm = () => {
                     <div className="form-group">
                         <label>Programme *</label>
                         <select name="programme" value={formData.programme} onChange={handleChange} required>
-                            <option value="B.Tech">B.Tech</option>
-                            <option value="BBA">BBA</option>
-                            <option value="B.Com">B.Com</option>
-                            <option value="BA LLB">BA LLB</option>
-                            <option value="BBA LLB">BBA LLB</option>
-                            <option value="B.Sc">B.Sc</option>
-                            <option value="BCA">BCA</option>
+                            <option value="">-- Select Programme --</option>
+                            <option value="BBA">BBA (Bachelor of Business Administration)</option>
+                            <option value="MBBA">MBBA (Master of Business Administration)</option>
+                            <option value="BCom">BCom (Bachelor of Commerce)</option>
+                            <option value="B. Arch">B. Arch (Bachelor of Architecture)</option>
+                            <option value="B.Des">B.Des (Bachelor of Design)</option>
+                            <option value="BA LLB">BA LLB (Bachelor of Arts + Law)</option>
+                            <option value="BBA LLB">BBA LLB (BBA + Law)</option>
+                            <option value="B.A.">B.A. (Bachelor of Arts)</option>
+                            <option value="B.Tech">B.Tech (Bachelor of Technology)</option>
+                            <option value="B.Sc.">B.Sc. (Bachelor of Science)</option>
+                            <option value="BCA">BCA (Bachelor of Computer Applications)</option>
                         </select>
+                        <small className="form-text" style={{ display: 'block', color: '#666', marginTop: '4px' }}>
+                            ⚠️ Select your PROGRAMME (e.g., B.Tech, BBA), NOT your specialization (e.g., CSE, Marketing)
+                        </small>
                     </div>
 
                     <div className="form-group">

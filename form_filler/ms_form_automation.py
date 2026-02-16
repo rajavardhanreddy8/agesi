@@ -36,6 +36,103 @@ class MSFormAutomation:
     # Path to persist login session across runs
     STORAGE_STATE_FILE = 'browser_state.json'
     
+    @staticmethod
+    def normalize_programme(programme_value):
+        """
+        Normalize database programme value to match Microsoft Form radio options exactly.
+        
+        Database may store: "B.B.A", "B.Tech", "B.Com" etc.
+        MS Form expects: "BBA", "B.Tech", "BCom" etc.
+        
+        Args:
+            programme_value (str): Programme value from database
+            
+        Returns:
+            str: Normalized programme value matching MS Form options
+        """
+        if not programme_value:
+            return ''
+        
+        # Programme mapping dictionary - maps database values to MS Form options
+        programme_map = {
+            # Remove periods from BBA variations
+            'B.B.A': 'BBA',
+            'B.B.A.': 'BBA',
+            'BBA': 'BBA',
+            
+            # MBBA variations
+            'M.B.B.A': 'MBBA',
+            'M.B.B.A.': 'MBBA',
+            'MBBA': 'MBBA',
+            
+            # BCom variations
+            'B.Com': 'BCom',
+            'B.COM': 'BCom',
+            'BCOM': 'BCom',
+            'B Com': 'BCom',
+            
+            # B.Tech (keep as-is if already correct)
+            'B.Tech': 'B.Tech',
+            'B.TECH': 'B.Tech',
+            'BTECH': 'B.Tech',
+            'B Tech': 'B.Tech',
+            
+            # B.Sc variations
+            'B.Sc': 'B.Sc.',
+            'B.Sc.': 'B.Sc.',
+            'B.SC': 'B.Sc.',
+            'BSC': 'B.Sc.',
+            'B Sc': 'B.Sc.',
+            
+            # B Arch
+            'B.Arch': 'B. Arch',
+            'B. Arch': 'B. Arch',
+            'B.ARCH': 'B. Arch',
+            'BARCH': 'B. Arch',
+            
+            # B.Des
+            'B.Des': 'B.Des',
+            'B.DES': 'B.Des',
+            'BDES': 'B.Des',
+            'B Des': 'B.Des',
+            
+            # BA LLB
+            'BA LLB': 'BA LLB',
+            'B.A. LLB': 'BA LLB',
+            'B.A LLB': 'BA LLB',
+            'BA.LLB': 'BA LLB',
+            
+            # BBA LLB
+            'BBA LLB': 'BBA LLB',
+            'B.B.A. LLB': 'BBA LLB',
+            'B.B.A LLB': 'BBA LLB',
+            'BBA.LLB': 'BBA LLB',
+            
+            # B.A
+            'B.A': 'B.A.',
+            'B.A.': 'B.A.',
+            'BA': 'B.A.',
+            'B A': 'B.A.',
+            
+            # BCA
+            'BCA': 'BCA',
+            'B.C.A': 'BCA',
+            'B.C.A.': 'BCA',
+        }
+        
+        # Try exact match first
+        if programme_value in programme_map:
+            return programme_map[programme_value]
+        
+        # Try case-insensitive match
+        for key, value in programme_map.items():
+            if key.lower() == programme_value.lower():
+                return value
+        
+        # If no match found, return original value
+        logging.warning(f"⚠️ Programme '{programme_value}' not in mapping, using as-is")
+        return programme_value
+    
     def __init__(self, headless=False, min_delay=5, max_delay=15):
         """
         Initialize automation with configurable delays.
@@ -698,8 +795,14 @@ class MSFormAutomation:
             # STRICT: No defaults. Use provided value or empty string.
             select_radio("School Name", form_data.get('school') or '')
             select_radio("Academic Session", form_data.get('academic_session') or '')
+            
             # PDF Format has "Programme Name" as radio (BBA, MBBA, BCom etc.)
-            select_radio("Programme Name", form_data.get('programme') or '')
+            # Normalize the programme value to match MS Form options exactly
+            programme_raw = form_data.get('programme') or ''
+            programme_normalized = self.normalize_programme(programme_raw)
+            if programme_raw and programme_raw != programme_normalized:
+                print(f"🔄 Programme mapping: '{programme_raw}' → '{programme_normalized}'")
+            select_radio("Programme Name", programme_normalized)
             
             # 3. Dates
             # This form only has "Leave Start Date" (no End Date field)
