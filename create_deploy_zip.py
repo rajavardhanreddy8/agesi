@@ -8,7 +8,7 @@ def create_connprehensive_zip(output_filename):
             dirs[:] = [d for d in dirs if d not in (
                 '.git', '.github', '.venv', 'venv', 'node_modules', 
                 'logs', 'logs_debug', 'logs_debug_v10', 'logs_debug_v11', 'logs_debug_v12',
-                '__pycache__', '.vscode', 'campusouting', 'mail_agent' 
+                '__pycache__', '.vscode', 'campusouting'
             )]
             
             for file in files:

@@ -57,10 +57,18 @@ load_dotenv(dotenv_path=env_path, override=False)
 # Add mail_agent to path for Grok Service
 sys.path.append(str(BASE_DIR / 'mail_agent'))
 try:
-    from groq_service import verify_form_data_with_groq
+    from groq_service import verify_form_data_with_groq, process_content_with_groq
 except ImportError:
     logging.warning("Could not import groq_service. AI Verification will be disabled.")
     verify_form_data_with_groq = None
+    process_content_with_groq = None
+
+# Import Gmail Service
+try:
+    from gmail_service import get_latest_email_content
+except ImportError:
+    logging.warning("Could not import gmail_service.")
+    get_latest_email_content = None
 
 print("="*50, flush=True)
 print(f"DEBUG: STARTING APP - {format_ist_timestamp()}", flush=True)
@@ -1184,6 +1192,113 @@ def generate_pdf():
 # ============================================================================
 # FORM SUBMISSION (PROTECTED)
 # ============================================================================
+
+@app.route('/api/admin/sync-config-from-mail', methods=['POST'])
+@admin_required
+def sync_config_from_mail():
+    """Fetch latest email, parse config, and update DB"""
+    if not get_latest_email_content:
+        return jsonify({'success': False, 'error': 'Gmail service not available'}), 503
+
+    try:
+        SENDER_EMAIL = "rrtradersind@gmail.com"
+        print(f"DEBUG: Fetching email from {SENDER_EMAIL} for config sync...", flush=True)
+        email_data = get_latest_email_content(SENDER_EMAIL)
+        
+        if not email_data:
+            return jsonify({'success': False, 'error': 'No relevant email found'}), 404
+
+        # Extraction Logic (Ported from bridge.py)
+        form_link = None
+        if email_data.get('form_links'):
+            form_link = email_data['form_links'][0]
+
+        combined_text = f"{email_data.get('subject', '')} {email_data.get('body', '')}"
+        
+        # Regex for Date (DD.MM.YYYY)
+        import re
+        date_pattern = re.compile(r'\b(\d{2}\.\d{2}\.\d{4})\b')
+        match = date_pattern.search(combined_text)
+        start_date = match.group(1) if match else None
+        
+        end_date = None
+        reason = None
+
+        # Calculate End Date if Start Date found
+        if start_date:
+            try:
+                start_obj = datetime.strptime(start_date, "%d.%m.%Y")
+                end_obj = start_obj + timedelta(days=2)
+                end_date = end_obj.strftime("%d.%m.%Y")
+                # Convert to YYYY-MM-DD for DB/Frontend consistency if needed, 
+                # but system_config seems to store what bridge.py sends.
+                # Let's standardize on YYYY-MM-DD for the frontend inputs
+                start_date = start_obj.strftime("%Y-%m-%d")
+                end_date = end_obj.strftime("%Y-%m-%d")
+            except Exception as e:
+                print(f"Date parse error: {e}")
+
+        # Grok Fallback
+        if (not form_link or not start_date or not reason) and process_content_with_groq:
+            print("DEBUG: Using Grok for fallback/enrichment...", flush=True)
+            try:
+                grok_result = process_content_with_groq(email_data)
+                if grok_result:
+                    if not start_date and grok_result.get('start_date'):
+                        # Grok usually returns DD.MM.YYYY based on prompt, verify and convert
+                        sd_raw = grok_result['start_date']
+                        try:
+                            s_obj = datetime.strptime(sd_raw, "%d.%m.%Y")
+                            start_date = s_obj.strftime("%Y-%m-%d")
+                            end_date = (s_obj + timedelta(days=2)).strftime("%Y-%m-%d")
+                        except:
+                            # Try YYYY-MM-DD just in case
+                            try:
+                                s_obj = datetime.strptime(sd_raw, "%Y-%m-%d")
+                                start_date = s_obj.strftime("%Y-%m-%d")
+                                end_date = (s_obj + timedelta(days=2)).strftime("%Y-%m-%d")
+                            except:
+                                pass
+
+                    if not form_link and grok_result.get('form_link'):
+                        form_link = grok_result['form_link']
+                    if not reason and grok_result.get('reason'):
+                        reason = grok_result['reason']
+            except Exception as e:
+                print(f"Grok fallback failed: {e}")
+
+        # Defaults if still missing
+        if not reason: reason = "Home Visit"
+
+        # Update Database
+        conn = get_db_connection()
+        cur = conn.cursor()
+        
+        updates = {}
+        if form_link: updates['form_link'] = form_link
+        if start_date: updates['start_date'] = start_date
+        if end_date: updates['end_date'] = end_date
+        if reason: updates['default_reason'] = reason
+        
+        for key, value in updates.items():
+            cur.execute("""
+                INSERT INTO system_config (key, value, updated_at) 
+                VALUES (%s, %s, NOW())
+                ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = NOW();
+            """, (key, value))
+            
+        conn.commit()
+        conn.close()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Config updated from email',
+            'updates': updates
+        }), 200
+
+    except Exception as e:
+        print(f"Sync Config Error: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/api/submit-form', methods=['POST'])
 @login_required

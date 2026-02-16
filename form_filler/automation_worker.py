@@ -2,8 +2,14 @@ import sys
 import os
 from pathlib import Path
 
+# Get the directory where this script is located (form_filler directory)
+SCRIPT_DIR = Path(__file__).resolve().parent
+
+# Add current directory (form_filler) to path for ms_form_automation and db imports
+sys.path.insert(0, str(SCRIPT_DIR))
+
 # Add project root and mail_agent to path
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = SCRIPT_DIR.parent
 sys.path.append(str(BASE_DIR))
 sys.path.append(str(BASE_DIR / 'mail_agent'))
 
@@ -14,10 +20,40 @@ load_dotenv(dotenv_path=env_path, override=False)
 import json
 import traceback
 import base64
-from ms_form_automation import MSFormAutomation
-from db import get_db_connection
-from mail_agent.groq_service import verify_form_data_with_groq
-from mail_agent.gmail_service import send_email
+
+# Debug: Log that we're starting
+print(f"DEBUG: automation_worker.py starting", flush=True)
+print(f"DEBUG: SCRIPT_DIR={SCRIPT_DIR}", flush=True)
+print(f"DEBUG: BASE_DIR={BASE_DIR}", flush=True)
+print(f"DEBUG: sys.path={sys.path[:3]}...", flush=True)
+
+try:
+    from ms_form_automation import MSFormAutomation
+    print("DEBUG: MSFormAutomation imported successfully", flush=True)
+except ImportError as e:
+    print(f"ERROR: Failed to import MSFormAutomation: {e}", flush=True)
+    raise
+
+try:
+    from db import get_db_connection
+    print("DEBUG: db imported successfully", flush=True)
+except ImportError as e:
+    print(f"ERROR: Failed to import db: {e}", flush=True)
+    raise
+
+try:
+    from mail_agent.groq_service import verify_form_data_with_groq
+    print("DEBUG: groq_service imported successfully", flush=True)
+except ImportError as e:
+    print(f"WARNING: Failed to import groq_service: {e}", flush=True)
+    verify_form_data_with_groq = None
+
+try:
+    from mail_agent.gmail_service import send_email
+    print("DEBUG: gmail_service imported successfully", flush=True)
+except ImportError as e:
+    print(f"WARNING: Failed to import gmail_service: {e}", flush=True)
+    send_email = None
 
 def update_db_status(task_id, status, message=None, screenshot_path=None):
     try:

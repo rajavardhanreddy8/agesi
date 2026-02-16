@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../utils/api';
+import { RefreshCw, Mail } from 'lucide-react';
 
 const AdminDashboard = () => {
     const [stats, setStats] = useState(null);
@@ -136,6 +137,23 @@ const AdminDashboard = () => {
         }
     };
 
+    const handleSyncFromMail = async () => {
+        if (!window.confirm("This will fetch the latest email from 'rrtradersind@gmail.com' and overwrite the current settings. Continue?")) return;
+
+        setActionLoading(true);
+        try {
+            const res = await api.post('/admin/sync-config-from-mail');
+            if (res.data.success) {
+                alert('Sync Complete!\nUpdated: ' + JSON.stringify(res.data.updates, null, 2));
+                fetchConfig();
+            }
+        } catch (error) {
+            alert('Sync failed: ' + (error.response?.data?.error || error.message));
+        } finally {
+            setActionLoading(false);
+        }
+    };
+
     if (!stats) return <div className="text-white p-8">Loading Admin Panel...</div>;
 
     return (
@@ -236,7 +254,27 @@ const AdminDashboard = () => {
                     </>
                 ) : view === 'settings' ? (
                     <div className="max-w-2xl">
-                        <h1 className="text-3xl font-bold mb-8">System Configuration</h1>
+                        <div className="flex justify-between items-center mb-8">
+                            <h1 className="text-3xl font-bold">System Configuration</h1>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={handleSyncFromMail}
+                                    disabled={actionLoading}
+                                    className="px-3 py-2 bg-indigo-600/20 hover:bg-indigo-600/40 border border-indigo-500/50 rounded-lg text-indigo-300 transition-colors flex items-center gap-2"
+                                    title="Sync from Latest Email"
+                                >
+                                    <Mail size={18} />
+                                    <span className="text-sm font-bold">Autofill from Mail</span>
+                                </button>
+                                <button
+                                    onClick={fetchConfig}
+                                    className="p-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-indigo-400 transition-colors"
+                                    title="Refresh Settings"
+                                >
+                                    <RefreshCw size={20} />
+                                </button>
+                            </div>
+                        </div>
                         <div className="bg-slate-800 p-8 rounded-xl border border-slate-700">
                             <form onSubmit={handleUpdateConfig} className="space-y-6">
                                 <div>
@@ -292,7 +330,16 @@ const AdminDashboard = () => {
                     </div>
                 ) : view === 'submissions' ? (
                     <>
-                        <h1 className="text-3xl font-bold mb-8">Automation Submissions</h1>
+                        <div className="flex justify-between items-center mb-8">
+                            <h1 className="text-3xl font-bold">Automation Submissions</h1>
+                            <button
+                                onClick={fetchSubmissions}
+                                className="p-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-indigo-400 transition-colors"
+                                title="Refresh Submissions"
+                            >
+                                <RefreshCw size={20} />
+                            </button>
+                        </div>
                         <div className="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden">
                             <table className="w-full text-left">
                                 <thead className="bg-slate-900/50 text-gray-400">
@@ -337,7 +384,16 @@ const AdminDashboard = () => {
                     </>
                 ) : (
                     <>
-                        <h1 className="text-3xl font-bold mb-8">User Management</h1>
+                        <div className="flex justify-between items-center mb-8">
+                            <h1 className="text-3xl font-bold">User Management</h1>
+                            <button
+                                onClick={fetchUsers}
+                                className="p-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-indigo-400 transition-colors"
+                                title="Refresh Users"
+                            >
+                                <RefreshCw size={20} />
+                            </button>
+                        </div>
 
                         {selectedUser ? (
                             <div className="bg-slate-800 p-8 rounded-xl border border-slate-700">
