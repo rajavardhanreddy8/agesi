@@ -1246,53 +1246,90 @@ class MSFormAutomation:
             print("=" * 60)
             print(f"Human-like delays: {self.min_delay//60}-{self.max_delay//60} minutes between steps")
             
-            # Step 1: Start browser
-            update_status("Starting browser session...", 10)
-            self.start_browser(email)
-            
-            # Step 2: Navigate to form URL
-            update_status(f"Navigating to form: {form_url}", 20)
-            # Increased timeout to 60s for initial load
-            self.page.goto(form_url, timeout=60000)
-            time.sleep(3)
-            
-            # Step 3: Handle Microsoft login
-            update_status("Authenticating with Microsoft...", 40)
-            self.microsoft_login(email, password)
-            
-            print("⏳ Stability Delay: Waiting 5s before accessing form...")
-            time.sleep(5) # Explicit wait for redirect/render as requested by user
-            
-            # EXPLICIT LOADING CHECK
-            self.wait_for_loading_screen()
-            
-            # Step 4: Validate we are actually on the form
-            update_status("Verifying form access...", 50)
-            try:
-                # Wait for specific MS Form elements
-                # 'div[data-automation-id="questionItem"]' is very specific to MS Forms
-                # or 'button:has-text("Submit")'
-                # or 'div:has-text("Hi,")'
-                self.page.wait_for_selector(
-                    'div[data-automation-id="questionItem"], button:has-text("Submit"), div:has-text("Hi,")', 
-                    timeout=20000
-                )
-                
-                # Double check we are NOT on login page
-                if "login.microsoftonline.com" in self.page.url:
-                     raise Exception("Redirected back to Login Page after authentication attempt!")
-                     
-            except PlaywrightTimeout:
-                current_url = self.page.url
-                if "login.microsoftonline.com" in current_url:
-                     raise Exception("Authentication Failed - Stuck on Login Page")
-                title = self.page.title()
-                # Take a screenshot to help debug
+            # RETRY LOOP FOR AUTHENTICATION
+            MAX_RETRIES = 2
+            for attempt in range(MAX_RETRIES):
                 try:
-                    self.page.screenshot(path="debug_form_load_fail.png")
-                except:
-                    pass
-                raise Exception(f"Form did not load. Current URL: {current_url}, Title: {title}")
+                    logging.info(f"--- Automation Attempt {attempt+1}/{MAX_RETRIES} ---")
+                    
+                    # Step 1: Start browser
+                    update_status("Starting browser session...", 10)
+                    self.start_browser(email)
+                    
+                    # Step 2: Navigate to form URL
+                    update_status(f"Navigating to form: {form_url}", 20)
+                    # Increased timeout to 60s for initial load
+                    self.page.goto(form_url, timeout=60000)
+                    time.sleep(3)
+                    
+                    # Step 3: Handle Microsoft login
+                    update_status("Authenticating with Microsoft...", 40)
+                    self.microsoft_login(email, password)
+                    
+                    print("⏳ Stability Delay: Waiting 5s before accessing form...")
+                    time.sleep(5) # Explicit wait for redirect/render as requested by user
+                    
+                    # EXPLICIT LOADING CHECK
+                    self.wait_for_loading_screen()
+                    
+                    # Step 4: Validate we are actually on the form
+                    update_status("Verifying form access...", 50)
+                    try:
+                        # Wait for specific MS Form elements
+                        self.page.wait_for_selector(
+                            'div[data-automation-id="questionItem"], button:has-text("Submit"), div:has-text("Hi,")', 
+                            timeout=20000
+                        )
+                        
+                        # Double check we are NOT on login page
+                        if "login.microsoftonline.com" in self.page.url:
+                             raise Exception("Redirected back to Login Page after authentication attempt!")
+                             
+                    except PlaywrightTimeout:
+                        current_url = self.page.url
+                        if "login.microsoftonline.com" in current_url:
+                             raise Exception("Authentication Failed - Stuck on Login Page")
+                        title = self.page.title()
+                        # Take a screenshot to help debug
+                        try:
+                            self.page.screenshot(path="debug_form_load_fail.png")
+                        except:
+                            pass
+                        raise Exception(f"Form did not load. Current URL: {current_url}, Title: {title}")
+                    
+                    # If we passed validation, break the retry loop
+                    break
+
+                except Exception as inner_e:
+                    # Catch auth failures and retry if possible
+                    if "Redirected back to Login Page" in str(inner_e) or "Stuck on Login Page" in str(inner_e):
+                        logging.warning(f"⚠️ Encountered login loop/failure: {inner_e}")
+                        
+                        if attempt < MAX_RETRIES - 1:
+                            logging.info("♻️ Invalidating session and retrying with fresh login...")
+                            update_status("Session invalid, retrying cleanup...", 15)
+                            
+                            # DELETE STATE FILE
+                            sanitized_email = email.replace('@', '_').replace('.', '_')
+                            state_file = f"browser_state_{sanitized_email}.json"
+                            if os.path.exists(state_file):
+                                try:
+                                    os.remove(state_file)
+                                    logging.info(f"Deleted stale state file: {state_file}")
+                                except Exception as del_e:
+                                    logging.error(f"Failed to delete state file: {del_e}")
+                            
+                            # Close current browser to restart
+                            if hasattr(self, 'browser') and self.browser:
+                                try:
+                                    self.browser.close()
+                                except:
+                                    pass
+                            continue # Retry loop
+                        else:
+                            raise inner_e # Validation failed on last attempt
+                    else:
+                        raise inner_e # Unrelated error, re-raise immediately
 
             # Step 5: Fill form
             update_status("Filling form data...", 60)

@@ -64,7 +64,7 @@ export const LoginForm = () => {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required
-                            placeholder="your.name@woxsen.edu.in"
+                            placeholder="your.name@college.edu.in"
                         />
                     </div>
 

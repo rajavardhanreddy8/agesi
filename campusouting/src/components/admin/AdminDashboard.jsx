@@ -138,7 +138,7 @@ const AdminDashboard = () => {
     };
 
     const handleSyncFromMail = async () => {
-        if (!window.confirm("This will fetch the latest email from 'campusouting.go@gmail.com' and overwrite the current settings. Continue?")) return;
+        if (!window.confirm("This will fetch the latest email from 'rajavreddy.g@gmail.com' and overwrite the current settings. Continue?")) return;
 
         setActionLoading(true);
         try {
@@ -245,7 +245,7 @@ const AdminDashboard = () => {
                                                 </span>
                                             </td>
                                             <td className="p-4 text-gray-300">{act.description}</td>
-                                            <td className="p-4 text-gray-500 text-sm">{new Date(act.created_at).toLocaleString()}</td>
+                                            <td className="p-4 text-gray-500 text-sm">{new Date(act.created_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}</td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -375,7 +375,7 @@ const AdminDashboard = () => {
                                                     </div>
                                                 )}
                                             </td>
-                                            <td className="p-4 text-gray-500 text-sm">{new Date(sub.submitted_at).toLocaleString()}</td>
+                                            <td className="p-4 text-gray-500 text-sm">{new Date(sub.submitted_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}</td>
                                         </tr>
                                     ))}
                                 </tbody>

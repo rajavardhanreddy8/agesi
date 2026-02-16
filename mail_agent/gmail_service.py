@@ -25,65 +25,71 @@ SCOPES = [
     'https://www.googleapis.com/auth/gmail.send'
 ]
 
-def get_gmail_service():
+def get_gmail_service(account_type='fetch'):
     """
     Get Gmail API service, supporting both:
     - Railway deployment (via GMAIL_TOKEN_JSON env var)
     - Local development (via token.json file)
+    
+    account_type: 'fetch' (rajavreddy.g) or 'send' (campusouting.go)
     """
     creds = None
-    token_path = os.path.join(SCRIPT_DIR, 'token.json')
+    
+    # Define token file based on account type
+    if account_type == 'fetch':
+        token_filename = 'token_fetch.json'
+    elif account_type == 'send':
+        token_filename = 'token_send.json'
+    else:
+        # Default fallback or error
+        token_filename = 'token_fetch.json' 
+
+    token_path = os.path.join(SCRIPT_DIR, token_filename)
     credentials_path = os.path.join(SCRIPT_DIR, 'credentials.json')
     
     # First, try environment variable (for Railway deployment)
-    token_json_env = os.getenv('GMAIL_TOKEN_JSON')
-    if token_json_env:
-        try:
-            token_data = json.loads(token_json_env)
-            creds = Credentials(
-                token=token_data.get('token'),
-                refresh_token=token_data.get('refresh_token'),
-                token_uri=token_data.get('token_uri', 'https://oauth2.googleapis.com/token'),
-                client_id=token_data.get('client_id'),
-                client_secret=token_data.get('client_secret'),
-                scopes=token_data.get('scopes', SCOPES)
-            )
-            print("✓ Loaded Gmail credentials from environment variable")
-        except Exception as e:
-            print(f"⚠️ Failed to parse GMAIL_TOKEN_JSON: {e}")
-            creds = None
+    # TODO: Update Railway to support dual tokens (maybe GMAIL_TOKEN_FETCH_JSON, GMAIL_TOKEN_SEND_JSON)
+    # For now, we prioritize local file for this specific request
     
     # Fallback to file-based token (local development)
     if not creds and os.path.exists(token_path):
         creds = Credentials.from_authorized_user_file(token_path, SCOPES)
-        print("✓ Loaded Gmail credentials from token.json")
+        # print(f"✓ Loaded Gmail credentials from {token_filename}")
     
     # If there are no (valid) credentials available, let the user log in.
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-            print("✓ Refreshed Gmail credentials")
-        else:
+            try:
+                creds.refresh(Request())
+                print(f"✓ Refreshed Gmail credentials for {account_type}")
+                # Save refreshed token
+                with open(token_path, 'w') as token:
+                    token.write(creds.to_json())
+            except Exception as e:
+                print(f"Error refreshing token: {e}")
+                creds = None
+
+        if not creds:
             # Only works in local development (interactive flow)
             if os.path.exists(credentials_path):
+                print(f"Initiating OAuth flow for {account_type}...")
                 flow = InstalledAppFlow.from_client_secrets_file(
                     credentials_path, SCOPES)
                 # Force 'consent' to ensure we get a refresh_token every time (critical for offline access)
                 creds = flow.run_local_server(port=8080, prompt='consent', access_type='offline')
-                print("✓ Obtained new Gmail credentials via OAuth flow")
+                print(f"✓ Obtained new Gmail credentials for {account_type}")
+                
+                 # Save the credentials for the next run (local only)
+                with open(token_path, 'w') as token:
+                    token.write(creds.to_json())
             else:
-                raise Exception("No valid credentials available. Set GMAIL_TOKEN_JSON env var or run locally first.")
-        
-        # Save the credentials for the next run (local only)
-        if not token_json_env:
-            with open(token_path, 'w') as token:
-                token.write(creds.to_json())
+                raise Exception(f"No valid credentials available for {account_type}. Set env var or run locally first.")
 
     service = build('gmail', 'v1', credentials=creds)
     return service
 
 def get_latest_email_content(sender_email):
-    service = get_gmail_service()
+    service = get_gmail_service('fetch')
     
     # query to filter by sender
     q = f"from:{sender_email}"
@@ -162,7 +168,7 @@ def send_email(to, subject, body, html_body=None):
         from email.mime.multipart import MIMEMultipart
         import base64
 
-        service = get_gmail_service()
+        service = get_gmail_service('send')
         
         if html_body:
             message = MIMEMultipart('alternative')

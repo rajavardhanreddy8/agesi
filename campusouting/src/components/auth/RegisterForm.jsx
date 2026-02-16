@@ -71,7 +71,7 @@ export const RegisterForm = () => {
         setSuccess('');
 
         if (!formData.email.endsWith('@woxsen.edu.in')) {
-            setError('Please use your Woxsen college email (@woxsen.edu.in)');
+            setError('Please use your college email (@college.edu.in)');
             return;
         }
 
@@ -181,14 +181,14 @@ export const RegisterForm = () => {
                     <h3>Login Credentials</h3>
 
                     <div className="form-group">
-                        <label>College Email (@woxsen.edu.in) *</label>
+                        <label>College Email (@college.edu.in) *</label>
                         <input
                             type="email"
                             name="email"
                             value={formData.email}
                             onChange={handleChange}
                             required
-                            placeholder="your.name@woxsen.edu.in"
+                            placeholder="your.name@college.edu.in"
                         />
                     </div>
 
