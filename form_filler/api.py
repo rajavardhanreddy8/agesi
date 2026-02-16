@@ -1201,7 +1201,7 @@ def sync_config_from_mail():
         return jsonify({'success': False, 'error': 'Gmail service not available'}), 503
 
     try:
-        SENDER_EMAIL = "rrtradersind@gmail.com"
+        SENDER_EMAIL = "campusouting.go@gmail.com"
         print(f"DEBUG: Fetching email from {SENDER_EMAIL} for config sync...", flush=True)
         email_data = get_latest_email_content(SENDER_EMAIL)
         

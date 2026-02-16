@@ -138,7 +138,7 @@ const AdminDashboard = () => {
     };
 
     const handleSyncFromMail = async () => {
-        if (!window.confirm("This will fetch the latest email from 'rrtradersind@gmail.com' and overwrite the current settings. Continue?")) return;
+        if (!window.confirm("This will fetch the latest email from 'campusouting.go@gmail.com' and overwrite the current settings. Continue?")) return;
 
         setActionLoading(true);
         try {
