@@ -1211,9 +1211,11 @@ def sync_config_from_mail():
         return jsonify({'success': False, 'error': 'Gmail service not available'}), 503
 
     try:
-        SENDER_EMAIL = "campusouting.go@gmail.com"
-        print(f"DEBUG: Fetching email from {SENDER_EMAIL} for config sync...", flush=True)
-        email_data = get_latest_email_content(SENDER_EMAIL)
+        # Search for emails from campusouting.go OR self (rajavreddy.g) OR student.outing@woxsen.edu.in
+        # Note: get_latest_email_content takes a query string now, not just an email
+        SENDER_QUERY = "from:campusouting.go@gmail.com OR from:rajavreddy.g@gmail.com OR from:student.outing@woxsen.edu.in OR from:me"
+        print(f"DEBUG: Fetching email matching '{SENDER_QUERY}' for config sync...", flush=True)
+        email_data = get_latest_email_content(SENDER_QUERY)
         
         if not email_data:
             return jsonify({'success': False, 'error': 'No relevant email found'}), 404
@@ -1225,9 +1227,10 @@ def sync_config_from_mail():
 
         combined_text = f"{email_data.get('subject', '')} {email_data.get('body', '')}"
         
-        # Regex for Date (DD.MM.YYYY)
+        # Regex for Date (DD.MM.YYYY or DD/MM/YYYY or DD-MM-YYYY)
         import re
-        date_pattern = re.compile(r'\b(\d{2}\.\d{2}\.\d{4})\b')
+        # Matches dd.mm.yyyy, dd/mm/yyyy, or dd-mm-yyyy
+        date_pattern = re.compile(r'\b(\d{2}[./-]\d{2}[./-]\d{4})\b')
         match = date_pattern.search(combined_text)
         start_date = match.group(1) if match else None
         
@@ -1237,7 +1240,10 @@ def sync_config_from_mail():
         # Calculate End Date if Start Date found
         if start_date:
             try:
-                start_obj = datetime.strptime(start_date, "%d.%m.%Y")
+                # Normalize separator to dot for strptime if needed, or handle variations
+                # actually strptime requires specific format. Let's try to detect or normalize.
+                clean_date = start_date.replace('/', '.').replace('-', '.')
+                start_obj = datetime.strptime(clean_date, "%d.%m.%Y")
                 end_obj = start_obj + timedelta(days=2)
                 end_date = end_obj.strftime("%d.%m.%Y")
                 # Convert to YYYY-MM-DD for DB/Frontend consistency if needed, 
