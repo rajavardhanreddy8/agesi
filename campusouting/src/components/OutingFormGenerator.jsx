@@ -105,6 +105,15 @@ export default function OutingFormGenerator() {
     };
 
     const generatePDF = () => {
+        // Resolve signature URL
+        let sigUrl = signatureImage;
+        if (sigUrl && !sigUrl.startsWith('data:') && !sigUrl.startsWith('http')) {
+            // It's likely a relative path from DB (e.g., 'signatures/user.png')
+            // Prepend the backend root URL (not /api)
+            const backendRoot = 'https://outing-backend-api.azurewebsites.net';
+            sigUrl = `${backendRoot}/${sigUrl.replace(/^\//, '')}`;
+        }
+
         generateOutingPDF({
             studentName: formData.studentName,
             studentId: formData.studentId,
@@ -129,7 +138,7 @@ export default function OutingFormGenerator() {
             studentEmail: formData.studentEmail,
             studentMobile: formData.studentMobile,
 
-            signatureImage: signatureImage
+            signatureImage: sigUrl
         });
     };
 

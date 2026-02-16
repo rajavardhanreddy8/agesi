@@ -120,21 +120,27 @@ export const generateOutingPDF = (data) => {
     <table class="data-table">
         <tr style="height: 50px;">
             <td style="width: 30%;">Father Name, Email & Mobile Number</td>
-            <td style="width: 25%;">${fatherName || ''}</td>
-            <td style="width: 25%;">${fatherEmail || ''}</td>
-            <td style="width: 20%;">${fatherMobile || ''}</td>
+            <td style="width: 25%;">
+                ${[fatherName, fatherEmail, fatherMobile].filter(Boolean).join(', ')}
+            </td>
+            <td style="width: 25%;"></td>
+            <td style="width: 20%;"></td>
         </tr>
         <tr style="height: 50px;">
             <td>Mother Name, Email & Mobile Number</td>
-            <td>${motherName || ''}</td>
-            <td>${motherEmail || ''}</td>
-            <td>${motherMobile || ''}</td>
+            <td>
+                ${[motherName, motherEmail, motherMobile].filter(Boolean).join(', ')}
+            </td>
+            <td></td>
+            <td></td>
         </tr>
         <tr style="height: 50px;">
             <td>Student Name, Email & Mobile Number</td>
-            <td>${studentName || ''}</td>
-            <td>${studentEmail || ''}</td>
-            <td>${studentMobile || ''}</td>
+            <td>
+                ${[studentName, studentEmail, studentMobile].filter(Boolean).join(', ')}
+            </td>
+            <td></td>
+            <td></td>
         </tr>
     </table>
 
