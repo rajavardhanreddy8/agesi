@@ -1069,9 +1069,15 @@ def generate_outing_pdf_buffer(profile, start_date, end_date, reason):
             "parent_phone": profile.get('parent1_phone') or profile.get('parent_phone', ''),
             "parent_email": profile.get('parent1_email') or profile.get('parent_email', ''),
             
-            # Specific table fields
+            # Specific table fields - Father/Parent1
             "father_name": profile.get('parent1_name') or profile.get('father_name', ''),
+            "father_email": profile.get('parent1_email', ''),
+            "father_phone": profile.get('parent1_phone', ''),
+            
+            # Mother/Parent2
             "mother_name": profile.get('parent2_name') or profile.get('mother_name', ''),
+            "mother_email": profile.get('parent2_email', ''),
+            "mother_phone": profile.get('parent2_phone', ''),
             
             # Outing Details
             "leave_start_date": start_date,
@@ -1099,6 +1105,10 @@ def generate_outing_pdf_buffer(profile, start_date, end_date, reason):
                  abs_sig_path = os.path.abspath(sig_path)
                  if os.path.exists(abs_sig_path):
                      pdf_data['signature_path'] = abs_sig_path
+        
+        # Also pass signature_data if available (Azure URL or base64)
+        if profile.get('signature_data'):
+            pdf_data['signature_data'] = profile['signature_data']
 
         generate_parent_consent_pdf(buffer, pdf_data)
         

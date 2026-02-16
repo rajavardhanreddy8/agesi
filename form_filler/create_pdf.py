@@ -156,7 +156,11 @@ def generate_parent_consent_pdf(path_or_buffer, data):
     y -= 0.5 * inch
 
     # Parent signature image (if provided)
+    # Try signature_path first, then signature_data
     sig_path = data.get('signature_path')
+    sig_data = data.get('signature_data')
+    signature_drawn = False
+    
     if sig_path and os.path.exists(sig_path):
         try:
             sig_w = 2.2 * inch
@@ -165,10 +169,49 @@ def generate_parent_consent_pdf(path_or_buffer, data):
             c.drawImage(sig_path, width - RIGHT_MARGIN - 2.5 * inch, y - sig_h + 0.4*inch, width=sig_w, height=sig_h, mask='auto', preserveAspectRatio=True)
             c.setFont(USE_FONT, 8)
             c.drawString(width - RIGHT_MARGIN - 2.5 * inch, y - sig_h + 0.4*inch - 10, "(Digitally Signed)")
+            signature_drawn = True
         except Exception as ex:
             c.setFont(USE_FONT, 9)
             c.drawString(width - RIGHT_MARGIN - 2.5 * inch, y - 10, f"[Signature Error: {ex}]")
-    else:
+    elif sig_data:
+        # Handle signature_data (Azure URL or base64)
+        try:
+            from reportlab.lib.utils import ImageReader
+            import io
+            import base64
+            
+            sig_w = 2.2 * inch
+            sig_h = 0.6 * inch
+            
+            if sig_data.startswith('http://') or sig_data.startswith('https://'):
+                # Azure Blob Storage URL — download and embed
+                import urllib.request
+                sig_response = urllib.request.urlopen(sig_data)
+                sig_image = ImageReader(io.BytesIO(sig_response.read()))
+                c.drawImage(sig_image, width - RIGHT_MARGIN - 2.5 * inch, y - sig_h + 0.4*inch, width=sig_w, height=sig_h, preserveAspectRatio=True, mask='auto')
+                c.setFont(USE_FONT, 8)
+                c.drawString(width - RIGHT_MARGIN - 2.5 * inch, y - sig_h + 0.4*inch - 10, "(Digitally Signed)")
+                signature_drawn = True
+            elif sig_data.startswith('data:image'):
+                # Base64 encoded image
+                header, encoded = sig_data.split(',', 1)
+                sig_bytes = base64.b64decode(encoded)
+                sig_image = ImageReader(io.BytesIO(sig_bytes))
+                c.drawImage(sig_image, width - RIGHT_MARGIN - 2.5 * inch, y - sig_h + 0.4*inch, width=sig_w, height=sig_h, preserveAspectRatio=True, mask='auto')
+                c.setFont(USE_FONT, 8)
+                c.drawString(width - RIGHT_MARGIN - 2.5 * inch, y - sig_h + 0.4*inch - 10, "(Digitally Signed)")
+                signature_drawn = True
+            elif os.path.exists(sig_data):
+                # File path
+                c.drawImage(sig_data, width - RIGHT_MARGIN - 2.5 * inch, y - sig_h + 0.4*inch, width=sig_w, height=sig_h, preserveAspectRatio=True, mask='auto')
+                c.setFont(USE_FONT, 8)
+                c.drawString(width - RIGHT_MARGIN - 2.5 * inch, y - sig_h + 0.4*inch - 10, "(Digitally Signed)")
+                signature_drawn = True
+        except Exception as ex:
+            c.setFont(USE_FONT, 9)
+            c.drawString(width - RIGHT_MARGIN - 2.5 * inch, y - 10, f"[Signature Error: {ex}]")
+    
+    if not signature_drawn:
         c.setFont(USE_FONT, 9)
         c.drawString(LEFT_MARGIN, y - 10, "") # No signature
 
@@ -183,14 +226,28 @@ def generate_parent_consent_pdf(path_or_buffer, data):
 
     # rows & heights
     
-    # Construct contact strings
-    father_contact = data.get('father_name', '')
-    mother_contact = data.get('mother_name', '')
+    # Construct contact strings with proper formatting
+    # Father details: Name, Email, Phone
+    father_name = data.get('father_name', '') or data.get('parent1_name', '') or data.get('parent_name', '')
+    father_email = data.get('father_email', '') or data.get('parent1_email', '') or data.get('parent_email', '')
+    father_phone = data.get('father_phone', '') or data.get('parent1_phone', '') or data.get('parent_phone', '')
     
-    # If specific fields missing, try to construct likely strings
-    if not father_contact and data.get('parent_name'):
-        father_contact = f"{data.get('parent_name')} ({data.get('parent_phone', '')})"
+    if father_name or father_email or father_phone:
+        father_contact = f"{father_name}, {father_email}, {father_phone}"
+    else:
+        father_contact = ""
+    
+    # Mother details: Name, Email, Phone
+    mother_name = data.get('mother_name', '') or data.get('parent2_name', '')
+    mother_email = data.get('mother_email', '') or data.get('parent2_email', '')
+    mother_phone = data.get('mother_phone', '') or data.get('parent2_phone', '')
+    
+    if mother_name or mother_email or mother_phone:
+        mother_contact = f"{mother_name}, {mother_email}, {mother_phone}"
+    else:
+        mother_contact = ""
         
+    # Student contact
     stu_contact = data.get('student_contact')
     if not stu_contact:
         stu_contact = f"{data.get('student_name', '')}, {data.get('student_email', '')}, {data.get('student_phone', '')}"

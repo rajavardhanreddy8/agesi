@@ -238,10 +238,71 @@ export default function OutingFormGenerator() {
             </h1>
 
             {/* Form Fields */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                <input name="startDate" type="date" value={formData.startDate} onChange={handleChange} className="border p-2 rounded" />
-                <input name="endDate" type="date" value={formData.endDate} onChange={handleChange} className="border p-2 rounded" />
-                <input name="purpose" placeholder="Purpose" value={formData.purpose} onChange={handleChange} className="border p-2 rounded col-span-2" />
+            <div className="space-y-6">
+                {/* Student Details Section */}
+                <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                    <h3 className="font-bold text-blue-900 mb-3">Student Details</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input name="studentName" placeholder="Student Name" value={formData.studentName} onChange={handleChange} className="border p-2 rounded" readOnly />
+                        <input name="studentId" placeholder="Student ID" value={formData.studentId} onChange={handleChange} className="border p-2 rounded" readOnly />
+                        <input name="program" placeholder="Program" value={formData.program} onChange={handleChange} className="border p-2 rounded" readOnly />
+                        <input name="academicYear" placeholder="Academic Year" value={formData.academicYear} onChange={handleChange} className="border p-2 rounded" readOnly />
+                        <input name="studentEmail" placeholder="Student Email" value={formData.studentEmail} onChange={handleChange} className="border p-2 rounded" />
+                        <input name="studentMobile" placeholder="Student Mobile" value={formData.studentMobile} onChange={handleChange} className="border p-2 rounded" />
+                    </div>
+                </div>
+
+                {/* Father Details Section */}
+                <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                    <h3 className="font-bold text-green-900 mb-3">Father Details</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <input name="fatherName" placeholder="Father Name *" value={formData.fatherName} onChange={handleChange} className="border p-2 rounded" required />
+                        <input name="fatherEmail" placeholder="Father Email *" value={formData.fatherEmail} onChange={handleChange} className="border p-2 rounded" type="email" required />
+                        <input name="fatherMobile" placeholder="Father Mobile *" value={formData.fatherMobile} onChange={handleChange} className="border p-2 rounded" type="tel" required />
+                    </div>
+                </div>
+
+                {/* Mother Details Section */}
+                <div className="bg-pink-50 p-4 rounded-lg border border-pink-200">
+                    <h3 className="font-bold text-pink-900 mb-3">Mother Details</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <input name="motherName" placeholder="Mother Name" value={formData.motherName} onChange={handleChange} className="border p-2 rounded" />
+                        <input name="motherEmail" placeholder="Mother Email" value={formData.motherEmail} onChange={handleChange} className="border p-2 rounded" type="email" />
+                        <input name="motherMobile" placeholder="Mother Mobile" value={formData.motherMobile} onChange={handleChange} className="border p-2 rounded" type="tel" />
+                    </div>
+                </div>
+
+                {/* Outing Details Section */}
+                <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
+                    <h3 className="font-bold text-purple-900 mb-3">Outing Details</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Start Date *</label>
+                            <input name="startDate" type="date" value={formData.startDate} onChange={handleChange} className="border p-2 rounded w-full" required />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">End Date *</label>
+                            <input name="endDate" type="date" value={formData.endDate} onChange={handleChange} className="border p-2 rounded w-full" required />
+                        </div>
+                        <div className="col-span-2">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Purpose *</label>
+                            <input name="purpose" placeholder="Purpose (e.g., Home Visit, Family Function)" value={formData.purpose} onChange={handleChange} className="border p-2 rounded w-full" required />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Signature Section */}
+                <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                    <h3 className="font-bold text-yellow-900 mb-3">Parent Signature</h3>
+                    {signatureImage && (
+                        <div className="mb-3 p-2 bg-white border rounded">
+                            <img src={signatureImage} alt="Signature" className="h-16 mx-auto" />
+                            <p className="text-sm text-center text-gray-600 mt-1">Signature loaded from profile</p>
+                        </div>
+                    )}
+                    <input type="file" accept="image/*" onChange={handleSignatureUpload} className="block w-full text-sm" />
+                    <p className="text-xs text-gray-600 mt-1">Upload a new signature to replace the existing one</p>
+                </div>
             </div>
 
             <div className="border-t pt-6">
