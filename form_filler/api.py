@@ -1325,15 +1325,29 @@ def submit_form():
     """
     conn = None
     try:
-        # 1. Get JSON data
-        request_data = request.json
+
+        # 1. Get Data (Handle both JSON and Multipart/FormData)
+        if request.content_type and 'multipart/form-data' in request.content_type:
+            # Handle key-value from FormData or JSON string in 'data' field
+            if 'data' in request.form:
+                import json
+                try:
+                    request_data = json.loads(request.form['data'])
+                except:
+                    return jsonify({'success': False, 'error': 'Invalid JSON in "data" field'}), 400
+            else:
+                # Try to get fields directly from form (fallback)
+                request_data = request.form.to_dict()
+        else:
+            # Standard JSON request
+            request_data = request.json
+
         if not request_data:
-            return jsonify({'success': False, 'error': 'No JSON data provided'}), 400
+            return jsonify({'success': False, 'error': 'No data provided'}), 400
             
         form_url = request_data.get('form_url')
         leave_start_date = request_data.get('leave_start_date')  # YYYY-MM-DD
         leave_end_date = request_data.get('leave_end_date')      # YYYY-MM-DD
-        # STRICT: No default reason. Must be provided by user.
         reason = request_data.get('reason')
         
         if not form_url:
@@ -1373,16 +1387,27 @@ def submit_form():
                 'error_code': 'CREDENTIAL_REVERIFY_NEEDED'
             }), 400
         
-        # 3. Generate PDF with provided dates and reason
-        logging.info(f"Generating PDF for user {request.user_id} with dates {leave_start_date} to {leave_end_date}")
+        # 3. Get PDF (Prefer Uploaded File > Generate New)
+        pdf_buffer = None
         
-        # Merge profile with user email for PDF generation
-        profile_data = dict(profile)
-        profile_data['email'] = user_auth['email']
-        
-        pdf_buffer = generate_outing_pdf_buffer(profile_data, leave_start_date, leave_end_date, reason)
+        # Check if file was uploaded
+        if 'pdf' in request.files:
+            uploaded_file = request.files['pdf']
+            if uploaded_file.filename != '':
+                logging.info(f"Using uploaded PDF: {uploaded_file.filename}")
+                pdf_buffer = uploaded_file.read()
+
+        # If no file uploaded, generate one (Fallback)
         if not pdf_buffer:
-            return jsonify({'success': False, 'error': 'Failed to generate PDF'}), 500
+            logging.info(f"No PDF uploaded. Generating new PDF for user {request.user_id}...")
+            # Merge profile with user email for PDF generation
+            profile_data = dict(profile)
+            profile_data['email'] = user_auth['email']
+            
+            pdf_buffer = generate_outing_pdf_buffer(profile_data, leave_start_date, leave_end_date, reason)
+            
+        if not pdf_buffer:
+            return jsonify({'success': False, 'error': 'Failed to provide or generate PDF'}), 500
         
         # 4. Upload PDF to Azure Blob Storage
         try:
