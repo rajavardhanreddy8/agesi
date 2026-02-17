@@ -1,5 +1,24 @@
 import * as mammoth from 'mammoth';
 
+// Standardized list of programmes to match the dropdown in RegisterForm
+const STANDARD_PROGRAMMES = [
+    "B.Tech", "BBA", "BCom", "B.Sc", "B.Des", "B.Arch", "Integrated MBA", "Integrated BBA-MBA", "MBA", "MBA (BA/AI/ML)", "MBA (Financial Services)"
+];
+
+const normalizeProgramme = (extractedProgramme) => {
+    if (!extractedProgramme) return '';
+
+    const normalized = extractedProgramme.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+
+    // Exact or fuzzy matching logic
+    const match = STANDARD_PROGRAMMES.find(prog => {
+        const progNormalized = prog.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+        return normalized.includes(progNormalized) || progNormalized.includes(normalized);
+    });
+
+    return match || extractedProgramme; // Return match if found, else original (user can fix)
+};
+
 export const extractRegistrationData = async (file) => {
     try {
         // 1. Convert DOCX to Raw Text
@@ -11,121 +30,139 @@ export const extractRegistrationData = async (file) => {
             throw new Error("Document appears to be empty or unreadable.");
         }
 
-        if (text.length < 50) {
-            console.warn("Extracted text is very short. Document might be a scanned image.");
-            // We continue anyway, but it's likely searching will fail.
-        }
-
-        // 2. Call Groq API (optional - falls back to basic extraction if key missing)
-        const apiKey = import.meta.env.VITE_GROQ_API_KEY;
+        console.log("Raw Extracted Text (First 200 chars):", text.substring(0, 200));
 
         let extractedData = {};
+        const apiKey = import.meta.env.VITE_GROQ_API_KEY;
 
-        if (!apiKey) {
-            console.warn('VITE_GROQ_API_KEY not found, using basic regex extraction instead of AI');
+        // 2. AI Extraction (Preferred)
+        if (apiKey) {
+            console.log('Using AI Model for Extraction...');
 
-            // Basic regex extraction as fallback
-            extractedData = {
-                fullName: text.match(/Name[:\s]+([A-Za-z\s]+)/i)?.[1]?.trim() || '',
-                rollNumber: text.match(/Roll\s*No\.?[:\s]+([A-Z0-9]+)/i)?.[1]?.trim() || '',
-                school: text.match(/School[:\s]+([A-Za-z\s]+)/i)?.[1]?.trim() || '',
-                programme: text.match(/Programme[:\s]+([A-Za-z.\s]+)/i)?.[1]?.trim() || '',
-                academicYear: text.match(/Academic\s*Year[:\s]+(\d{4}-\d{4})/i)?.[1]?.trim() || '',
-                specialization: text.match(/Specialization[:\s]+([A-Za-z\s&]+)/i)?.[1]?.trim() || '',
-                studentPhone: text.match(/Student.*Phone[:\s]+(\d{10})/i)?.[1]?.trim() || '',
-                studentEmail: text.match(/Student.*Email[:\s]+([^\s@]+@[^\s@]+\.[^\s@]+)/i)?.[1]?.trim() || '',
-                fatherName: text.match(/(?:Father|Parent 1).*Name[:\s]+([A-Za-z\s]+)/i)?.[1]?.trim() || '',
-                fatherEmail: text.match(/(?:Father|Parent 1).*Email[:\s]+([^\s@]+@[^\s@]+\.[^\s@]+)/i)?.[1]?.trim() || '',
-                fatherPhone: text.match(/(?:Father|Parent 1).*Phone[:\s]+(\d{10})/i)?.[1]?.trim() || '',
-                motherName: text.match(/(?:Mother|Parent 2).*Name[:\s]+([A-Za-z\s]+)/i)?.[1]?.trim() || '',
-                motherEmail: text.match(/(?:Mother|Parent 2).*Email[:\s]+([^\s@]+@[^\s@]+\.[^\s@]+)/i)?.[1]?.trim() || '',
-                motherPhone: text.match(/(?:Mother|Parent 2).*Phone[:\s]+(\d{10})/i)?.[1]?.trim() || ''
-            };
-        } else {
-            // Use AI extraction if API key is available
-            const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${apiKey}`
-                },
-                body: JSON.stringify({
-                    model: 'llama-3.3-70b-versatile',
-                    response_format: { type: "json_object" }, // FORCE VALID JSON
-                    messages: [
-                        {
-                            role: "system",
-                            content: "You are a data extraction assistant. Extract student registration details from the document text. Output must be valid JSON."
-                        },
-                        {
-                            role: "user",
-                            content: `Extract the following details from the text below and return ONLY valid JSON.
-            
-            Fields to extract:
-            - fullName (Student's full name)
-            - rollNumber (Student ID/Roll No)
-            - school (School Name)
-            - programme (Degree program e.g. B.Tech, BBA)
-            - academicYear (e.g. 2024-2028)
-            - specialization (Branch/Stream e.g. CSE)
-            - studentPhone (10-digit mobile)
-            - studentEmail (Email address)
-            
-            PARENT DETAILS:
-            - fatherName (Father/Guardian Name)
-            - fatherEmail (Father/Guardian Email)
-            - fatherPhone (Father/Guardian Phone)
-            - motherName (Mother/Guardian Name)
-            - motherEmail (Mother/Guardian Email)
-            - motherPhone (Mother/Guardian Phone)
-            
-            INSTRUCTIONS:
-            1. If table format is broken, look for proximity. e.g. "Name: John" near "Father" implies Father Name.
-            2. Infer relationships: "Mr. X" is likely Father, "Mrs. Y" is likely Mother.
-            3. "Parent 1" = Father, "Parent 2" = Mother.
-            4. If a field is missing, use empty string "".
-            
-            Text Content:
-            ${text.substring(0, 15000)} 
-            
-            JSON:`
-                        }
-                    ],
-                    temperature: 0.1
-                })
-            });
+            try {
+                const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: 'llama-3.3-70b-versatile',
+                        response_format: { type: "json_object" },
+                        messages: [
+                            {
+                                role: "system",
+                                content: `You are an expert data extraction assistant. extracting student details from college registration documents.
+                                Extract the following fields accurately and return ONLY valid JSON:
+                                - fullName (Student Name)
+                                - rollNumber (Roll No / ID No / Registration No)
+                                - email (College Email ID prefers .woxsen.edu.in)
+                                - phone (Student Contact Number)
+                                - school (School Name e.g. School of Technology)
+                                - programme (Course Name e.g. B.Tech, BBA, MBA)
+                                - specialization (Branch / Specialization e.g. CSE, AI&DS)
+                                - academicYear (Year of Study e.g. 2023-2024, or just "2023")
+                                - fatherName (Father's Name)
+                                - fatherPhone (Father's Contact Number)
+                                - fatherEmail (Father's Email ID)
+                                - motherName (Mother's Name)
+                                - motherPhone (Mother's Contact Number)
+                                - motherEmail (Mother's Email ID)
+                                `
+                            },
+                            {
+                                role: "user",
+                                content: `Extract data from this text:\n\n${text}\n\nJSON Output:`
+                            }
+                        ],
+                        temperature: 0.1
+                    })
+                });
 
-            if (!response.ok) {
-                const errData = await response.json().catch(() => ({}));
-                console.error("Groq API Error:", errData);
-                throw new Error(`AI Extraction failed: ${response.statusText}`);
+                if (!response.ok) {
+                    const errData = await response.json().catch(() => ({}));
+                    console.error("Groq API Error:", errData);
+                    throw new Error(`AI Extraction failed: ${response.statusText}`);
+                }
+
+                const jsonResponse = await response.json();
+                const aiContent = jsonResponse.choices[0]?.message?.content;
+
+                console.log("AI Raw Response:", aiContent);
+
+                if (aiContent) {
+                    const parsedData = JSON.parse(aiContent);
+                    extractedData = {
+                        fullName: parsedData.fullName || '',
+                        rollNumber: parsedData.rollNumber || '',
+                        studentEmail: parsedData.email || '', // Mapped to studentEmail
+                        studentPhone: parsedData.phone || '', // Mapped to studentPhone
+                        school: parsedData.school || '',
+                        programme: normalizeProgramme(parsedData.programme),
+                        specialization: parsedData.specialization || '',
+                        academicYear: parsedData.academicYear || '',
+                        fatherName: parsedData.fatherName || '',
+                        fatherPhone: parsedData.fatherPhone || '',
+                        fatherEmail: parsedData.fatherEmail || '',
+                        motherName: parsedData.motherName || '',
+                        motherPhone: parsedData.motherPhone || '',
+                        motherEmail: parsedData.motherEmail || ''
+                    };
+                }
+            } catch (aiError) {
+                console.warn("AI extraction failed, falling back to regex...", aiError);
+                // Fallback continues below
             }
-
-            const data = await response.json();
-            const content = data.choices[0].message.content;
-            console.log("AI Raw Response:", content); // Debug log (check console)
-
-            extractedData = JSON.parse(content);
+        } else {
+            console.warn("VITE_GROQ_API_KEY is missing. Using Regex fallback.");
         }
 
-        // 3. Extract signature image from document
+        // 3. Regex Fallback (If AI failed or key missing)
+        // Only run if extractedData is empty (meaning AI path wasn't taken or failed)
+        if (Object.keys(extractedData).length === 0) {
+            console.log("Running Regex Extraction...");
+            // More robust regex patterns
+            const findMatch = (patterns) => {
+                for (const pattern of patterns) {
+                    const match = text.match(pattern);
+                    if (match && match[1]) return match[1].trim();
+                }
+                return '';
+            };
+
+            extractedData = {
+                fullName: findMatch([/Name\s*[:\-]?\s*([^\n\r]+)/i, /Student Name\s*[:\-]?\s*([^\n\r]+)/i]),
+                rollNumber: findMatch([/Roll\s*No\.?\s*[:\-]?\s*([A-Z0-9]+)/i, /ID\s*No\.?\s*[:\-]?\s*([A-Z0-9]+)/i]),
+                studentEmail: findMatch([/Email\s*ID\s*[:\-]?\s*([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/i]),
+                studentPhone: findMatch([/Phone\s*(?:No\.?)?\s*[:\-]?\s*([0-9+\-\s]{10,})/i, /Contact\s*(?:No\.?)?\s*([0-9+\-\s]{10,})/i]),
+                programme: normalizeProgramme(findMatch([/Programme\s*[:\-]?\s*([^\n\r]+)/i, /Course\s*[:\-]?\s*([^\n\r]+)/i])),
+                specialization: findMatch([/Specialization\s*[:\-]?\s*([^\n\r]+)/i, /Branch\s*[:\-]?\s*([^\n\r]+)/i]),
+                academicYear: findMatch([/Academic\s*Year\s*[:\-]?\s*([0-9\-]+)/i]),
+                // Basic Parent extraction via Regex is hard due to multiple parents, but we try
+                fatherName: findMatch([/Father(?:'s)?\s*Name\s*[:\-]?\s*([^\n\r]+)/i]),
+                motherName: findMatch([/Mother(?:'s)?\s*Name\s*[:\-]?\s*([^\n\r]+)/i])
+            };
+        }
+
+        // 4. Image/Signature Extraction (Original Logic Preserved)
         try {
             const htmlResult = await mammoth.convertToHtml({ arrayBuffer });
             const parser = new DOMParser();
             const doc = parser.parseFromString(htmlResult.value, 'text/html');
             const images = doc.querySelectorAll('img');
 
-            // Find the last image (usually the signature at the bottom)
             if (images.length > 0) {
+                // Heuristic: The signature is often the LAST image in the document
                 const lastImage = images[images.length - 1];
                 const signatureSrc = lastImage.getAttribute('src');
+
                 if (signatureSrc && signatureSrc.startsWith('data:image')) {
                     extractedData.signatureData = signatureSrc;
                     console.log('Signature extracted from document');
                 }
             }
-        } catch (imgErr) {
-            console.warn('Could not extract signature image:', imgErr);
+        } catch (imgError) {
+            console.warn("Signature extraction failed:", imgError);
         }
 
         return extractedData;
