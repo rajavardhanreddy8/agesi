@@ -11,6 +11,11 @@ export const extractRegistrationData = async (file) => {
             throw new Error("Document appears to be empty or unreadable.");
         }
 
+        if (text.length < 50) {
+            console.warn("Extracted text is very short. Document might be a scanned image.");
+            // We continue anyway, but it's likely searching will fail.
+        }
+
         // 2. Call Groq API (optional - falls back to basic extraction if key missing)
         const apiKey = import.meta.env.VITE_GROQ_API_KEY;
 
@@ -29,12 +34,12 @@ export const extractRegistrationData = async (file) => {
                 specialization: text.match(/Specialization[:\s]+([A-Za-z\s&]+)/i)?.[1]?.trim() || '',
                 studentPhone: text.match(/Student.*Phone[:\s]+(\d{10})/i)?.[1]?.trim() || '',
                 studentEmail: text.match(/Student.*Email[:\s]+([^\s@]+@[^\s@]+\.[^\s@]+)/i)?.[1]?.trim() || '',
-                fatherName: text.match(/Father.*Name[:\s]+([A-Za-z\s]+)/i)?.[1]?.trim() || '',
-                fatherEmail: text.match(/Father.*Email[:\s]+([^\s@]+@[^\s@]+\.[^\s@]+)/i)?.[1]?.trim() || '',
-                fatherPhone: text.match(/Father.*Phone[:\s]+(\d{10})/i)?.[1]?.trim() || '',
-                motherName: text.match(/Mother.*Name[:\s]+([A-Za-z\s]+)/i)?.[1]?.trim() || '',
-                motherEmail: text.match(/Mother.*Email[:\s]+([^\s@]+@[^\s@]+\.[^\s@]+)/i)?.[1]?.trim() || '',
-                motherPhone: text.match(/Mother.*Phone[:\s]+(\d{10})/i)?.[1]?.trim() || ''
+                fatherName: text.match(/(?:Father|Parent 1).*Name[:\s]+([A-Za-z\s]+)/i)?.[1]?.trim() || '',
+                fatherEmail: text.match(/(?:Father|Parent 1).*Email[:\s]+([^\s@]+@[^\s@]+\.[^\s@]+)/i)?.[1]?.trim() || '',
+                fatherPhone: text.match(/(?:Father|Parent 1).*Phone[:\s]+(\d{10})/i)?.[1]?.trim() || '',
+                motherName: text.match(/(?:Mother|Parent 2).*Name[:\s]+([A-Za-z\s]+)/i)?.[1]?.trim() || '',
+                motherEmail: text.match(/(?:Mother|Parent 2).*Email[:\s]+([^\s@]+@[^\s@]+\.[^\s@]+)/i)?.[1]?.trim() || '',
+                motherPhone: text.match(/(?:Mother|Parent 2).*Phone[:\s]+(\d{10})/i)?.[1]?.trim() || ''
             };
         } else {
             // Use AI extraction if API key is available
@@ -46,10 +51,11 @@ export const extractRegistrationData = async (file) => {
                 },
                 body: JSON.stringify({
                     model: 'llama-3.3-70b-versatile',
+                    response_format: { type: "json_object" }, // FORCE VALID JSON
                     messages: [
                         {
                             role: "system",
-                            content: "You are a data extraction assistant. Extract student registration details from the document text."
+                            content: "You are a data extraction assistant. Extract student registration details from the document text. Output must be valid JSON."
                         },
                         {
                             role: "user",
@@ -57,34 +63,32 @@ export const extractRegistrationData = async (file) => {
             
             Fields to extract:
             - fullName (Student's full name)
-            - rollNumber (Student ID/Roll No/Registration Number)
-            - school (School Name, e.g. School of Technology, School of Business)
-            - programme (Degree program e.g. B.Tech, BBA, BCom - NOT specialization)
-            - academicYear (e.g. 2024-2028 or 2022-2026)
-            - specialization (Branch/Stream e.g. CSE, ECE, AI&ML, Marketing)
-            - studentPhone (Student's 10-digit mobile number)
-            - studentEmail (Student's email address)
+            - rollNumber (Student ID/Roll No)
+            - school (School Name)
+            - programme (Degree program e.g. B.Tech, BBA)
+            - academicYear (e.g. 2024-2028)
+            - specialization (Branch/Stream e.g. CSE)
+            - studentPhone (10-digit mobile)
+            - studentEmail (Email address)
             
-            PARENT DETAILS (Look for these in various formats):
-            - fatherName (Father's name, may be listed as "Parent 1", "Guardian 1", or "Father")
-            - fatherEmail (Father's email)
-            - fatherPhone (Father's 10-digit phone number)
-            - motherName (Mother's name, may be listed as "Parent 2", "Guardian 2", or "Mother")
-            - motherEmail (Mother's email)
-            - motherPhone (Mother's 10-digit phone number)
+            PARENT DETAILS:
+            - fatherName (Father/Guardian Name)
+            - fatherEmail (Father/Guardian Email)
+            - fatherPhone (Father/Guardian Phone)
+            - motherName (Mother/Guardian Name)
+            - motherEmail (Mother/Guardian Email)
+            - motherPhone (Mother/Guardian Phone)
             
-            IMPORTANT NOTES:
-            - Parent details may be in a table or comma-separated format like "Name, Email, Phone"
-            - Phone numbers should be 10 digits only (remove country codes like +91)
-            - If parent information is labeled as "Parent 1" or "Guardian 1", treat it as Father
-            - If parent information is labeled as "Parent 2" or "Guardian 2", treat it as Mother
-            - Look for section headers like "Parents Details", "Guardian Information", "Emergency Contact"
-            - If a field is not found, use empty string ""
+            INSTRUCTIONS:
+            1. If table format is broken, look for proximity. e.g. "Name: John" near "Father" implies Father Name.
+            2. Infer relationships: "Mr. X" is likely Father, "Mrs. Y" is likely Mother.
+            3. "Parent 1" = Father, "Parent 2" = Mother.
+            4. If a field is missing, use empty string "".
             
-            Text:
-            ${text}
+            Text Content:
+            ${text.substring(0, 15000)} 
             
-            Return ONLY the JSON object, no other text:`
+            JSON:`
                         }
                     ],
                     temperature: 0.1
@@ -92,19 +96,16 @@ export const extractRegistrationData = async (file) => {
             });
 
             if (!response.ok) {
+                const errData = await response.json().catch(() => ({}));
+                console.error("Groq API Error:", errData);
                 throw new Error(`AI Extraction failed: ${response.statusText}`);
             }
 
             const data = await response.json();
             const content = data.choices[0].message.content;
+            console.log("AI Raw Response:", content); // Debug log (check console)
 
-            // Parse JSON
-            const jsonMatch = content.match(/\{[\s\S]*\}/);
-            if (!jsonMatch) {
-                throw new Error("Could not parse AI response.");
-            }
-
-            extractedData = JSON.parse(jsonMatch[0]);
+            extractedData = JSON.parse(content);
         }
 
         // 3. Extract signature image from document
