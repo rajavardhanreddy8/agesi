@@ -246,7 +246,7 @@ export const RegisterForm = () => {
                             value={formData.rollNumber}
                             onChange={handleChange}
                             required
-                            placeholder="24WU0101111"
+                            placeholder="22WU0000000"
                         />
                     </div>
 
