@@ -610,78 +610,105 @@ class MSFormAutomation:
                     if not option_text:
                         logging.warning("   ⚠️ No option text provided, skipping radio selection")
                         return False
+
+                    # Helper to normalize text for comparison (remove \xa0, \n, extra spaces)
+                    def normalize_text(text):
+                        if not text: return ""
+                        return text.replace('\xa0', ' ').replace('\n', ' ').strip().lower()
+
+                    target_normalized = normalize_text(option_text)
                         
                     # Strategy 1: Find by role="radio" with aria-label
+                    # We check startsWith because sometimes aria-label has extra info
                     choice = self.page.locator(f'div[role="radio"][aria-label="{option_text}"]')
                     if choice.count() > 0:
                         choice.first.click()
-                        logging.info(f"   ✅ Selected radio (aria-label): {option_text}")
+                        logging.info(f"   ✅ Selected radio (aria-label exact): {option_text}")
                         return True
                     
                     # Strategy 2: Find exact text match
                     choice = self.page.locator(f':text("{option_text}")')
                     if choice.count() > 0:
                         choice.first.click()
-                        logging.info(f"   ✅ Selected radio (text): {option_text}")
+                        logging.info(f"   ✅ Selected radio (text exact): {option_text}")
                         return True
                         
-                    # Strategy 3: Find loose text match (case-insensitive)
-                    pattern = option_text.replace('(', '\\(').replace(')', '\\)')
+                    # Strategy 3: Find loose text match (case-insensitive) using regex
+                    # Escape special regex chars
+                    pattern = option_text.replace('(', '\\(').replace(')', '\\)').replace('.', '\\.')
                     choice = self.page.locator(f'text=/{pattern}/i')
                     if choice.count() > 0:
                         choice.first.click()
                         logging.info(f"   ✅ Selected radio (regex): {option_text}")
                         return True
                         
-
-                    # Strategy 4: Find any radio button in the question container (if only one question is asked)
-                    # If label_text is found, look for radios inside that container
+                    # Strategy 4: Component-based search within the question container
                     label_locator = self.page.locator(f'text=/{label_text}/i').first
                     if label_locator.count() > 0:
                         container = label_locator.locator('xpath=./ancestor::div[@data-automation-id="questionItem"]').first
                         if container.count() > 0:
                             radios = container.locator('[role="radio"]').all()
-                            for radio in radios:
-                                radio_aria = radio.get_attribute('aria-label') or ''
-                                if option_text.lower() in radio_aria.lower():
-                                    radio.click()
-                                    logging.info(f"   ✅ Selected radio in container: {option_text}")
-                                    return True
                             
-                            # Strategy 5: Text-based sibling match WITHIN the question container
-                            # Find the text of the option, then find the radio near it
-                            # This handles MS Forms where text is in a <span class="text-format-content"> next to the radio
+                            # Sub-strategy 4a: Check aria-labels of radios in this container
+                            for radio in radios:
+                                radio_aria = normalize_text(radio.get_attribute('aria-label'))
+                                if target_normalized in radio_aria:
+                                    radio.click()
+                                    logging.info(f"   ✅ Selected radio in container (aria-match): {option_text}")
+                                    return True
+
+                            # Sub-strategy 4b: Text-based sibling match WITHIN the question container
+                            # This handles the case where text is separate from the radio div
                             try:
-                                # Find the option text element inside this specific question container to avoid cross-question pollution
-                                option_text_el = container.locator(f'text="{option_text}"').first
-                                if option_text_el.count() > 0:
-                                    # We found the text "B.B.A" inside the question "Programme Name"
-                                    # Now find the radio button relative to this text.
-                                    # Usually, they are in a common wrapper.
-                                    # Let's try clicking the text itself (sometimes works) or the radio preceding it
-                                    logging.info(f"   found option text '{option_text}', trying to find its radio...")
+                                # Look for any element containing the option text
+                                option_text_els = container.locator(f'text=/{pattern}/i').all()
+                                for el in option_text_els:
+                                    # Visually check if it's visible
+                                    if not el.is_visible(): continue
                                     
-                                    # Try 1: Click the text element directly (often triggers the radio)
+                                    # Try 1: Click the text itself (often works for labels)
                                     try:
-                                        option_text_el.click(force=True, timeout=1000)
-                                        # Verify if aria-checked became true? Difficult without re-querying.
-                                        # Assume click worked if no error.
-                                        logging.info(f"   ✅ Clicked option text: {option_text}")
+                                        el.click(force=True, timeout=500)
+                                        logging.info(f"   ✅ Clicked option text element: {option_text}")
                                         return True
                                     except:
                                         pass
 
-                                    # Try 2: Find ancestor div that contains both, then find [role="radio"]
-                                    # Common MS Forms: div > div > [radio, label]
-                                    wrapper = option_text_el.locator('xpath=./ancestor::div[.//div[@role="radio"]][1]').first
+                                    # Try 2: Look for a radio button nearby (preceding or parent's sibling)
+                                    # Search up to find a shared container, then down for radio
+                                    wrapper = el.locator('xpath=./ancestor::div[.//div[@role="radio"]][1]').first
                                     if wrapper.count() > 0:
                                         radio = wrapper.locator('[role="radio"]').first
                                         if radio.count() > 0:
                                             radio.click(force=True)
-                                            logging.info(f"   ✅ Selected radio via wrapper: {option_text}")
+                                            logging.info(f"   ✅ Selected radio via text wrapper: {option_text}")
                                             return True
                             except Exception as e:
-                                logging.warning(f"   Strategy 5 failed: {e}")
+                                logging.warning(f"   Strategy 4b failed: {e}")
+
+                    # Strategy 5: Aggressive Global Search (when all else fails)
+                    # Look for ANY visible radio button whose aria-label contains the normalized text
+                    # This is risky if multiple questions have same options (e.g. Yes/No), but useful for unique ones like Programmes
+                    logging.info("   ⚠️ Strict match failed, trying aggressive global search...")
+                    all_radios = self.page.locator('[role="radio"]').all()
+                    for radio in all_radios:
+                        if not radio.is_visible(): continue
+                        radio_aria = normalize_text(radio.get_attribute('aria-label'))
+                        
+                        # Check for inclusion
+                        if target_normalized in radio_aria:
+                            radio.click()
+                            logging.info(f"   ✅ Selected radio (global fallback): {option_text}")
+                            return True
+                            
+                    # Strategy 6: Aggressive Text Click
+                    # Just find ANY text on the page that looks like the option and click it
+                    logging.info("   ⚠️ Global radio search failed, trying to click text directly...")
+                    text_candidate = self.page.locator(f'text="{option_text}"').first
+                    if text_candidate.count() > 0 and text_candidate.is_visible():
+                        text_candidate.click(force=True)
+                        logging.info(f"   ✅ Clicked text candidate: {option_text}")
+                        return True
 
                     logging.warning(f"   ⚠️ Could not find option '{option_text}'")
                     # Take screenshot
@@ -800,9 +827,67 @@ class MSFormAutomation:
             # Normalize the programme value to match MS Form options exactly
             programme_raw = form_data.get('programme') or ''
             programme_normalized = self.normalize_programme(programme_raw)
-            if programme_raw and programme_raw != programme_normalized:
-                print(f"🔄 Programme mapping: '{programme_raw}' → '{programme_normalized}'")
-            select_radio("Programme Name", programme_normalized)
+            
+            print(f"📋 Programme: raw='{programme_raw}', normalized='{programme_normalized}'")
+            
+            if not programme_normalized:
+                print("❌ CRITICAL: Programme value is EMPTY in form_data! Cannot select Programme Name.")
+                raise Exception("Programme value is missing from form_data. Check student_profiles.programme in database.")
+            
+            # ATTEMPT SELECTION
+            programme_selected = select_radio("Programme Name", programme_normalized)
+            
+            # VERIFY SELECTION
+            # The form reported "'Programme Name\xa0\n': This question is required" -> implies non-breaking space
+            # We must ensure a radio button is ACTUALLY checked in the Programme Name container
+            is_checked = False
+            try:
+                # Find the container for Programme Name (handling the weird whitespace in title)
+                prog_container = self.page.locator('div[data-automation-id="questionItem"]').filter(has_text=self.page.locator('text=/Programme Name/i'))
+                if prog_container.count() > 0:
+                    checked_radio = prog_container.first.locator('[role="radio"][aria-checked="true"]')
+                    if checked_radio.count() > 0:
+                        is_checked = True
+                        print(f"✅ Verified: Programme '{checked_radio.first.get_attribute('aria-label')}' is checked.")
+            except Exception as e:
+                print(f"⚠️ Verification check failed (ignoring): {e}")
+
+            if not programme_selected or not is_checked:
+                print(f"⚠️ Standard select_radio failed or NOT verified for Programme '{programme_normalized}'. Trying hard fallback...")
+                
+                # RETRY STRATEGY: Find container -> Find Option -> Force Click
+                # We assume the container text contains "Programme Name"
+                containers = self.page.locator('div[data-automation-id="questionItem"]').all()
+                target_lower = programme_normalized.replace('.', '').replace(' ', '').lower() # heavy normalization
+                
+                for container in containers:
+                    text = container.inner_text().lower()
+                    if 'programme name' in text:
+                        print("   Found 'Programme Name' container for fallback...")
+                        radios = container.locator('[role="radio"]').all()
+                        for radio in radios:
+                            aria = (radio.get_attribute('aria-label') or '').lower().replace('.', '').replace(' ', '')
+                            if target_lower in aria or aria in target_lower:
+                                print(f"   FALLBACK CLICK: Radio aria='{radio.get_attribute('aria-label')}'")
+                                radio.scroll_into_view_if_needed()
+                                radio.click(force=True)
+                                time.sleep(1)
+                                if radio.get_attribute('aria-checked') == 'true':
+                                    print("   ✅ Fallback success: Radio is now checked.")
+                                    programme_selected = True
+                                    break
+                        if programme_selected: break
+                
+                # Double check verification
+                if not programme_selected:
+                     # Try finding text simply
+                     print(f"   Last Resort: Clicking text '{programme_normalized}'")
+                     self.page.locator(f'text="{programme_normalized}"').first.click(force=True)
+
+            # Final check before proceeding
+            # We don't raise here to allow submission to try its best, but we warn heavily
+            if not programme_selected:
+                 print(f"❌ CRITICAL WARNING: Could not verify Programme Name selection for '{programme_normalized}'")
             
             # 3. Dates
             # This form only has "Leave Start Date" (no End Date field)
