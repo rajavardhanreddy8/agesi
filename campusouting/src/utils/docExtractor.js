@@ -18,74 +18,24 @@ export const extractRegistrationData = async (file) => {
 
         if (!apiKey) {
             console.warn('VITE_GROQ_API_KEY not found, using basic regex extraction instead of AI');
-            console.log('📄 Document text preview:', text.substring(0, 500)); // Debug
 
-            // Improved regex extraction with multiple pattern attempts
+            // Basic regex extraction as fallback
             extractedData = {
-                fullName: (
-                    text.match(/(?:Student\s*)?Name[:\s-]*([A-Za-z\s.]+?)(?:\n|Roll|Student)/i)?.[1]?.trim() ||
-                    text.match(/Name[:\s]+([A-Za-z\s.]+)/i)?.[1]?.trim() ||
-                    ''
-                ),
-                rollNumber: (
-                    text.match(/(?:Roll\s*(?:Number|No\.?|ID)|Student\s*ID)[:\s-]*([A-Z0-9]+)/i)?.[1]?.trim() ||
-                    text.match(/\b(\d{2}WU\d{7})\b/i)?.[1]?.trim() ||
-                    ''
-                ),
-                school: (
-                    text.match(/School[:\s-]*([A-Za-z\s&,]+?)(?:\n|Programme|Academic)/i)?.[1]?.trim() ||
-                    ''
-                ),
-                programme: (
-                    text.match(/Programme[:\s-]*([A-Za-z.\s]+?)(?:\n|Specialization|Year)/i)?.[1]?.trim() ||
-                    text.match(/\b(B\.Tech|BBA|BCom|B\.\s?Arch|B\.Des|BA\s?LLB|BBA\s?LLB|B\.A\.|B\.Sc\.|BCA|MBBA)\b/i)?.[1]?.trim() ||
-                    ''
-                ),
-                academicYear: (
-                    text.match(/(?:Academic\s*Year|Session|Year)[:\s-]*(\d{4}\s*-\s*\d{4})/i)?.[1]?.replace(/\s/g, '') ||
-                    ''
-                ),
-                specialization: (
-                    text.match(/(?:Specialization|Branch|Stream|Department)[:\s-]*([A-Za-z\s&,]+?)(?:\n|Phone|Email|Parent|Father|Mother)/i)?.[1]?.trim() ||
-                    ''
-                ),
-                studentPhone: (
-                    text.match(/(?:Student\s*)?(?:Phone|Mobile|Contact)[:\s-]*(\d{10})/i)?.[1]?.trim() ||
-                    text.match(/\b(\d{10})\b/)?.[1]?.trim() ||
-                    ''
-                ),
-                studentEmail: (
-                    text.match(/(?:Student\s*)?Email[:\s-]*([^\s@]+@[^\s@]+\.[^\s@]+)/i)?.[1]?.trim() ||
-                    text.match(/([^\s@]+@woxsen\.edu\.in)/i)?.[1]?.trim() ||
-                    ''
-                ),
-                fatherName: (
-                    text.match(/Father['`']?s?\s*Name[:\s-]*([A-Za-z\s.]+?)(?:\n|Email|Phone|Mother)/i)?.[1]?.trim() ||
-                    ''
-                ),
-                fatherEmail: (
-                    text.match(/Father['`']?s?\s*Email[:\s-]*([^\s@]+@[^\s@]+\.[^\s@]+)/i)?.[1]?.trim() ||
-                    ''
-                ),
-                fatherPhone: (
-                    text.match(/Father['`']?s?\s*(?:Phone|Mobile|Contact)[:\s-]*(\d{10})/i)?.[1]?.trim() ||
-                    ''
-                ),
-                motherName: (
-                    text.match(/Mother['`']?s?\s*Name[:\s-]*([A-Za-z\s.]+?)(?:\n|Email|Phone|Father|Signature)/i)?.[1]?.trim() ||
-                    ''
-                ),
-                motherEmail: (
-                    text.match(/Mother['`']?s?\s*Email[:\s-]*([^\s@]+@[^\s@]+\.[^\s@]+)/i)?.[1]?.trim() ||
-                    ''
-                ),
-                motherPhone: (
-                    text.match(/Mother['`']?s?\s*(?:Phone|Mobile|Contact)[:\s-]*(\d{10})/i)?.[1]?.trim() ||
-                    ''
-                )
+                fullName: text.match(/Name[:\s]+([A-Za-z\s]+)/i)?.[1]?.trim() || '',
+                rollNumber: text.match(/Roll\s*No\.?[:\s]+([A-Z0-9]+)/i)?.[1]?.trim() || '',
+                school: text.match(/School[:\s]+([A-Za-z\s]+)/i)?.[1]?.trim() || '',
+                programme: text.match(/Programme[:\s]+([A-Za-z.\s]+)/i)?.[1]?.trim() || '',
+                academicYear: text.match(/Academic\s*Year[:\s]+(\d{4}-\d{4})/i)?.[1]?.trim() || '',
+                specialization: text.match(/Specialization[:\s]+([A-Za-z\s&]+)/i)?.[1]?.trim() || '',
+                studentPhone: text.match(/Student.*Phone[:\s]+(\d{10})/i)?.[1]?.trim() || '',
+                studentEmail: text.match(/Student.*Email[:\s]+([^\s@]+@[^\s@]+\.[^\s@]+)/i)?.[1]?.trim() || '',
+                fatherName: text.match(/Father.*Name[:\s]+([A-Za-z\s]+)/i)?.[1]?.trim() || '',
+                fatherEmail: text.match(/Father.*Email[:\s]+([^\s@]+@[^\s@]+\.[^\s@]+)/i)?.[1]?.trim() || '',
+                fatherPhone: text.match(/Father.*Phone[:\s]+(\d{10})/i)?.[1]?.trim() || '',
+                motherName: text.match(/Mother.*Name[:\s]+([A-Za-z\s]+)/i)?.[1]?.trim() || '',
+                motherEmail: text.match(/Mother.*Email[:\s]+([^\s@]+@[^\s@]+\.[^\s@]+)/i)?.[1]?.trim() || '',
+                motherPhone: text.match(/Mother.*Phone[:\s]+(\d{10})/i)?.[1]?.trim() || ''
             };
-
-            console.log('✅ Extracted data:', extractedData); // Debug
         } else {
             // Use AI extraction if API key is available
             const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -106,27 +56,35 @@ export const extractRegistrationData = async (file) => {
                             content: `Extract the following details from the text below and return ONLY valid JSON.
             
             Fields to extract:
-            - fullName (Student Name)
-            - rollNumber (Student ID/Roll No)
-            - school (School Name, e.g. School of Technology)
-            - programme (e.g. B.Tech, BBA)
-            - academicYear (e.g. 2024-2028)
-            - specialization (e.g. CSE)
-            - studentPhone
-            - studentEmail
-            - fatherName (Father's Name)
-            - fatherEmail (Father's Email)
-            - fatherPhone (Father's Phone)
-            - motherName (Mother's Name)
-            - motherEmail (Mother's Email)
-            - motherPhone (Mother's Phone)
-
-            If a field is not found, use empty string "".
+            - fullName (Student's full name)
+            - rollNumber (Student ID/Roll No/Registration Number)
+            - school (School Name, e.g. School of Technology, School of Business)
+            - programme (Degree program e.g. B.Tech, BBA, BCom - NOT specialization)
+            - academicYear (e.g. 2024-2028 or 2022-2026)
+            - specialization (Branch/Stream e.g. CSE, ECE, AI&ML, Marketing)
+            - studentPhone (Student's 10-digit mobile number)
+            - studentEmail (Student's email address)
+            
+            PARENT DETAILS (Look for these in various formats):
+            - fatherName (Father's name, may be listed as "Parent 1", "Guardian 1", or "Father")
+            - fatherEmail (Father's email)
+            - fatherPhone (Father's 10-digit phone number)
+            - motherName (Mother's name, may be listed as "Parent 2", "Guardian 2", or "Mother")
+            - motherEmail (Mother's email)
+            - motherPhone (Mother's 10-digit phone number)
+            
+            IMPORTANT NOTES:
+            - Parent details may be in a table or comma-separated format like "Name, Email, Phone"
+            - Phone numbers should be 10 digits only (remove country codes like +91)
+            - If parent information is labeled as "Parent 1" or "Guardian 1", treat it as Father
+            - If parent information is labeled as "Parent 2" or "Guardian 2", treat it as Mother
+            - Look for section headers like "Parents Details", "Guardian Information", "Emergency Contact"
+            - If a field is not found, use empty string ""
             
             Text:
             ${text}
             
-            JSON:`
+            Return ONLY the JSON object, no other text:`
                         }
                     ],
                     temperature: 0.1
