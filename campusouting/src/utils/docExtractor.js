@@ -52,27 +52,34 @@ export const extractRegistrationData = async (file) => {
                         messages: [
                             {
                                 role: "system",
-                                content: `You are an expert data extraction assistant. extracting student details from college registration documents.
-                                Extract the following fields accurately and return ONLY valid JSON:
+                                content: `You are an expert data extraction assistant. Your ONLY job is to extract student registration details from messy document text.
+                                
+                                CRITICAL: You must extract the following fields. If a field is not explicitly labeled, infer it from the context (e.g. a 10-digit number near "Father" is fatherPhone).
+                                
+                                Return a valid JSON object with these exact keys:
                                 - fullName (Student Name)
                                 - rollNumber (Roll No / ID No / Registration No)
-                                - email (College Email ID prefers .woxsen.edu.in)
-                                - phone (Student Contact Number)
-                                - school (School Name e.g. School of Technology)
-                                - programme (Course Name e.g. B.Tech, BBA, MBA)
-                                - specialization (Branch / Specialization e.g. CSE, AI&DS)
-                                - academicYear (Year of Study e.g. 2023-2024, or just "2023")
+                                - email (Student's College Email - prefer .woxsen.edu.in)
+                                - phone (Student's Contact Number)
+                                - school (School Name e.g., School of Technology, School of Business)
+                                - programme (Course Name e.g., B.Tech, BBA, MBA, B.Des, B.Arch, B.Sc)
+                                - specialization (Branch / Specialization e.g., CSE, AI&DS, Marketing)
+                                - academicYear (Year of Study e.g., 2023-2024)
+                                
+                                PARENT DETAILS (Crucial):
                                 - fatherName (Father's Name)
-                                - fatherPhone (Father's Contact Number)
+                                - fatherPhone (Father's Phone Number)
                                 - fatherEmail (Father's Email ID)
                                 - motherName (Mother's Name)
-                                - motherPhone (Mother's Contact Number)
+                                - motherPhone (Mother's Phone Number)
                                 - motherEmail (Mother's Email ID)
+
+                                If a specific parent field (like email) is missing, return an empty string "". Do not make up data.
                                 `
                             },
                             {
                                 role: "user",
-                                content: `Extract data from this text:\n\n${text}\n\nJSON Output:`
+                                content: `Extract data from the following text:\n\n${text}\n\nReturn JSON only:`
                             }
                         ],
                         temperature: 0.1
