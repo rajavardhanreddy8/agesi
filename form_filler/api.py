@@ -1087,8 +1087,9 @@ def generate_outing_pdf_buffer(profile, start_date, end_date, reason):
             "reason": reason,
             "purpose": reason,
             
-            # Contact string for table
-            "student_contact": f"{student_name}, {profile.get('email', '')}, {profile.get('student_phone', '')}",
+            # Student details for table
+            "student_email": profile.get('student_email') or profile.get('email', ''),
+            "student_phone": profile.get('student_phone', ''),
 
             # Date of generation
             "date": get_ist_now().strftime('%d-%m-%Y'),

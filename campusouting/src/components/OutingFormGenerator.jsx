@@ -57,7 +57,7 @@ export default function OutingFormGenerator() {
                     studentId: p.roll_number,
                     program: p.programme,
                     academicYear: p.academic_year?.split('-')[0] || '', // Extract start year
-                    studentEmail: p.email, // Use auth email
+                    studentEmail: p.student_email || p.email, // Prefer college email over auth email
                     studentMobile: p.student_phone,
                     fatherName: p.parent1_name,
                     fatherEmail: p.parent1_email,
