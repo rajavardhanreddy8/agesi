@@ -40,6 +40,37 @@ def format_ist_timestamp(dt=None):
     return dt.strftime('%Y-%m-%d %H:%M:%S IST')
 # ===== END TIMEZONE CONFIGURATION =====
 
+# ===== PROGRAMME NORMALIZATION =====
+# Maps any DB programme value to the EXACT MS Form radio button text
+def normalize_programme(prog):
+    """Normalize programme value to match exact MS Form dropdown options."""
+    if not prog: return ''
+    norm = ''.join(c for c in prog if c.isalnum()).lower()
+    # B.Tech variations (check first to avoid false BBA matches)
+    if 'btech' in norm or 'technology' in norm or 'engineering' in norm:
+        return 'B.Tech'
+    # Map to exact MS Form options
+    STANDARD = [
+        ("BBA",     "bba"),
+        ("MBBA",    "mbba"),
+        ("BCom",    "bcom"),
+        ("B. Arch", "barch"),
+        ("B.Des",   "bdes"),
+        ("BA LLB",  "ballb"),
+        ("BBA LLB", "bbllb"),  # note: bballb normalized
+        ("B.A.",    "ba"),
+        ("B.Sc.",   "bsc"),
+        ("B.Tech",  "btech"),
+        ("BCA",     "bca"),
+    ]
+    for label, key in STANDARD:
+        if norm == key:
+            return label
+    logging.warning(f"Programme '{prog}' not in standard list, using as-is")
+    return prog
+# ===== END PROGRAMME NORMALIZATION =====
+
+
 # Force clear existing variables to ensure .env is read
 # if 'RAZORPAY_KEY_ID' in os.environ:
 #     del os.environ['RAZORPAY_KEY_ID']
@@ -274,6 +305,50 @@ def automation_worker():
                 logging.info(f"Launched subprocess PID {process.pid} for task {task_info['task_id']}")
                 print(f"DEBUG: Subprocess started with PID {process.pid}", flush=True)
 
+                # CRITICAL: Wait for subprocess with timeout to prevent hanging forever
+                SUBPROCESS_TIMEOUT = 600  # 10 minutes max for entire automation
+                try:
+                    return_code = process.wait(timeout=SUBPROCESS_TIMEOUT)
+                    logging.info(f"Subprocess PID {process.pid} finished with code {return_code}")
+                    print(f"DEBUG: Subprocess finished with code {return_code}", flush=True)
+                    
+                    if return_code != 0:
+                        logging.warning(f"Subprocess exited with non-zero code {return_code}")
+                        # Check if the task is still 'running' (subprocess crashed without updating DB)
+                        try:
+                            conn = get_db_connection()
+                            cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+                            cur.execute("SELECT status FROM submission_history WHERE task_id = %s", (task_info['task_id'],))
+                            result = cur.fetchone()
+                            if result and result['status'] == 'running':
+                                cur.execute(
+                                    "UPDATE submission_history SET status = 'failed', error_details = %s WHERE task_id = %s",
+                                    (f"Worker process exited with code {return_code}", task_info['task_id'])
+                                )
+                                conn.commit()
+                            conn.close()
+                        except Exception as db_e:
+                            logging.error(f"Failed to update failed status: {db_e}")
+                            
+                except subprocess.TimeoutExpired:
+                    logging.error(f"TIMEOUT: Subprocess PID {process.pid} exceeded {SUBPROCESS_TIMEOUT}s, killing it!")
+                    print(f"ERROR: Subprocess TIMED OUT after {SUBPROCESS_TIMEOUT}s, killing PID {process.pid}", flush=True)
+                    process.kill()
+                    process.wait()  # Reap the zombie process
+                    
+                    # Mark task as failed in DB
+                    try:
+                        conn = get_db_connection()
+                        cur = conn.cursor()
+                        cur.execute(
+                            "UPDATE submission_history SET status = 'failed', error_details = %s WHERE task_id = %s",
+                            (f"Automation timed out after {SUBPROCESS_TIMEOUT}s", task_info['task_id'])
+                        )
+                        conn.commit()
+                        conn.close()
+                    except Exception as db_e:
+                        logging.error(f"Failed to update timeout status: {db_e}")
+
             except Exception as e:
                 logging.error(f"Worker failed launching subprocess for task {task_info['task_id']}: {e}", exc_info=True)
                 # Update DB to failed status if subprocess can't start
@@ -324,6 +399,31 @@ def init_app_background():
 
 # Call recovery at module level so it runs in Gunicorn
 # init_app_background()
+
+@app.route('/api/admin/recover-stuck-tasks', methods=['POST'])
+def recover_stuck_tasks():
+    """Mark tasks stuck in 'running' state for >15 minutes as 'failed'"""
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("""
+            UPDATE submission_history 
+            SET status = 'failed', error_details = 'Recovered: Task was stuck in running state'
+            WHERE status = 'running' 
+              AND created_at < NOW() - INTERVAL '15 minutes'
+            RETURNING task_id
+        """)
+        recovered = [row[0] for row in cur.fetchall()]
+        conn.commit()
+        conn.close()
+        
+        return jsonify({
+            'success': True, 
+            'recovered_count': len(recovered),
+            'recovered_task_ids': recovered
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 class AutomationTask:
     """Track automation task status"""
@@ -578,7 +678,7 @@ def auto_submit_from_email():
                     'roll_number': user['roll_number'],
                     'school': user['school'],
                     'academic_session': user['academic_year'],
-                    'programme': user['programme'],
+                    'programme': normalize_programme(user['programme']),
                     'specialization': user['specialization'],
                     'student_phone': user['student_phone'],
                     'student_email': user['student_email'] or user['email'],
@@ -1442,21 +1542,9 @@ def submit_form():
             except:
                 return date_str
         
-        # Normalize programme to match EXACT MS Form dropdown options
-        def normalize_programme(prog):
-            if not prog: return ''
-            norm = ''.join(c for c in prog if c.isalnum()).lower()
-            if 'btech' in norm or 'technology' in norm or 'engineering' in norm:
-                return 'B.Tech'
-            # Must match EXACT MS Form dropdown values
-            STANDARD = ["BBA","MBBA","BCom","B. Arch","B.Des",
-                        "BA LLB","BBA LLB","B.A.","B.Sc.","B.Tech","BCA"]
-            for s in STANDARD:
-                sn = ''.join(c for c in s if c.isalnum()).lower()
-                if norm == sn:
-                    return s
-            return prog
+        # Uses module-level normalize_programme() defined at top of file
         
+
         form_data = {
             'student_name': profile['full_name'],
             'roll_number': profile['roll_number'],

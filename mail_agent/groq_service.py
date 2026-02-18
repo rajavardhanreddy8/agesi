@@ -95,6 +95,6 @@ def verify_form_data_with_groq(scraped_data, expected_data):
         return result.get('match', False), result.get('reason', 'AI returned no reason')
     except Exception as e:
         print(f"Grok Verification Error: {e}")
-        # Fail safe: if AI fails, we might want to fail verification to be safe?
-        # Or warn? User asked for verification. Better fail.
-        return False, f"AI Error: {str(e)}"
+        # Fail-OPEN: if AI verification fails due to API error, warn but allow submission
+        # A Groq outage should NOT block a valid form submission
+        return True, f"AI verification skipped (API error): {str(e)}"
