@@ -1,8 +1,9 @@
 import * as mammoth from 'mammoth';
 
-// Standardized list of programmes to match the dropdown in RegisterForm
+// Standardized list — must match the EXACT MS Form dropdown options
 const STANDARD_PROGRAMMES = [
-    "B.Tech", "BBA", "BCom", "B.Sc", "B.Des", "B.Arch", "Integrated MBA", "Integrated BBA-MBA", "MBA", "MBA (BA/AI/ML)", "MBA (Financial Services)"
+    "BBA", "MBBA", "BCom", "B. Arch", "B.Des",
+    "BA LLB", "BBA LLB", "B.A.", "B.Sc.", "B.Tech", "BCA"
 ];
 
 export const normalizeProgramme = (extractedProgramme) => {

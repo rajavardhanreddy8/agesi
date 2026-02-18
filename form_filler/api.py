@@ -1442,15 +1442,15 @@ def submit_form():
             except:
                 return date_str
         
-        # Normalize programme to handle stale DB values (e.g., "BBA" should be "B.Tech")
+        # Normalize programme to match EXACT MS Form dropdown options
         def normalize_programme(prog):
             if not prog: return ''
             norm = ''.join(c for c in prog if c.isalnum()).lower()
             if 'btech' in norm or 'technology' in norm or 'engineering' in norm:
                 return 'B.Tech'
-            STANDARD = ["B.Tech","BBA","BCom","B.Sc","B.Des","B.Arch",
-                        "Integrated MBA","Integrated BBA-MBA","MBA",
-                        "MBA (BA/AI/ML)","MBA (Financial Services)"]
+            # Must match EXACT MS Form dropdown values
+            STANDARD = ["BBA","MBBA","BCom","B. Arch","B.Des",
+                        "BA LLB","BBA LLB","B.A.","B.Sc.","B.Tech","BCA"]
             for s in STANDARD:
                 sn = ''.join(c for c in s if c.isalnum()).lower()
                 if norm == sn:
