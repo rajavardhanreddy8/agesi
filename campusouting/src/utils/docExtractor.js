@@ -10,9 +10,23 @@ const normalizeProgramme = (extractedProgramme) => {
 
     const normalized = extractedProgramme.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
 
+    // Specific check for B.Tech variations first to avoid BBA confusion
+    if (normalized.includes('btech') || normalized.includes('technology') || normalized.includes('engineering')) {
+        return "B.Tech";
+    }
+
+    // Check for BBA but ensure it's not part of MBBA or BBA-LLB if they exist as separate options
+    if (normalized === 'bba' || normalized === 'bachelorsinbusinessadministration') {
+        // Double check against standard list logic below
+    }
+
     // Exact or fuzzy matching logic
     const match = STANDARD_PROGRAMMES.find(prog => {
         const progNormalized = prog.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+        // Strict equality for short acronyms to avoid partial matching (e.g. BBA inside MBBA)
+        if (progNormalized.length < 4) {
+            return normalized === progNormalized;
+        }
         return normalized.includes(progNormalized) || progNormalized.includes(normalized);
     });
 
@@ -54,12 +68,12 @@ export const extractRegistrationData = async (file) => {
                                 role: "system",
                                 content: `You are an expert data extraction assistant. Your ONLY job is to extract student registration details from messy document text.
                                 
-                                CRITICAL: You must extract the following fields. If a field is not explicitly labeled, infer it from the context (e.g. a 10-digit number near "Father" is fatherPhone).
+                                CRITICAL: You must extract the following fields. If a field is not explicitly labeled, infer it from the context.
                                 
                                 Return a valid JSON object with these exact keys:
                                 - fullName (Student Name)
                                 - rollNumber (Roll No / ID No / Registration No)
-                                - email (Student's College Email - prefer .woxsen.edu.in)
+                                - email (Student's College Email - prefer .woxsen.edu.in if available, otherwise personal)
                                 - phone (Student's Contact Number)
                                 - school (School Name e.g., School of Technology, School of Business)
                                 - programme (Course Name e.g., B.Tech, BBA, MBA, B.Des, B.Arch, B.Sc)
@@ -140,9 +154,11 @@ export const extractRegistrationData = async (file) => {
             extractedData = {
                 fullName: findMatch([/Name\s*[:\-]?\s*([^\n\r]+)/i, /Student Name\s*[:\-]?\s*([^\n\r]+)/i]),
                 rollNumber: findMatch([/Roll\s*No\.?\s*[:\-]?\s*([A-Z0-9]+)/i, /ID\s*No\.?\s*[:\-]?\s*([A-Z0-9]+)/i]),
-                studentEmail: findMatch([/Email\s*ID\s*[:\-]?\s*([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/i]),
+                // Prioritize woxsen.edu.in email
+                studentEmail: findMatch([/Email\s*ID\s*[:\-]?\s*([a-zA-Z0-9._%+-]+@woxsen\.edu\.in)/i, /Email\s*ID\s*[:\-]?\s*([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/i]),
                 studentPhone: findMatch([/Phone\s*(?:No\.?)?\s*[:\-]?\s*([0-9+\-\s]{10,})/i, /Contact\s*(?:No\.?)?\s*([0-9+\-\s]{10,})/i]),
                 programme: normalizeProgramme(findMatch([/Programme\s*[:\-]?\s*([^\n\r]+)/i, /Course\s*[:\-]?\s*([^\n\r]+)/i])),
+
                 specialization: findMatch([/Specialization\s*[:\-]?\s*([^\n\r]+)/i, /Branch\s*[:\-]?\s*([^\n\r]+)/i]),
                 academicYear: findMatch([/Academic\s*Year\s*[:\-]?\s*([0-9\-]+)/i]),
                 // Basic Parent extraction via Regex is hard due to multiple parents, but we try
