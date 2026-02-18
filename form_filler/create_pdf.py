@@ -225,90 +225,143 @@ def generate_parent_consent_pdf(path_or_buffer, data):
     c.line(LEFT_MARGIN + 40, y - 2, LEFT_MARGIN + 150, y - 2)
 
     c.setFont(USE_BOLD, 12)
-    c.drawString(width - RIGHT_MARGIN - 150, y, "Parents Signature")
+    sig_label_x = width - RIGHT_MARGIN - 150
+    c.drawString(sig_label_x, y, "Parents Signature")
     
-    # Signature placement
-    sig_y_pos = y + 10 # slightly above label
-    
-    # Insert Signature Image logic
+    # --- Signature Image (drawn ABOVE the label) ---
     sig_path = data.get('signature_path')
     sig_data = data.get('signature_data')
+    sig_w = 130
+    sig_h = 50
+    sig_x = sig_label_x
+    sig_y = y + 12  # above the label text
     
-    if sig_path and os.path.exists(sig_path):
-        try:
-            c.drawImage(sig_path, width - RIGHT_MARGIN - 150, sig_y_pos, width=120, height=50, mask='auto', preserveAspectRatio=True)
-        except: pass
-    elif sig_data:
-        try:
-            from reportlab.lib.utils import ImageReader
-            import base64, io
-            if sig_data.startswith('data:image'):
-                 header, encoded = sig_data.split(',', 1)
-                 sig_bytes = base64.b64decode(encoded)
-                 sig_image = ImageReader(io.BytesIO(sig_bytes))
-                 c.drawImage(sig_image, width - RIGHT_MARGIN - 150, sig_y_pos, width=120, height=50, mask='auto', preserveAspectRatio=True)
-        except: pass
-
-    y -= 1.0 * inch
-
-    # --- Bottom Table ---
-    # 3 rows, 2 columns (Label | Value)
-    # Actually screenshot shows: Label Column | Empty Box | Empty Box | Empty Box?
-    # User screenshot has 4 columns: [Label] [Empty] [Empty] [Empty]
-    # Labels: "Father Name, Email & Mobile Number", "Mother Name, Email & Mobile Number", "Student Name, Email & Mobile Number"
-    
-    # We will construct a simple table with ReportLab primitive lines
-    
-    table_top = y
-    row_h = 40
-    col1_w = 200
-    col2_w = (width - LEFT_MARGIN - RIGHT_MARGIN - col1_w) # One big column for value, or split?
-    # Screenshot shows 3 empty columns for filling. Since we are digital, we should fill the value.
-    # Where does the value go? In the first available slot? 
-    # Let's make it 2 columns: Label | Value content
-    
-    # Data prep
-    father_str = f"{data.get('father_name', '')}\n{data.get('father_email', '')}\n{data.get('father_phone', '')}".strip()
-    mother_str = f"{data.get('mother_name', '')}\n{data.get('mother_email', '')}\n{data.get('mother_phone', '')}".strip()
-    
-    stu_contact = data.get('student_contact', '')
-    if not stu_contact:
-        stu_contact = f"{data.get('student_name', '')}\n{data.get('student_email', '')}\n{data.get('student_phone', '')}".strip()
+    def _try_draw_signature(canvas_obj, image_source, sx, sy, sw, sh):
+        """Try to draw a signature from various sources."""
+        from reportlab.lib.utils import ImageReader
+        import base64 as b64mod
+        import io as iomod
+        import urllib.request
         
-    table_data = [
-        ("Father Name, Email &\nMobile Number", father_str),
-        ("Mother Name, Email &\nMobile Number", mother_str),
-        ("Student Name, Email &\nMobile Number", stu_contact)
+        try:
+            if isinstance(image_source, str):
+                if os.path.exists(image_source):
+                    # Local file path
+                    canvas_obj.drawImage(image_source, sx, sy, width=sw, height=sh, mask='auto', preserveAspectRatio=True)
+                    return True
+                elif image_source.startswith(('http://', 'https://')):
+                    # URL (e.g., Azure Blob)
+                    resp = urllib.request.urlopen(image_source)
+                    img = ImageReader(iomod.BytesIO(resp.read()))
+                    canvas_obj.drawImage(img, sx, sy, width=sw, height=sh, mask='auto', preserveAspectRatio=True)
+                    return True
+                elif image_source.startswith('data:image'):
+                    # Base64 data URI
+                    _, encoded = image_source.split(',', 1)
+                    img_bytes = b64mod.b64decode(encoded)
+                    img = ImageReader(iomod.BytesIO(img_bytes))
+                    canvas_obj.drawImage(img, sx, sy, width=sw, height=sh, mask='auto', preserveAspectRatio=True)
+                    return True
+        except Exception as e:
+            print(f"Signature draw error: {e}")
+        return False
+    
+    sig_drawn = False
+    if sig_path:
+        sig_drawn = _try_draw_signature(c, sig_path, sig_x, sig_y, sig_w, sig_h)
+    if not sig_drawn and sig_data:
+        sig_drawn = _try_draw_signature(c, sig_data, sig_x, sig_y, sig_w, sig_h)
+
+    y -= 0.8 * inch
+
+    # ============================================================
+    # BOTTOM TABLE: 4 columns — Label | Name | Email | Phone
+    # Matches the Word template exactly
+    # ============================================================
+    
+    table_x = LEFT_MARGIN
+    table_w = width - LEFT_MARGIN - RIGHT_MARGIN
+    
+    # Column widths (4 columns)
+    label_w = 150          # "Father Name, Email & Mobile Number"
+    name_w = 120           # Name value
+    email_w = 140          # Email value
+    phone_w = table_w - label_w - name_w - email_w  # Phone value (remainder)
+    
+    row_h = 45  # height per row
+    
+    # Prepare row data: (label, name, email, phone)
+    father_name = data.get('father_name', '') or data.get('parent1_name', '') or data.get('parent_name', '') or ''
+    father_email = data.get('father_email', '') or data.get('parent1_email', '') or data.get('parent_email', '') or ''
+    father_phone = data.get('father_phone', '') or data.get('parent1_phone', '') or data.get('parent_phone', '') or ''
+    
+    mother_name = data.get('mother_name', '') or data.get('parent2_name', '') or ''
+    mother_email = data.get('mother_email', '') or data.get('parent2_email', '') or ''
+    mother_phone = data.get('mother_phone', '') or data.get('parent2_phone', '') or ''
+    
+    stu_name = data.get('student_name', '') or ''
+    stu_email = data.get('student_email', '') or ''
+    stu_phone = data.get('student_phone', '') or ''
+    
+    rows = [
+        ("Father Name, Email &\nMobile Number", father_name, father_email, father_phone),
+        ("Mother Name, Email &\nMobile Number", mother_name, mother_email, mother_phone),
+        ("Student Name, Email &\nMobile Number", stu_name, stu_email, stu_phone),
     ]
     
-    c.setLineWidth(1)
-    c.setFont(USE_FONT, 10)
+    col_widths = [label_w, name_w, email_w, phone_w]
     
-    curr_y = table_top
+    c.setLineWidth(0.8)
     
-    for label, value in table_data:
-        # Draw row rects
-        # Col 1 (Label)
-        c.rect(LEFT_MARGIN, curr_y - row_h, col1_w, row_h)
-        # Col 2 (Value)
-        c.rect(LEFT_MARGIN + col1_w, curr_y - row_h, col2_w, row_h)
+    curr_y = y
+    
+    for (label, name_val, email_val, phone_val) in rows:
+        cell_values = [label, name_val, email_val, phone_val]
         
-        # Text
-        # draw label centered vertically?
-        # reportlab draws from bottom up.
-        # simple multi-line text draw
-        text_obj = c.beginText(LEFT_MARGIN + 5, curr_y - 12)
-        text_obj.setFont(USE_FONT, 10)
-        for line in label.split('\n'):
-            text_obj.textLine(line)
-        c.drawText(text_obj)
+        # Draw each cell rectangle
+        cx = table_x
+        for i, cw in enumerate(col_widths):
+            c.rect(cx, curr_y - row_h, cw, row_h)
+            cx += cw
         
-        # draw value
-        val_obj = c.beginText(LEFT_MARGIN + col1_w + 5, curr_y - 12)
-        val_obj.setFont(USE_FONT, 10)
-        for line in value.split('\n'):
-            val_obj.textLine(line)
-        c.drawText(val_obj)
+        # Fill text into each cell
+        cx = table_x
+        for i, (cw, val) in enumerate(zip(col_widths, cell_values)):
+            if val:
+                # Use bold for the label column, normal for data
+                font = USE_BOLD if i == 0 else USE_FONT
+                font_size = 8 if i == 0 else 9
+                
+                # Wrap text within the cell
+                padding = 4
+                max_text_w = cw - 2 * padding
+                
+                # Split into lines that fit
+                words = val.replace('\n', ' ').split()
+                lines = []
+                line = ""
+                for w in words:
+                    test = (line + " " + w).strip()
+                    tw = pdfmetrics.stringWidth(test, font, font_size)
+                    if tw <= max_text_w:
+                        line = test
+                    else:
+                        if line:
+                            lines.append(line)
+                        line = w
+                if line:
+                    lines.append(line)
+                
+                # Draw lines vertically centered in cell
+                line_h = font_size + 3
+                total_text_h = len(lines) * line_h
+                start_text_y = curr_y - (row_h - total_text_h) / 2 - font_size
+                
+                c.setFont(font, font_size)
+                for li, ln in enumerate(lines):
+                    c.drawString(cx + padding, start_text_y - li * line_h, ln)
+            
+            cx += cw
         
         curr_y -= row_h
 
@@ -322,22 +375,26 @@ if __name__ == "__main__":
     # Example usage and test data (adjust paths & values as needed)
     out_path = "temp_uploads/parent_consent_generated.pdf"
     sample_data = {
-        "student_id": "STU-123456",
+        "student_name": "GUNTAKA RAJAVARDHAN REDDY",
+        "student_id": "23WUBOT048",
         "programme": "B.Tech",
         "specialization": "Computer Science",
         "academic_year": "2024-25",
-        "parent_relation": "Mr. Parent Name",
         "leave_date_text": "12-Apr-2026, 09:00 AM",
         "purpose": "family function",
         "return_date_text": "12-Apr-2026, 08:00 PM",
-        "date": "12-04-2026",
+        "date": "18-02-2026",
         # signature image (optional)
-        "signature_path": "signatures/test_sig.png",
-        # bottom table prefill (optional)
-        "father_name": "Father Name",
-        "mother_name": "",
-        "student_contact": "Test Student, test@example.com, +91-9999999999",
-        "student_name": "Test Student Name"
+        "signature_path": "",
+        # Table data — each detail in its own cell
+        "father_name": "Raghunadha reddy",
+        "father_email": "rrtradersind@gmail.com",
+        "father_phone": "8919455860",
+        "mother_name": "Pranitha",
+        "mother_email": "pranithaguntaka@gmail.com",
+        "mother_phone": "9010787739",
+        "student_email": "guntaka.reddy_2028@woxsen.edu.in",
+        "student_phone": "8639929405",
     }
 
     generate_parent_consent_pdf(out_path, sample_data)
