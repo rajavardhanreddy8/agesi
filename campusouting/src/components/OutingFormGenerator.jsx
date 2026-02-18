@@ -4,6 +4,7 @@ import * as mammoth from 'mammoth';
 import { auth } from '../utils/auth';
 import api from '../utils/api';
 import { generateOutingPDF } from '../utils/pdfGenerator';
+import { normalizeProgramme } from '../utils/docExtractor';
 
 export default function OutingFormGenerator() {
     // Basic Form Data
@@ -55,7 +56,7 @@ export default function OutingFormGenerator() {
                     ...prev,
                     studentName: p.full_name,
                     studentId: p.roll_number,
-                    program: p.programme,
+                    program: normalizeProgramme(p.programme),
                     academicYear: p.academic_year?.split('-')[0] || '', // Extract start year
                     studentEmail: p.student_email || p.email, // Prefer college email over auth email
                     studentMobile: p.student_phone,

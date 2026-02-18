@@ -1442,12 +1442,27 @@ def submit_form():
             except:
                 return date_str
         
+        # Normalize programme to handle stale DB values (e.g., "BBA" should be "B.Tech")
+        def normalize_programme(prog):
+            if not prog: return ''
+            norm = ''.join(c for c in prog if c.isalnum()).lower()
+            if 'btech' in norm or 'technology' in norm or 'engineering' in norm:
+                return 'B.Tech'
+            STANDARD = ["B.Tech","BBA","BCom","B.Sc","B.Des","B.Arch",
+                        "Integrated MBA","Integrated BBA-MBA","MBA",
+                        "MBA (BA/AI/ML)","MBA (Financial Services)"]
+            for s in STANDARD:
+                sn = ''.join(c for c in s if c.isalnum()).lower()
+                if norm == sn:
+                    return s
+            return prog
+        
         form_data = {
             'student_name': profile['full_name'],
             'roll_number': profile['roll_number'],
             'school': profile['school'],
             'academic_session': profile['academic_year'],
-            'programme': profile['programme'],
+            'programme': normalize_programme(profile['programme']),
             'specialization': profile['specialization'],
             'student_phone': profile['student_phone'],
             # CHANGED: Do NOT fallback to admin email. Use student email or empty string.

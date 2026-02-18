@@ -5,7 +5,7 @@ const STANDARD_PROGRAMMES = [
     "B.Tech", "BBA", "BCom", "B.Sc", "B.Des", "B.Arch", "Integrated MBA", "Integrated BBA-MBA", "MBA", "MBA (BA/AI/ML)", "MBA (Financial Services)"
 ];
 
-const normalizeProgramme = (extractedProgramme) => {
+export const normalizeProgramme = (extractedProgramme) => {
     if (!extractedProgramme) return '';
 
     const normalized = extractedProgramme.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
