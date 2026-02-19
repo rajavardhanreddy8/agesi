@@ -492,8 +492,16 @@ class MSFormAutomation:
                             # Visually check if it's visible
                             if not el.is_visible(): continue
                             
-                            # Skip if it's a hyperlink
-                            if el.locator('xpath=./ancestor-or-self::a').count() > 0: continue
+                            # If it's a link, try to click the wrapper (label) to avoid navigation
+                            if el.locator('xpath=./ancestor-or-self::a').count() > 0:
+                                # Find parent label
+                                label_parent = el.locator('xpath=./ancestor::label').first
+                                if label_parent.count() > 0:
+                                    label_parent.click(force=True)
+                                    logging.info(f"   ✅ Clicked label parent of linkified text: {option_text}")
+                                    return True
+                                # If no label, continue (don't click link directly)
+                                continue
                             
                             # Try 1: Click the text itself (often works for labels)
                             try:
@@ -539,8 +547,14 @@ class MSFormAutomation:
                     
                     logging.info(f"   🎯 Found match: '{option_text}' (Strategy: {'aria-label' if radio_aria == target_normalized else 'value'})")
                     
-                    # Attempt 1: Standard Click
-                    radio.click()
+                    # Attempt 1: Click Wrapper Label (Safer for React forms)
+                    label_wrapper = radio.locator('xpath=./ancestor::label')
+                    if label_wrapper.count() > 0:
+                        label_wrapper.first.click(force=True)
+                        logging.info(f"   ✅ Clicked parent label for value match: {option_text}")
+                    else:
+                        # Fallback to direct input click
+                        radio.click()
                     
                     # Verification
                     if not radio.is_checked():
