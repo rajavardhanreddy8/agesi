@@ -416,7 +416,170 @@ class MSFormAutomation:
             except:
                 pass
             raise
+            raise
     
+    def select_radio(self, label_text, option_text):
+        """
+        Select a radio button option robustly.
+        Strategies:
+        1. Exact aria-label match on radio
+        2. Normalized aria-label match on radio
+        3. Contains match on radio aria-label (visible only)
+        4. Component-based search within question container (aria & text)
+        5. Global aggressive search (aria & value)
+        """
+        try:
+            logging.info(f"🔍 Looking for radio: '{label_text}' -> '{option_text}'...")
+            if not option_text:
+                logging.warning("   ⚠️ No option text provided, skipping radio selection")
+                return False
+
+            # Helper to normalize text for comparison (remove \\xa0, \\n, extra spaces)
+            def normalize_text(text):
+                if not text: return ""
+                return text.replace('\xa0', ' ').replace('\n', ' ').strip().lower()
+
+            target_normalized = normalize_text(option_text)
+            # Regex pattern for text matching (escaped)
+            pattern = option_text.replace('(', '\(').replace(')', '\)').replace('.', '\.')
+                
+            # Strategy 1: Find by role="radio" with aria-label
+            # We check startsWith because sometimes aria-label has extra info
+            choice = self.page.locator(f'div[role="radio"][aria-label="{option_text}"]')
+            if choice.count() > 0:
+                choice.first.click()
+                logging.info(f"   ✅ Selected radio (aria-label exact): {option_text}")
+                return True
+            
+            # Strategy 2: Find [role="radio"] whose aria-label exactly matches
+            # NOTE: Do NOT use :text() here — it can click hyperlinks and navigate away!
+            all_radios_s2 = self.page.locator('[role="radio"]').all()
+            for r in all_radios_s2:
+                if normalize_text(r.get_attribute('aria-label')) == target_normalized:
+                    r.click()
+                    logging.info(f"   ✅ Selected radio (aria-label normalized): {option_text}")
+                    return True
+                
+            # Strategy 3: Find [role="radio"] whose aria-label contains the target
+            for r in all_radios_s2:
+                aria = normalize_text(r.get_attribute('aria-label'))
+                if target_normalized in aria and r.is_visible():
+                    r.click()
+                    logging.info(f"   ✅ Selected radio (aria-label contains): {option_text}")
+                    return True
+                
+            # Strategy 4: Component-based search within the question container
+            label_locator = self.page.locator(f'text=/{label_text}/i').first
+            if label_locator.count() > 0:
+                container = label_locator.locator('xpath=./ancestor::div[@data-automation-id="questionItem"]').first
+                if container.count() > 0:
+                    radios = container.locator('[role="radio"]').all()
+                    
+                    # Sub-strategy 4a: Check aria-labels of radios in this container
+                    for radio in radios:
+                        radio_aria = normalize_text(radio.get_attribute('aria-label'))
+                        if target_normalized in radio_aria:
+                            radio.click()
+                            logging.info(f"   ✅ Selected radio in container (aria-match): {option_text}")
+                            return True
+
+                    # Sub-strategy 4b: Text-based sibling match WITHIN the question container
+                    # This handles the case where text is separate from the radio div
+                    try:
+                        # Look for any element containing the option text
+                        option_text_els = container.locator(f'text=/{pattern}/i').all()
+                        for el in option_text_els:
+                            # Visually check if it's visible
+                            if not el.is_visible(): continue
+                            
+                            # Skip if it's a hyperlink
+                            if el.locator('xpath=./ancestor-or-self::a').count() > 0: continue
+                            
+                            # Try 1: Click the text itself (often works for labels)
+                            try:
+                                el.click(force=True, timeout=500)
+                                logging.info(f"   ✅ Clicked option text element: {option_text}")
+                                return True
+                            except:
+                                pass
+
+                            # Try 2: Look for a radio button nearby (preceding or parent's sibling)
+                            # Search up to find a shared container, then down for radio
+                            wrapper = el.locator('xpath=./ancestor::div[.//div[@role="radio"]][1]').first
+                            if wrapper.count() > 0:
+                                radio = wrapper.locator('[role="radio"]').first
+                                if radio.count() > 0:
+                                    radio.click(force=True)
+                                    logging.info(f"   ✅ Selected radio via text wrapper: {option_text}")
+                                    return True
+                    except Exception as e:
+                        logging.warning(f"   Strategy 4b failed: {e}")
+
+            # Strategy 5: Aggressive Global Search (when all else fails)
+            # Look for ANY visible radio button whose aria-label contains the normalized text
+            # This is risky if multiple questions have same options (e.g. Yes/No), but useful for unique ones like Programmes
+            logging.info("   ⚠️ Strict match failed, trying aggressive global search...")
+            all_radios = self.page.locator('[role="radio"]').all()
+            for radio in all_radios:
+                if not radio.is_visible(): continue
+                radio_aria = normalize_text(radio.get_attribute('aria-label'))
+                
+                # Check for inclusion
+                if target_normalized in radio_aria:
+                    radio.click()
+                    logging.info(f"   ✅ Selected radio (global fallback): {option_text}")
+                    return True
+                    
+                # Strategy 6: Check 'value' attribute (for fields missing aria-label)
+                # The Programme Name field uses value="B.Tech" but has no aria-label
+                radio_value = normalize_text(radio.get_attribute('value'))
+                
+                if (radio_aria and target_normalized == radio_aria) or \
+                   (radio_value and target_normalized == radio_value):
+                    
+                    logging.info(f"   🎯 Found match: '{option_text}' (Strategy: {'aria-label' if radio_aria == target_normalized else 'value'})")
+                    
+                    # Attempt 1: Standard Click
+                    radio.click()
+                    
+                    # Verification
+                    if not radio.is_checked():
+                        logging.warning(f"   ⚠️ Clicked but not checked. Retrying with force=True...")
+                        radio.click(force=True)
+                    
+                    if not radio.is_checked():
+                        logging.warning(f"   ⚠️ Still not checked. Trying to click the label/span...")
+                        # Try clicking the sibling span which usually contains the visible label/link
+                        # Based on HTML: <span ...><input ...>...<span aria-label="B.Tech">...</span>
+                        try:
+                            # Find the span that is a sibling or parent-sibling
+                            # Actually, looking at the dump, the label span is a sibling of the input's container
+                            # But Playwright 'radio' locator points to the input.
+                            # We can try clicking the locator that matches the text?
+                            # Or just dispatch a click event.
+                            radio.dispatch_event('click')
+                        except Exception as e:
+                            logging.warning(f"   ⚠️ Label click failed: {e}")
+
+                    if radio.is_checked():
+                        logging.info(f"   ✅ Selected radio: {option_text}")
+                        return True
+                    else:
+                        logging.error(f"   ❌ FAILED to select radio: {option_text}")
+                        # Check if we should try next one? If unique match failed, probably fatal.
+                        # But let's continue just in case.
+                        continue
+
+            logging.warning(f"   ⚠️ Could not find option '{option_text}'")
+            # Take screenshot
+            try:
+                self.page.screenshot(path=f'debug_radio_fail_{datetime.now().strftime("%H%M%S")}.png')
+            except:
+                pass
+            return False
+        except Exception as e:
+            logging.error(f"   ❌ Error selecting {option_text}: {e}")
+            return False
     def fill_form(self, form_data):
         """
         Fill all form fields robustly by finding labels
@@ -604,120 +767,7 @@ class MSFormAutomation:
                     print(f"   ❌ Error filling {label_text_or_list}: {e}")
                     raise e
 
-            def select_radio(label_text, option_text):
-                try:
-                    logging.info(f"🔍 Looking for radio: '{label_text}' -> '{option_text}'...")
-                    if not option_text:
-                        logging.warning("   ⚠️ No option text provided, skipping radio selection")
-                        return False
 
-                    # Helper to normalize text for comparison (remove \xa0, \n, extra spaces)
-                    def normalize_text(text):
-                        if not text: return ""
-                        return text.replace('\xa0', ' ').replace('\n', ' ').strip().lower()
-
-                    target_normalized = normalize_text(option_text)
-                    # Regex pattern for text matching (escaped)
-                    pattern = option_text.replace('(', '\\(').replace(')', '\\)').replace('.', '\\.')
-                        
-                    # Strategy 1: Find by role="radio" with aria-label
-                    # We check startsWith because sometimes aria-label has extra info
-                    choice = self.page.locator(f'div[role="radio"][aria-label="{option_text}"]')
-                    if choice.count() > 0:
-                        choice.first.click()
-                        logging.info(f"   ✅ Selected radio (aria-label exact): {option_text}")
-                        return True
-                    
-                    # Strategy 2: Find [role="radio"] whose aria-label exactly matches
-                    # NOTE: Do NOT use :text() here — it can click hyperlinks and navigate away!
-                    all_radios_s2 = self.page.locator('[role="radio"]').all()
-                    for r in all_radios_s2:
-                        if normalize_text(r.get_attribute('aria-label')) == target_normalized:
-                            r.click()
-                            logging.info(f"   ✅ Selected radio (aria-label normalized): {option_text}")
-                            return True
-                        
-                    # Strategy 3: Find [role="radio"] whose aria-label contains the target
-                    for r in all_radios_s2:
-                        aria = normalize_text(r.get_attribute('aria-label'))
-                        if target_normalized in aria and r.is_visible():
-                            r.click()
-                            logging.info(f"   ✅ Selected radio (aria-label contains): {option_text}")
-                            return True
-                        
-                    # Strategy 4: Component-based search within the question container
-                    label_locator = self.page.locator(f'text=/{label_text}/i').first
-                    if label_locator.count() > 0:
-                        container = label_locator.locator('xpath=./ancestor::div[@data-automation-id="questionItem"]').first
-                        if container.count() > 0:
-                            radios = container.locator('[role="radio"]').all()
-                            
-                            # Sub-strategy 4a: Check aria-labels of radios in this container
-                            for radio in radios:
-                                radio_aria = normalize_text(radio.get_attribute('aria-label'))
-                                if target_normalized in radio_aria:
-                                    radio.click()
-                                    logging.info(f"   ✅ Selected radio in container (aria-match): {option_text}")
-                                    return True
-
-                            # Sub-strategy 4b: Text-based sibling match WITHIN the question container
-                            # This handles the case where text is separate from the radio div
-                            try:
-                                # Look for any element containing the option text
-                                option_text_els = container.locator(f'text=/{pattern}/i').all()
-                                for el in option_text_els:
-                                    # Visually check if it's visible
-                                    if not el.is_visible(): continue
-                                    
-                                    # Skip if it's a hyperlink
-                                    if el.locator('xpath=./ancestor-or-self::a').count() > 0: continue
-                                    
-                                    # Try 1: Click the text itself (often works for labels)
-                                    try:
-                                        el.click(force=True, timeout=500)
-                                        logging.info(f"   ✅ Clicked option text element: {option_text}")
-                                        return True
-                                    except:
-                                        pass
-
-                                    # Try 2: Look for a radio button nearby (preceding or parent's sibling)
-                                    # Search up to find a shared container, then down for radio
-                                    wrapper = el.locator('xpath=./ancestor::div[.//div[@role="radio"]][1]').first
-                                    if wrapper.count() > 0:
-                                        radio = wrapper.locator('[role="radio"]').first
-                                        if radio.count() > 0:
-                                            radio.click(force=True)
-                                            logging.info(f"   ✅ Selected radio via text wrapper: {option_text}")
-                                            return True
-                            except Exception as e:
-                                logging.warning(f"   Strategy 4b failed: {e}")
-
-                    # Strategy 5: Aggressive Global Search (when all else fails)
-                    # Look for ANY visible radio button whose aria-label contains the normalized text
-                    # This is risky if multiple questions have same options (e.g. Yes/No), but useful for unique ones like Programmes
-                    logging.info("   ⚠️ Strict match failed, trying aggressive global search...")
-                    all_radios = self.page.locator('[role="radio"]').all()
-                    for radio in all_radios:
-                        if not radio.is_visible(): continue
-                        radio_aria = normalize_text(radio.get_attribute('aria-label'))
-                        
-                        # Check for inclusion
-                        if target_normalized in radio_aria:
-                            radio.click()
-                            logging.info(f"   ✅ Selected radio (global fallback): {option_text}")
-                            return True
-                            
-
-                    logging.warning(f"   ⚠️ Could not find option '{option_text}'")
-                    # Take screenshot
-                    try:
-                        self.page.screenshot(path=f'debug_radio_fail_{datetime.now().strftime("%H%M%S")}.png')
-                    except:
-                        pass
-                    return False
-                except Exception as e:
-                    logging.error(f"   ❌ Error selecting {option_text}: {e}")
-                    return False
 
             # --- FILLING FIELDS ---
             
@@ -818,8 +868,8 @@ class MSFormAutomation:
             
             # 2. Radios
             # STRICT: No defaults. Use provided value or empty string.
-            select_radio("School Name", form_data.get('school') or '')
-            select_radio("Academic Session", form_data.get('academic_session') or '')
+            self.select_radio("School Name", form_data.get('school') or '')
+            self.select_radio("Academic Session", form_data.get('academic_session') or '')
             
             # PDF Format has "Programme Name" as radio (BBA, MBBA, BCom etc.)
             # Normalize the programme value to match MS Form options exactly
@@ -833,7 +883,7 @@ class MSFormAutomation:
                 raise Exception("Programme value is missing from form_data. Check student_profiles.programme in database.")
             
             # ATTEMPT SELECTION
-            programme_selected = select_radio("Programme Name", programme_normalized)
+            programme_selected = self.select_radio("Programme Name", programme_normalized)
             
             # VERIFY SELECTION
             # The form reported "'Programme Name\xa0\n': This question is required" -> implies non-breaking space

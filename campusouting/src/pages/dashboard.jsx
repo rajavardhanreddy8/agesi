@@ -148,7 +148,7 @@ const Dashboard = () => {
         if (!profile?.full_name) missingFields.push('Full Name');
         if (!profile?.roll_number) missingFields.push('Roll Number');
         if (!profile?.student_phone) missingFields.push('Student Phone');
-        if (!profile?.student_email) missingFields.push('Student Email');
+        if (!profile?.student_email && !profile?.email) missingFields.push('Student Email');
         if (!profile?.parent1_name) missingFields.push('Parent 1 Name');
         if (!profile?.parent1_phone) missingFields.push('Parent 1 Phone');
         if (!profile?.parent1_email) missingFields.push('Parent 1 Email');
