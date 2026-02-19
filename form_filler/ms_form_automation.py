@@ -617,6 +617,8 @@ class MSFormAutomation:
                         return text.replace('\xa0', ' ').replace('\n', ' ').strip().lower()
 
                     target_normalized = normalize_text(option_text)
+                    # Regex pattern for text matching (escaped)
+                    pattern = option_text.replace('(', '\\(').replace(')', '\\)').replace('.', '\\.')
                         
                     # Strategy 1: Find by role="radio" with aria-label
                     # We check startsWith because sometimes aria-label has extra info
@@ -666,6 +668,9 @@ class MSFormAutomation:
                                 for el in option_text_els:
                                     # Visually check if it's visible
                                     if not el.is_visible(): continue
+                                    
+                                    # Skip if it's a hyperlink
+                                    if el.locator('xpath=./ancestor-or-self::a').count() > 0: continue
                                     
                                     # Try 1: Click the text itself (often works for labels)
                                     try:
