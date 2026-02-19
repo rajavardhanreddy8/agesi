@@ -626,21 +626,22 @@ class MSFormAutomation:
                         logging.info(f"   ✅ Selected radio (aria-label exact): {option_text}")
                         return True
                     
-                    # Strategy 2: Find exact text match
-                    choice = self.page.locator(f':text("{option_text}")')
-                    if choice.count() > 0:
-                        choice.first.click()
-                        logging.info(f"   ✅ Selected radio (text exact): {option_text}")
-                        return True
+                    # Strategy 2: Find [role="radio"] whose aria-label exactly matches
+                    # NOTE: Do NOT use :text() here — it can click hyperlinks and navigate away!
+                    all_radios_s2 = self.page.locator('[role="radio"]').all()
+                    for r in all_radios_s2:
+                        if normalize_text(r.get_attribute('aria-label')) == target_normalized:
+                            r.click()
+                            logging.info(f"   ✅ Selected radio (aria-label normalized): {option_text}")
+                            return True
                         
-                    # Strategy 3: Find loose text match (case-insensitive) using regex
-                    # Escape special regex chars
-                    pattern = option_text.replace('(', '\\(').replace(')', '\\)').replace('.', '\\.')
-                    choice = self.page.locator(f'text=/{pattern}/i')
-                    if choice.count() > 0:
-                        choice.first.click()
-                        logging.info(f"   ✅ Selected radio (regex): {option_text}")
-                        return True
+                    # Strategy 3: Find [role="radio"] whose aria-label contains the target
+                    for r in all_radios_s2:
+                        aria = normalize_text(r.get_attribute('aria-label'))
+                        if target_normalized in aria and r.is_visible():
+                            r.click()
+                            logging.info(f"   ✅ Selected radio (aria-label contains): {option_text}")
+                            return True
                         
                     # Strategy 4: Component-based search within the question container
                     label_locator = self.page.locator(f'text=/{label_text}/i').first
@@ -701,14 +702,6 @@ class MSFormAutomation:
                             logging.info(f"   ✅ Selected radio (global fallback): {option_text}")
                             return True
                             
-                    # Strategy 6: Aggressive Text Click
-                    # Just find ANY text on the page that looks like the option and click it
-                    logging.info("   ⚠️ Global radio search failed, trying to click text directly...")
-                    text_candidate = self.page.locator(f'text="{option_text}"').first
-                    if text_candidate.count() > 0 and text_candidate.is_visible():
-                        text_candidate.click(force=True)
-                        logging.info(f"   ✅ Clicked text candidate: {option_text}")
-                        return True
 
                     logging.warning(f"   ⚠️ Could not find option '{option_text}'")
                     # Take screenshot
@@ -989,7 +982,7 @@ class MSFormAutomation:
             # 5. Student Details
             # API sends 'student_phone', 'student_email'
             fill_by_label(["Student Contact No.", "Student Contact", "Mobile No.", "Contact No."], form_data.get('student_phone', '') or form_data.get('student_contact', ''))
-            fill_by_label(["Student Woxsen Email ID", "Student Email", "Email ID"], form_data.get('student_email', ''))
+            fill_by_label(["Student Woxsen Email ID", "Student Email ID", "Student Email"], form_data.get('student_email', ''))
             
             
             # 6. SMART CLEANUP PASS: Fill remaining empty inputs using question context
