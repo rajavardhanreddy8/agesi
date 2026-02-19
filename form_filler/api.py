@@ -25,6 +25,14 @@ from dotenv import load_dotenv
 # Force override of environment variables from .env file
 import os
 from pathlib import Path
+import sys
+try:
+    # Add mail_agent to path to access gmail_service
+    sys.path.append(os.path.join(os.path.dirname(__file__), '../mail_agent'))
+    from gmail_service import send_email
+except ImportError:
+    logging.warning("Could not import send_email from gmail_service. Email notifications disabled.")
+    send_email = None
 
 # ===== TIMEZONE CONFIGURATION FOR INDIA (IST) =====
 IST = pytz.timezone('Asia/Kolkata')
@@ -630,6 +638,29 @@ def auto_submit_from_email():
         for user in eligible_users:
             try:
                 user_id = user['user_id']
+                
+                # Check for missing required profile fields before processing
+                required_fields = ['full_name', 'roll_number', 'school', 'programme', 'academic_year', 'student_phone', 'parent1_name', 'parent1_phone', 'parent1_email']
+                missing_fields = [f for f in required_fields if not user.get(f)]
+                
+                if missing_fields:
+                    error_msg = f"Missing profile details: {', '.join(missing_fields)}"
+                    logging.warning(f"Skipping automation for user {user.get('email')} due to missing fields: {missing_fields}")
+                    
+                    # Send warning email if possible
+                    if send_email:
+                        subject = "Action Required: Incomplete Profile Prevents Outing Request"
+                        body = (f"Hello {user.get('full_name', 'Student')},\n\n"
+                                f"We received your outing request via email, but could not process it automatically because your profile is incomplete.\n"
+                                f"The following details are missing: {', '.join(missing_fields)}.\n\n"
+                                f"Please update your profile immediately to enable automated submissions.")
+                        try:
+                            threading.Thread(target=send_email, args=(user['email'], subject, body)).start()
+                        except Exception as e:
+                            logging.error(f"Failed to send warning email to {user['email']}: {e}")
+                    
+                    # Skip processing this user
+                    continue
 
                 # Check for existing pending/completed task for this date
                 cur.execute("""
