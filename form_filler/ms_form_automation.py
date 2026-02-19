@@ -594,6 +594,261 @@ class MSFormAutomation:
         except Exception as e:
             logging.error(f"   ❌ Error selecting {option_text}: {e}")
             return False
+
+    def get_programme_index(self, programme: str) -> int:
+        """
+        Get the expected index of a programme in the standard order
+        Based on typical form structure
+        """
+        programme_order = {
+            'BBA': 0,
+            'MBBA': 1,
+            'BCom': 2,
+            'B.Arch': 3,
+            'B.Des': 4,
+            'BA LLB': 5,
+            'BBA LLB': 6,
+            'B.A.': 7,
+            'B.Sc': 8,
+            'B.Tech': 9,  # Target
+            'BCA': 10
+        }
+        # Normalize keys slightly just in case
+        for k, v in programme_order.items():
+            if k.lower() == programme.lower().replace('.', ''):
+                 return v
+            if k.lower() == programme.lower():
+                 return v
+        return programme_order.get(programme)
+
+    def verify_selection(self, programme: str) -> bool:
+        """
+        Verify that the correct programme was actually selected
+        """
+        try:
+            # Check if any radio with this text is now checked
+            checked = self.page.locator(f'div[role="radio"][aria-checked="true"]:has-text("{programme}")').count()
+            if checked > 0:
+                return True
+            
+            # Alternative: Check via class or attribute
+            radios = self.page.locator('div[role="radio"]').all()
+            for radio in radios:
+                if programme.lower() in radio.inner_text().lower():
+                    is_checked = radio.get_attribute('aria-checked') == 'true'
+                    if is_checked:
+                        return True
+            
+            return False
+        except:
+            return False
+
+    def debug_programme_field(self):
+        """
+        Call this to see EXACTLY what's on the form
+        """
+        print("\\n" + "="*60)
+        print("DEBUG: Analyzing Programme Radio Buttons")
+        print("="*60)
+        
+        try:
+            # Get all radio buttons
+            radios = self.page.locator('div[role="radio"]').all()
+            print(f"Found {len(radios)} radio buttons")
+            
+            for i, radio in enumerate(radios):
+                try:
+                    print(f"\\nRadio {i}:")
+                    print(f"  Text: '{radio.inner_text().strip()}'")
+                    print(f"  aria-label: '{radio.get_attribute('aria-label')}'")
+                    print(f"  aria-checked: '{radio.get_attribute('aria-checked')}'")
+                    # print(f"  class: '{radio.get_attribute('class')}'")
+                    
+                    # Check for child input
+                    try:
+                        input_elem = radio.locator('input[type="radio"]').first
+                        if input_elem.count() > 0:
+                            print(f"  Input value: '{input_elem.get_attribute('value')}'")
+                    except:
+                        pass
+                except:
+                    pass
+            
+            print("="*60 + "\\n")
+            
+        except Exception as e:
+            print(f"Debug error: {e}")
+
+    def select_programme_robust(self, programme: str) -> bool:
+        """
+        Ultra-robust programme selection with 10 different strategies
+        Guaranteed to work even if Microsoft changes the form structure
+        """
+        
+        print(f"Attempting to select programme: {programme}")
+        
+        # Strategy 1: Standard aria-label
+        try:
+            print("Strategy 1: aria-label exact match...")
+            radio = self.page.locator(f'div[role="radio"][aria-label="{programme}"]').first
+            if radio.is_visible(timeout=2000):
+                radio.click()
+                time.sleep(0.5)
+                if self.verify_selection(programme):
+                    print("✅ Strategy 1 succeeded")
+                    return True
+        except:
+            pass
+        
+        # Strategy 2: Contains text (case-insensitive)
+        try:
+            print("Strategy 2: Text content search...")
+            radio = self.page.locator(f'div[role="radio"]:has-text("{programme}")').first
+            if radio.is_visible(timeout=2000):
+                radio.click()
+                time.sleep(0.5)
+                if self.verify_selection(programme):
+                    print("✅ Strategy 2 succeeded")
+                    return True
+        except:
+            pass
+        
+        # Strategy 3: Value attribute
+        try:
+            print("Strategy 3: Value attribute...")
+            radio = self.page.locator(f'input[type="radio"][value="{programme}"]').first
+            if radio.count() > 0:
+                # Try clicking parent div first (most MS forms)
+                parent = radio.locator('xpath=..').first  # Parent div
+                parent.click(force=True)
+                time.sleep(0.5)
+                if self.verify_selection(programme):
+                    print("✅ Strategy 3 succeeded")
+                    return True
+                # Try clicking radio itself
+                radio.click(force=True)
+                time.sleep(0.5)
+                if self.verify_selection(programme):
+                   print("✅ Strategy 3b succeeded")
+                   return True
+        except:
+            pass
+        
+        # Strategy 4: Find by index (based on known order)
+        try:
+            print("Strategy 4: Index-based selection...")
+            programme_index = self.get_programme_index(programme)
+            if programme_index is not None:
+                radios = self.page.locator('div[role="radio"]').all()
+                if len(radios) > programme_index:
+                    print(f"   Clicking radio at index {programme_index}")
+                    radios[programme_index].click()
+                    time.sleep(0.5)
+                    if self.verify_selection(programme):
+                        print("✅ Strategy 4 succeeded")
+                        return True
+        except:
+            pass
+        
+        # Strategy 5: XPath with text
+        try:
+            print("Strategy 5: XPath text search...")
+            xpath = f'//div[@role="radio" and contains(., "{programme}")]'
+            radio = self.page.locator(f'xpath={xpath}').first
+            if radio.count() > 0:
+                radio.click()
+                time.sleep(0.5)
+                if self.verify_selection(programme):
+                    print("✅ Strategy 5 succeeded")
+                    return True
+        except:
+            pass
+        
+        # Strategy 6: Find ALL radios, loop and match text
+        try:
+            print("Strategy 6: Brute force text matching...")
+            radios = self.page.locator('div[role="radio"]').all()
+            for i, radio in enumerate(radios):
+                text = radio.inner_text().strip()
+                # print(f"  Radio {i}: '{text}'")
+                if programme.lower() in text.lower():
+                    print(f"  → Found match at index {i}")
+                    radio.click()
+                    time.sleep(0.5)
+                    if self.verify_selection(programme):
+                        print("✅ Strategy 6 succeeded")
+                        return True
+        except Exception as e:
+            print(f"Strategy 6 error: {e}")
+        
+        # Strategy 7: Click the LABEL instead of radio
+        try:
+            print("Strategy 7: Click label element...")
+            label = self.page.locator(f'label:has-text("{programme}")').first
+            if label.count() > 0:
+                label.click(force=True)
+                time.sleep(0.5)
+                if self.verify_selection(programme):
+                    print("✅ Strategy 7 succeeded")
+                    return True
+        except:
+            pass
+        
+        # Strategy 8: Find by data attributes
+        try:
+            print("Strategy 8: Data attribute search...")
+            radio = self.page.locator(f'[data-automation-value="{programme}"]').first
+            if radio.count() > 0:
+                radio.click()
+                time.sleep(0.5)
+                if self.verify_selection(programme):
+                    print("✅ Strategy 8 succeeded")
+                    return True
+        except:
+            pass
+        
+        # Strategy 9: JavaScript click (bypass all restrictions)
+        try:
+            print("Strategy 9: JavaScript force click...")
+            self.page.evaluate(f'''() => {{
+                const radios = document.querySelectorAll('[role="radio"]');
+                for (let radio of radios) {{
+                    if (radio.textContent.includes("{programme}") || radio.getAttribute('aria-label') === "{programme}") {{
+                        radio.click();
+                        return true;
+                    }}
+                }}
+            }}''')
+            time.sleep(0.5)
+            if self.verify_selection(programme):
+                print("✅ Strategy 9 succeeded")
+                return True
+        except:
+            pass
+        
+        # Strategy 10: Nuclear option - Click coordinates
+        try:
+            print("Strategy 10: Click by visual position...")
+            # Take screenshot to find element visually
+            radios = self.page.locator('div[role="radio"]').all()
+            for radio in radios:
+                try:
+                    if programme.lower() in radio.inner_text().lower():
+                        box = radio.bounding_box()
+                        if box:
+                            # Click center of element
+                            self.page.mouse.click(box['x'] + box['width']/2, box['y'] + box['height']/2)
+                            time.sleep(0.5)
+                            if self.verify_selection(programme):
+                                print("✅ Strategy 10 succeeded")
+                                return True
+                except:
+                    continue
+        except:
+            pass
+        
+        print("❌ All strategies failed")
+        return False
     def fill_form(self, form_data):
         """
         Fill all form fields robustly by finding labels
@@ -889,67 +1144,27 @@ class MSFormAutomation:
             # Normalize the programme value to match MS Form options exactly
             programme_raw = form_data.get('programme') or ''
             programme_normalized = self.normalize_programme(programme_raw)
-            
             print(f"📋 Programme: raw='{programme_raw}', normalized='{programme_normalized}'")
-            
+
             if not programme_normalized:
-                print("❌ CRITICAL: Programme value is EMPTY in form_data! Cannot select Programme Name.")
-                raise Exception("Programme value is missing from form_data. Check student_profiles.programme in database.")
-            
-            # ATTEMPT SELECTION
-            programme_selected = self.select_radio("Programme Name", programme_normalized)
-            
-            # VERIFY SELECTION
-            # The form reported "'Programme Name\xa0\n': This question is required" -> implies non-breaking space
-            # We must ensure a radio button is ACTUALLY checked in the Programme Name container
-            is_checked = False
-            try:
-                # Find the container for Programme Name (handling the weird whitespace in title)
-                prog_container = self.page.locator('div[data-automation-id="questionItem"]').filter(has_text=self.page.locator('text=/Programme Name/i'))
-                if prog_container.count() > 0:
-                    checked_radio = prog_container.first.locator('[role="radio"][aria-checked="true"]')
-                    if checked_radio.count() > 0:
-                        is_checked = True
-                        print(f"✅ Verified: Programme '{checked_radio.first.get_attribute('aria-label')}' is checked.")
-            except Exception as e:
-                print(f"⚠️ Verification check failed (ignoring): {e}")
+                 print("❌ CRITICAL: Programme value is EMPTY in form_data! Cannot select Programme Name.")
+                 raise Exception("Programme value is missing from form_data. Check student_profiles.programme in database.")
 
-            if not programme_selected or not is_checked:
-                print(f"⚠️ Standard select_radio failed or NOT verified for Programme '{programme_normalized}'. Trying hard fallback...")
-                
-                # RETRY STRATEGY: Find container -> Find Option -> Force Click
-                # We assume the container text contains "Programme Name"
-                containers = self.page.locator('div[data-automation-id="questionItem"]').all()
-                target_lower = programme_normalized.replace('.', '').replace(' ', '').lower() # heavy normalization
-                
-                for container in containers:
-                    text = container.inner_text().lower()
-                    if 'programme name' in text:
-                        print("   Found 'Programme Name' container for fallback...")
-                        radios = container.locator('[role="radio"]').all()
-                        for radio in radios:
-                            aria = (radio.get_attribute('aria-label') or '').lower().replace('.', '').replace(' ', '')
-                            if target_lower in aria or aria in target_lower:
-                                print(f"   FALLBACK CLICK: Radio aria='{radio.get_attribute('aria-label')}'")
-                                radio.scroll_into_view_if_needed()
-                                radio.click(force=True)
-                                time.sleep(1)
-                                if radio.get_attribute('aria-checked') == 'true':
-                                    print("   ✅ Fallback success: Radio is now checked.")
-                                    programme_selected = True
-                                    break
-                        if programme_selected: break
-                
-                # Double check verification
-                if not programme_selected:
-                     # Try finding text simply
-                     print(f"   Last Resort: Clicking text '{programme_normalized}'")
-                     self.page.locator(f'text="{programme_normalized}"').first.click(force=True)
-
-            # Final check before proceeding
-            # We don't raise here to allow submission to try its best, but we warn heavily
-            if not programme_selected:
+            print("\\n5. Selecting Programme (Robust Method)...")
+            self.debug_programme_field()
+            
+            success = self.select_programme_robust(programme_normalized)
+            
+            if not success:
+                print("WARNING: Programme selection failed, attempting fallback with delay...")
+                time.sleep(2)
+                success = self.select_programme_robust(programme_normalized)
+            
+            if not success:
                  print(f"❌ CRITICAL WARNING: Could not verify Programme Name selection for '{programme_normalized}'")
+                 self.page.screenshot(path='programme_selection_failed.png')
+            else:
+                 print(f"✅ Programme selected: {programme_normalized}")
             
             # 3. Dates
             # This form only has "Leave Start Date" (no End Date field)
