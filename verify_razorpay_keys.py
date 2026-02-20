@@ -3,8 +3,8 @@ import razorpay
 import os
 
 # Credentials currently in Azure Env (verified via CLI)
-KEY_ID = 'rzp_live_SDcqknc6G4xFYv'
-KEY_SECRET = 'M5tSvmjcBxw4EJb7UzwdWGF5'
+KEY_ID = 'rzp_live_SHeEYfTnpJisHO'
+KEY_SECRET = 'a1q4hxQ8sqCFmJY0C2GT7yzf'
 
 print(f"Testing Keys: {KEY_ID} / {KEY_SECRET[:4]}...{KEY_SECRET[-4:]}")
 

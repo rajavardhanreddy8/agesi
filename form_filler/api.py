@@ -175,14 +175,10 @@ try:
         def decorated_function(*args, **kwargs):
             user_id = getattr(request, 'user_id', None)
             try:
-                # Get active subscription
-                res = supabase.table('subscriptions').select('*').eq('user_id', user_id).eq('plan_type', 'premium').execute()
-                # Simple check: basic or premium? User said "Subscribers only"
+                # Check any non-free plan
+                res = supabase.table('subscriptions').select('*').eq('user_id', user_id).neq('plan_type', 'free').execute()
                 if not res.data:
-                    # Check any non-free plan
-                    res = supabase.table('subscriptions').select('*').eq('user_id', user_id).neq('plan_type', 'free').execute()
-                    if not res.data:
-                        return jsonify({'success': False, 'error': 'ACTIVE SUBSCRIPTION REQUIRED! Please upgrade your plan to access this feature.'}), 403
+                    return jsonify({'success': False, 'error': 'ACTIVE SUBSCRIPTION REQUIRED! Please upgrade your plan to access this feature.'}), 403
                 
                 # Check expiry
                 sub = res.data[0]
@@ -1761,25 +1757,11 @@ ADMIN_PASSWORD_HASH = os.getenv('ADMIN_PASSWORD_HASH', '$2b$12$W0VJrQxqHdmO.oSjb
 
 # Subscription Plans (NO FREE PLAN)
 SUBSCRIPTION_PLANS = {
-    'basic': {
-        'name': 'Basic Plan',
+    'plan': {
+        'name': 'Plan',
         'price': 50,
         'currency': 'INR',
         'duration_days': 30, # Monthly
-        'features': {
-            'monthly_submissions': 999, # Unlimited (at least 4)
-            'auto_submit': True,
-            'email_notifications': True,
-            'sms_notifications': False,
-            'priority_support': False,
-            'data_backup': True
-        }
-    },
-    'premium': {
-        'name': 'Premium Plan',
-        'price': 180,
-        'currency': 'INR',
-        'duration_days': 120, # 4 Months
         'features': {
             'monthly_submissions': 9999,
             'auto_submit': True,
