@@ -924,7 +924,14 @@ def admin_users():
         # This is a complex join, might need multiple queries if views aren't used
         # Using the view v_user_profiles if it exists
         res = supabase.table('v_user_profiles').select('*').execute()
-        return jsonify({'success': True, 'users': res.data})
+        # The view returns 'user_id' but frontend expects 'id', so normalize
+        users = []
+        for u in res.data:
+            user = dict(u)
+            if 'user_id' in user and 'id' not in user:
+                user['id'] = user['user_id']
+            users.append(user)
+        return jsonify({'success': True, 'users': users})
     except Exception as e:
         # Fallback if view doesn't exist
         try:
