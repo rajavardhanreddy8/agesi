@@ -74,9 +74,9 @@ export const generateOutingPDF = (data) => {
         <h2 style="font-size: 16pt; text-decoration: underline; margin: 0;">Letter of Consent:</h2>
     </div>
 
-    <!-- Consent Body -->
+    <!-- Consent Body - MATCHING EXACT TEMPLATE BOLDING -->
     <div style="text-align: justify; margin-bottom: 20px;">
-        I, father/ mother/ guardian, of the student, batch, section, request you to permit <span class="bold">my child/ ward/ son/ daughter</span> to leave the campus <span class="bold">on date</span> ${formatDate(startDate)} <span class="bold">and time</span> ${sTime} for the purpose of <span class="bold">${purpose || 'Outing'}</span>. My <span class="bold">child/ward/son/ daughter</span> shall return on the <span class="bold">date</span> ${formatDate(endDate)} <span class="bold">and time</span> ${eTime}. (Signature below)
+        I, father/ mother/ guardian, of the student, batch, section, request you to permit <span class="bold">my child/ ward/ son/ daughter</span> to leave the campus on date <span class="bold">${formatDate(startDate)}</span> and time <span class="bold">${sTime}</span> for the purpose of <span class="bold">${purpose || 'Outing'}</span>. My <span class="bold">child/ward/son/ daughter</span> shall return on the date <span class="bold">${formatDate(endDate)}</span> and time <span class="bold">${eTime}</span>. (Signature below)
     </div>
 
     <!-- Footer Note -->
@@ -116,31 +116,25 @@ export const generateOutingPDF = (data) => {
         </tr>
     </table>
 
-    <!-- Details Table -->
+    <!-- Details Table - FIXED WIDTHS AND FORMAT -->
     <table class="data-table">
         <tr style="height: 50px;">
-            <td style="width: 30%;">Father Name, Email & Mobile Number</td>
-            <td style="width: 25%;">
+            <td style="width: 35%;">Father Name, Email & Mobile Number</td>
+            <td style="width: 65%;">
                 ${[fatherName, fatherEmail, fatherMobile].filter(Boolean).join(', ')}
             </td>
-            <td style="width: 25%;"></td>
-            <td style="width: 20%;"></td>
         </tr>
         <tr style="height: 50px;">
             <td>Mother Name, Email & Mobile Number</td>
             <td>
                 ${[motherName, motherEmail, motherMobile].filter(Boolean).join(', ')}
             </td>
-            <td></td>
-            <td></td>
         </tr>
         <tr style="height: 50px;">
             <td>Student Name, Email & Mobile Number</td>
             <td>
                 ${[studentName, studentEmail, studentMobile].filter(Boolean).join(', ')}
             </td>
-            <td></td>
-            <td></td>
         </tr>
     </table>
 

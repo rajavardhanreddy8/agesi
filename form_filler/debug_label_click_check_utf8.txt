@@ -1,0 +1,159 @@
+﻿python : C:\Users\admin\Documents
+\outing\agent 4.0\form_filler\ms_
+form_automation.py:444: 
+SyntaxWarning: invalid escape 
+sequence '\('
+At line:1 char:1
++ python debug_full.py > 
+debug_label_click_check.txt 2>&1
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : No 
+   tSpecified: (C:\Users\admin\  
+  ...e sequence '\(':String) [   
+ ], RemoteException
+    + FullyQualifiedErrorId : Na 
+   tiveCommandError
+ 
+  pattern = 
+option_text.replace('(', 
+'\(').replace(')', 
+'\)').replace('.', '\.')
+C:\Users\admin\Documents\outing\a
+gent 4.0\form_filler\ms_form_auto
+mation.py:444: SyntaxWarning: 
+invalid escape sequence '\)'
+  pattern = 
+option_text.replace('(', 
+'\(').replace(')', 
+'\)').replace('.', '\.')
+C:\Users\admin\Documents\outing\a
+gent 4.0\form_filler\ms_form_auto
+mation.py:444: SyntaxWarning: 
+invalid escape sequence '\.'
+  pattern = 
+option_text.replace('(', 
+'\(').replace(')', 
+'\)').replace('.', '\.')
+Warning: Encryption key issue: Fernet key must be 32 url-safe base64-encoded bytes.
+≡ƒÜÇ Starting Debug Script...
+≡ƒöæ Fetching user credentials...
+DEBUG: DB Connection SUCCESS!
+2026-02-19 22:05:34,212 - INFO - 
+Using browser state file: browser
+_state_guntaka_reddy_2028_woxsen_
+edu_in.json
+2026-02-19 22:05:34,340 - INFO - 
+Loading saved browser state 
+(age: 8.4h)
+2026-02-19 22:05:34,648 - INFO - 
+Browser started (saved session: 
+yes)
+2026-02-19 22:05:41,117 - INFO - 
+Attempting login with guntaka.red
+dy_2028@woxsen.edu.in...
+2026-02-19 22:05:41,119 - INFO - 
+Current URL at login start: https
+://login.microsoftonline.com/orga
+nizations/oauth2/v2.0/authorize?c
+lient_id=c9a559d2-7aab-4f13-a6ed-
+e7e9c52aec87&redirect_uri=https%3
+A%2F%2Fforms.office.com%2Flanding
+&state=eyJ2ZXJzaW9uIjoxLCJkYXRhIj
+p7IklkZW50aXR5UHJvdmlkZXIiOiJBVkl
+5bVYwTzZMQzFwMnhZelQxaGUyci10LVQ4
+ZzVHay1YdE4xSmlBNXhValYyOEhJUEJfZ
+mh0WnJ3RnBwQlVxbVUwTC1lcEJmdExzdn
+ctcUIxMEVCWG8iLCIucmVkaXJlY3QiOiJ
+odHRwczovL2Zvcm1zLm9mZmljZS5jb20v
+cGFnZXMvcmVzcG9uc2VwYWdlLmFzcHg_a
+WQ9TFNEMzZyUHZla09oQTFCYnVmdjNYOU
+5TS09heW9LOU50UWZWT1U5LThkaFVOVFZ
+MTmpoTFNEWllNVWxSVlVOT01FYzFNRFEw
+V0ZORFRTNHUmc2lkPTY0ZTY5OTBjLWQ1M
+TAtNDBkZC1hMGUyLWJhNjQ4MmFlMGNmYy
+IsIi54c3JmIjoiQVotUkpqOVVzc011YWp
+5c19GejdvN24tOWtlWXY2bW1mWXk4ZkNC
+U3RmVTlLdTZzMlp5YjBMWW5SNU9adGVwM
+TV4amtiMl9BcmxtWFpZRkFyVkpma3RpbT
+VpblNDU0RFSTZDaVFhRUxoUTlIejB6bkF
+MMko2enVUVWJwdTBIVnZKQSIsIk9wZW5J
+ZENvbm5lY3QuQ29kZS5SZWRpcmVjdFVya
+SI6IkFhVS1PdUxtUXNxbUlPbG5qSTM3OH
+oxNnBfVjhlWm9EQ0xCbEdnSEI3VmpxeGh
+3ZGVpaDM0TTJ5MkF4aER0NkdraGswcEdI
+RmRfZkNCVGdIVEtSaVcxM0lGa2NFZGROc
+2RiMEpHX2tkOHROTWFMZTlwMEUyWmZ0Rn
+RTUXlXdVdTSVEifX0&response_type=c
+ode&scope=openid%20profile&respon
+se_mode=form_post&nonce=639071157
+405104891.MjdiNDE0NTUtOTY3ZC00ODd
+hLWJlNmItNzYxZjEzZTkwYjAyNzc2ZTJl
+ODQtMmQwNy00ZTAwLWFlZGMtM2Y5OTAwY
+zQwMjAz&msafed=0&x-client-SKU=ID_
+NET10_0&x-client-ver=8.15.0.0
+2026-02-19 22:05:41,120 - INFO - 
+Waiting for page to settle 
+(login page OR form content)...
+2026-02-19 22:05:42,305 - INFO - 
+Page settled. URL: https://forms.
+office.com/pages/responsepage.asp
+x?id=LSD36rPvekOhA1Bbufv3X9NSKOay
+oK9NtQfVOU9-8dhUNTVLNjhLSDZYMUlRV
+UNOMEc1MDQ0WFNDTS4u
+2026-02-19 22:05:42,409 - INFO - 
+Already logged in - form 
+questions are visible! Skipping 
+login.
+2026-02-19 22:05:54,889 - INFO - 
+\U0001f50d Looking for radio: 
+'9. Programme Nameá ' -> 
+'B.Tech'...
+2026-02-19 22:05:55,227 - INFO - 
+   \u26a0\ufe0f Strict match 
+failed, trying aggressive global 
+search...
+2026-02-19 22:05:55,694 - INFO - 
+   \U0001f3af Found match: 
+'B.Tech' (Strategy: value)
+2026-02-19 22:05:55,743 - INFO - 
+   \u2705 Clicked parent label 
+for value match: B.Tech
+2026-02-19 22:05:55,759 - INFO - 
+   \u2705 Selected radio: B.Tech
+Γ£à User found: guntaka.reddy_2028@woxsen.edu.in
+≡ƒîÉ Navigating to Form URL: https://forms.office.com/pages/responsepage.aspx?id=LSD36rPvekOhA1Bbufv3X9NSKOayoK9NtQfVOU9-8dhUNTVLNjhLSDZYMUlRVUNOMEc1MDQ0WFNDTS4u
+ΓÅ│ Checking for loading indicators...
+Γ£à Loading screen cleared.
+Current URL: https://forms.office.com/pages/responsepage.aspx?id=LSD36rPvekOhA1Bbufv3X9NSKOayoK9NtQfVOU9-8dhUNTVLNjhLSDZYMUlRVUNOMEc1MDQ0WFNDTS4u
+DEBUG: 'Sign in' count: 0, Email input count: 0
+≡ƒöÆ Login required. Attempting login...
+Γ£à Login successful!
+ΓÅ│ Checking for loading indicators...
+Γ£à Loading screen cleared.
+
+≡ƒöÄ Selecting 'School of Technology'...
+Γ¥î Could not find 'School of Technology' radio button! Trying text match...
+Γ£à Clicked text 'School of Technology'
+ΓÅ│ Waiting 3s for any conditional fields to appear...
+
+≡ƒôï DUMPING QUESTIONS:
+Q1: 1. Name of the Student
+Q2: 2. Roll Number
+Q3: 3. School Name
+Q4: 4. Academic Session
+Q5: 5. Specialization
+Q6: 6. Reasons for Leave
+Q7: 7. Leave Start Date
+Q8: 8. Parents Contact No.
+Q9: 9. Programme Name┬á 
+   ≡ƒÄ» FOUND PROGRAMME FIELD! Title: '9. Programme Name┬á '
+      Γ£à Dumped HTML to debug_programme_html.html
+      OPTIONS: [None, None, None, None, None, None, None, None, None, None, None, None]
+   ≡ƒöì Testing selection of 'B.Tech' via bot.select_radio...
+      Γ£à bot.select_radio returned True
+Q10: 10. Parents Email ID
+Q11: 11. leave end date
+Q12: 12. Student Contact No.
+Q13: 13. Student Woxsen Email ID
+Q14: 14. Attach Application by parent in Prescribed Format  (Non-anonymous question )

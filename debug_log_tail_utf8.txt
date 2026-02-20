@@ -1,0 +1,1000 @@
+﻿2026-02-08 14:18:15,225 - INFO - 127.0.0.1 - - [08/Feb/2026 14:18:15] "[35m[1mGET /api/subscription/current HTTP/1.1[0m" 500 -
+2026-02-08 14:18:24,331 - INFO - 127.0.0.1 - - [08/Feb/2026 14:18:24] "[35m[1mPOST /api/subscription/upgrade HTTP/1.1[0m" 500 -
+2026-02-08 14:18:25,555 - INFO - 127.0.0.1 - - [08/Feb/2026 14:18:25] "[35m[1mGET /api/subscription/current HTTP/1.1[0m" 500 -
+2026-02-08 14:22:23,245 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\api.py', reloading
+2026-02-08 14:22:23,258 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\api.py', reloading
+2026-02-08 14:22:23,276 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\api.py', reloading
+2026-02-08 14:22:23,282 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\api.py', reloading
+2026-02-08 14:22:23,301 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\api.py', reloading
+2026-02-08 14:22:24,110 - INFO -  * Restarting with stat
+2026-02-08 14:22:28,067 - WARNING -  * Debugger is active!
+2026-02-08 14:22:28,073 - INFO -  * Debugger PIN: 900-091-490
+2026-02-08 14:22:41,893 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.20.10.3:5000
+2026-02-08 14:22:41,894 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-08 14:22:41,896 - INFO -  * Restarting with stat
+2026-02-08 14:22:45,005 - WARNING -  * Debugger is active!
+2026-02-08 14:22:45,010 - INFO -  * Debugger PIN: 900-091-490
+2026-02-08 14:23:14,918 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.20.10.3:5000
+2026-02-08 14:23:14,918 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-08 14:23:14,921 - INFO -  * Restarting with stat
+2026-02-08 14:23:17,955 - WARNING -  * Debugger is active!
+2026-02-08 14:23:17,960 - INFO -  * Debugger PIN: 900-091-490
+2026-02-08 14:24:12,737 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=id&email=eq.test_lrrz1id3%40example.com "HTTP/2 200 OK"
+2026-02-08 14:24:12,740 - INFO - Verifying Outlook credentials for test_lrrz1id3@example.com
+2026-02-08 14:24:13,506 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users "HTTP/2 201 Created"
+2026-02-08 14:24:13,721 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/student_profiles "HTTP/2 201 Created"
+2026-02-08 14:24:14,036 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/subscriptions "HTTP/2 201 Created"
+2026-02-08 14:24:14,041 - INFO - 127.0.0.1 - - [08/Feb/2026 14:24:14] "[35m[1mPOST /api/auth/register HTTP/1.1[0m" 201 -
+2026-02-08 14:24:14,368 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=%2A%2Cstudent_profiles%28full_name%2Croll_number%29&email=eq.test_lrrz1id3%40example.com "HTTP/2 200 OK"
+2026-02-08 14:24:14,819 - INFO - 127.0.0.1 - - [08/Feb/2026 14:24:14] "POST /api/auth/login HTTP/1.1" 200 -
+2026-02-08 14:24:14,827 - INFO - 127.0.0.1 - - [08/Feb/2026 14:24:14] "GET /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 14:24:24,900 - INFO - 127.0.0.1 - - [08/Feb/2026 14:24:24] "[35m[1mPOST /api/subscription/upgrade HTTP/1.1[0m" 500 -
+2026-02-08 14:24:40,578 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\api.py', reloading
+2026-02-08 14:24:40,579 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\api.py', reloading
+2026-02-08 14:24:40,610 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\api.py', reloading
+2026-02-08 14:24:41,048 - INFO -  * Restarting with stat
+2026-02-08 14:24:44,606 - WARNING -  * Debugger is active!
+2026-02-08 14:24:44,611 - INFO -  * Debugger PIN: 900-091-490
+2026-02-08 14:25:04,436 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.20.10.3:5000
+2026-02-08 14:25:04,437 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-08 14:25:04,439 - INFO -  * Restarting with stat
+2026-02-08 14:25:08,555 - WARNING -  * Debugger is active!
+2026-02-08 14:25:08,564 - INFO -  * Debugger PIN: 900-091-490
+2026-02-08 14:25:46,573 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.20.10.3:5000
+2026-02-08 14:25:46,573 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-08 14:25:46,576 - INFO -  * Restarting with stat
+2026-02-08 14:25:49,705 - WARNING -  * Debugger is active!
+2026-02-08 14:25:49,711 - INFO -  * Debugger PIN: 900-091-490
+2026-02-08 14:28:23,904 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\debug_env.py', reloading
+2026-02-08 14:28:23,909 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\debug_env.py', reloading
+2026-02-08 14:28:23,920 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\debug_env.py', reloading
+2026-02-08 14:28:24,395 - INFO -  * Restarting with stat
+2026-02-08 14:28:24,412 - INFO -  * Restarting with stat
+2026-02-08 14:28:24,441 - INFO -  * Restarting with stat
+2026-02-08 14:28:28,384 - WARNING -  * Debugger is active!
+2026-02-08 14:28:28,392 - INFO -  * Debugger PIN: 900-091-490
+2026-02-08 14:28:28,403 - WARNING -  * Debugger is active!
+2026-02-08 14:28:28,409 - INFO -  * Debugger PIN: 900-091-490
+2026-02-08 14:28:28,439 - WARNING -  * Debugger is active!
+2026-02-08 14:28:28,447 - INFO -  * Debugger PIN: 900-091-490
+2026-02-08 14:31:05,846 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.20.10.3:5000
+2026-02-08 14:31:05,846 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-08 14:31:05,849 - INFO -  * Restarting with stat
+2026-02-08 14:31:09,033 - WARNING -  * Debugger is active!
+2026-02-08 14:31:09,042 - INFO -  * Debugger PIN: 900-091-490
+2026-02-08 14:31:20,905 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=id&email=eq.test_frkqvut3%40example.com "HTTP/2 200 OK"
+2026-02-08 14:31:20,908 - INFO - Verifying Outlook credentials for test_frkqvut3@example.com
+2026-02-08 14:31:21,715 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users "HTTP/2 201 Created"
+2026-02-08 14:31:22,042 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/student_profiles "HTTP/2 201 Created"
+2026-02-08 14:31:22,283 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/subscriptions "HTTP/2 201 Created"
+2026-02-08 14:31:22,297 - INFO - 127.0.0.1 - - [08/Feb/2026 14:31:22] "[35m[1mPOST /api/auth/register HTTP/1.1[0m" 201 -
+2026-02-08 14:31:22,624 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=%2A%2Cstudent_profiles%28full_name%2Croll_number%29&email=eq.test_frkqvut3%40example.com "HTTP/2 200 OK"
+2026-02-08 14:31:23,093 - INFO - 127.0.0.1 - - [08/Feb/2026 14:31:23] "POST /api/auth/login HTTP/1.1" 200 -
+2026-02-08 14:31:23,099 - INFO - 127.0.0.1 - - [08/Feb/2026 14:31:23] "GET /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 14:31:33,318 - INFO - 127.0.0.1 - - [08/Feb/2026 14:31:33] "[35m[1mPOST /api/subscription/upgrade HTTP/1.1[0m" 500 -
+2026-02-08 14:32:04,638 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.20.10.3:5000
+2026-02-08 14:32:04,638 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-08 14:32:04,640 - INFO -  * Restarting with stat
+2026-02-08 14:32:07,785 - WARNING -  * Debugger is active!
+2026-02-08 14:32:07,792 - INFO -  * Debugger PIN: 900-091-490
+2026-02-08 14:32:31,534 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=id&email=eq.test_0cj1093a%40example.com "HTTP/2 200 OK"
+2026-02-08 14:32:31,540 - INFO - Verifying Outlook credentials for test_0cj1093a@example.com
+2026-02-08 14:32:32,289 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users "HTTP/2 201 Created"
+2026-02-08 14:32:32,619 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/student_profiles "HTTP/2 201 Created"
+2026-02-08 14:32:32,876 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/subscriptions "HTTP/2 201 Created"
+2026-02-08 14:32:32,887 - INFO - 127.0.0.1 - - [08/Feb/2026 14:32:32] "[35m[1mPOST /api/auth/register HTTP/1.1[0m" 201 -
+2026-02-08 14:32:33,243 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=%2A%2Cstudent_profiles%28full_name%2Croll_number%29&email=eq.test_0cj1093a%40example.com "HTTP/2 200 OK"
+2026-02-08 14:32:33,645 - INFO - 127.0.0.1 - - [08/Feb/2026 14:32:33] "POST /api/auth/login HTTP/1.1" 200 -
+2026-02-08 14:32:33,652 - INFO - 127.0.0.1 - - [08/Feb/2026 14:32:33] "GET /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 14:32:43,725 - INFO - 127.0.0.1 - - [08/Feb/2026 14:32:43] "[35m[1mPOST /api/subscription/upgrade HTTP/1.1[0m" 500 -
+2026-02-08 14:34:06,914 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.20.10.3:5000
+2026-02-08 14:34:06,915 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-08 14:34:06,917 - INFO -  * Restarting with stat
+2026-02-08 14:34:09,882 - WARNING -  * Debugger is active!
+2026-02-08 14:34:09,887 - INFO -  * Debugger PIN: 900-091-490
+2026-02-08 14:34:15,483 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=id&email=eq.test_o00miwa8%40example.com "HTTP/2 200 OK"
+2026-02-08 14:34:15,487 - INFO - Verifying Outlook credentials for test_o00miwa8@example.com
+2026-02-08 14:34:16,283 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users "HTTP/2 201 Created"
+2026-02-08 14:34:16,608 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/student_profiles "HTTP/2 201 Created"
+2026-02-08 14:34:16,832 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/subscriptions "HTTP/2 201 Created"
+2026-02-08 14:34:16,848 - INFO - 127.0.0.1 - - [08/Feb/2026 14:34:16] "[35m[1mPOST /api/auth/register HTTP/1.1[0m" 201 -
+2026-02-08 14:34:17,236 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=%2A%2Cstudent_profiles%28full_name%2Croll_number%29&email=eq.test_o00miwa8%40example.com "HTTP/2 200 OK"
+2026-02-08 14:34:17,756 - INFO - 127.0.0.1 - - [08/Feb/2026 14:34:17] "POST /api/auth/login HTTP/1.1" 200 -
+2026-02-08 14:34:56,471 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.20.10.3:5000
+2026-02-08 14:34:56,477 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-08 14:34:56,479 - INFO -  * Restarting with stat
+2026-02-08 14:34:59,314 - WARNING -  * Debugger is active!
+2026-02-08 14:34:59,319 - INFO -  * Debugger PIN: 900-091-490
+2026-02-08 14:35:07,321 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=id&email=eq.test_oel8c7uq%40example.com "HTTP/2 200 OK"
+2026-02-08 14:35:07,324 - INFO - Verifying Outlook credentials for test_oel8c7uq@example.com
+2026-02-08 14:35:08,282 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users "HTTP/2 201 Created"
+2026-02-08 14:35:08,564 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/student_profiles "HTTP/2 201 Created"
+2026-02-08 14:35:08,773 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/subscriptions "HTTP/2 201 Created"
+2026-02-08 14:35:08,775 - INFO - 127.0.0.1 - - [08/Feb/2026 14:35:08] "[35m[1mPOST /api/auth/register HTTP/1.1[0m" 201 -
+2026-02-08 14:35:09,057 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=%2A%2Cstudent_profiles%28full_name%2Croll_number%29&email=eq.test_oel8c7uq%40example.com "HTTP/2 200 OK"
+2026-02-08 14:35:09,477 - INFO - 127.0.0.1 - - [08/Feb/2026 14:35:09] "POST /api/auth/login HTTP/1.1" 200 -
+2026-02-08 14:35:09,485 - INFO - 127.0.0.1 - - [08/Feb/2026 14:35:09] "GET /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 14:35:19,569 - INFO - 127.0.0.1 - - [08/Feb/2026 14:35:19] "[35m[1mPOST /api/subscription/upgrade HTTP/1.1[0m" 500 -
+2026-02-08 14:37:23,687 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.20.10.3:5000
+2026-02-08 14:37:23,696 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-08 14:37:23,699 - INFO -  * Restarting with stat
+2026-02-08 14:37:26,788 - WARNING -  * Debugger is active!
+2026-02-08 14:37:26,796 - INFO -  * Debugger PIN: 900-091-490
+2026-02-08 14:37:33,402 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=id&email=eq.test_ximeq2s8%40example.com "HTTP/2 200 OK"
+2026-02-08 14:37:33,405 - INFO - Verifying Outlook credentials for test_ximeq2s8@example.com
+2026-02-08 14:37:34,080 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users "HTTP/2 201 Created"
+2026-02-08 14:37:34,322 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/student_profiles "HTTP/2 201 Created"
+2026-02-08 14:37:34,618 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/subscriptions "HTTP/2 201 Created"
+2026-02-08 14:37:34,624 - INFO - 127.0.0.1 - - [08/Feb/2026 14:37:34] "[35m[1mPOST /api/auth/register HTTP/1.1[0m" 201 -
+2026-02-08 14:37:34,867 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=%2A%2Cstudent_profiles%28full_name%2Croll_number%29&email=eq.test_ximeq2s8%40example.com "HTTP/2 200 OK"
+2026-02-08 14:37:35,276 - INFO - 127.0.0.1 - - [08/Feb/2026 14:37:35] "POST /api/auth/login HTTP/1.1" 200 -
+2026-02-08 14:37:35,282 - INFO - 127.0.0.1 - - [08/Feb/2026 14:37:35] "GET /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 14:37:45,376 - INFO - 127.0.0.1 - - [08/Feb/2026 14:37:45] "[35m[1mPOST /api/subscription/upgrade HTTP/1.1[0m" 500 -
+2026-02-08 14:41:33,567 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.20.10.3:5000
+2026-02-08 14:41:33,569 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-08 14:41:33,571 - INFO -  * Restarting with stat
+2026-02-08 14:41:36,245 - WARNING -  * Debugger is active!
+2026-02-08 14:41:36,250 - INFO -  * Debugger PIN: 900-091-490
+2026-02-08 14:41:37,736 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=id&email=eq.test_ob0v4cmz%40example.com "HTTP/2 200 OK"
+2026-02-08 14:41:37,738 - INFO - Verifying Outlook credentials for test_ob0v4cmz@example.com
+2026-02-08 14:41:38,651 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users "HTTP/2 201 Created"
+2026-02-08 14:41:38,887 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/student_profiles "HTTP/2 201 Created"
+2026-02-08 14:41:39,163 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/subscriptions "HTTP/2 201 Created"
+2026-02-08 14:41:39,167 - INFO - 127.0.0.1 - - [08/Feb/2026 14:41:39] "[35m[1mPOST /api/auth/register HTTP/1.1[0m" 201 -
+2026-02-08 14:41:39,480 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=%2A%2Cstudent_profiles%28full_name%2Croll_number%29&email=eq.test_ob0v4cmz%40example.com "HTTP/2 200 OK"
+2026-02-08 14:41:40,057 - INFO - 127.0.0.1 - - [08/Feb/2026 14:41:40] "POST /api/auth/login HTTP/1.1" 200 -
+2026-02-08 14:41:40,064 - INFO - 127.0.0.1 - - [08/Feb/2026 14:41:40] "GET /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 14:41:42,846 - INFO - 127.0.0.1 - - [08/Feb/2026 14:41:42] "POST /api/subscription/upgrade HTTP/1.1" 200 -
+2026-02-08 14:42:03,089 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\api.py', reloading
+2026-02-08 14:42:03,426 - INFO -  * Restarting with stat
+2026-02-08 14:43:04,916 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.20.10.3:5000
+2026-02-08 14:43:04,917 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-08 14:43:04,919 - INFO -  * Restarting with stat
+2026-02-08 14:43:07,709 - WARNING -  * Debugger is active!
+2026-02-08 14:43:07,715 - INFO -  * Debugger PIN: 900-091-490
+2026-02-08 14:43:41,867 - INFO - 127.0.0.1 - - [08/Feb/2026 14:43:41] "OPTIONS /api/subscription/upgrade HTTP/1.1" 200 -
+2026-02-08 14:43:42,106 - INFO - 127.0.0.1 - - [08/Feb/2026 14:43:42] "[35m[1mPOST /api/subscription/upgrade HTTP/1.1[0m" 500 -
+2026-02-08 14:44:36,846 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\api.py', reloading
+2026-02-08 14:44:37,283 - INFO -  * Restarting with stat
+2026-02-08 14:44:40,208 - WARNING -  * Debugger is active!
+2026-02-08 14:44:40,212 - INFO -  * Debugger PIN: 900-091-490
+2026-02-08 14:44:58,726 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.20.10.3:5000
+2026-02-08 14:44:58,727 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-08 14:44:58,729 - INFO -  * Restarting with stat
+2026-02-08 14:45:01,422 - WARNING -  * Debugger is active!
+2026-02-08 14:45:01,426 - INFO -  * Debugger PIN: 900-091-490
+2026-02-08 14:45:02,651 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=id&email=eq.test_wdvqzn7n%40example.com "HTTP/2 200 OK"
+2026-02-08 14:45:02,654 - INFO - Verifying Outlook credentials for test_wdvqzn7n@example.com
+2026-02-08 14:45:03,253 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users "HTTP/2 201 Created"
+2026-02-08 14:45:03,476 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/student_profiles "HTTP/2 201 Created"
+2026-02-08 14:45:03,715 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/subscriptions "HTTP/2 201 Created"
+2026-02-08 14:45:03,720 - INFO - 127.0.0.1 - - [08/Feb/2026 14:45:03] "[35m[1mPOST /api/auth/register HTTP/1.1[0m" 201 -
+2026-02-08 14:45:03,963 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=%2A%2Cstudent_profiles%28full_name%2Croll_number%29&email=eq.test_wdvqzn7n%40example.com "HTTP/2 200 OK"
+2026-02-08 14:45:04,650 - INFO - 127.0.0.1 - - [08/Feb/2026 14:45:04] "POST /api/auth/login HTTP/1.1" 200 -
+2026-02-08 14:45:04,658 - INFO - 127.0.0.1 - - [08/Feb/2026 14:45:04] "GET /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 14:45:07,170 - INFO - 127.0.0.1 - - [08/Feb/2026 14:45:07] "POST /api/subscription/upgrade HTTP/1.1" 200 -
+2026-02-08 14:45:34,346 - INFO - 127.0.0.1 - - [08/Feb/2026 14:45:34] "OPTIONS /api/subscription/upgrade HTTP/1.1" 200 -
+2026-02-08 14:45:36,415 - INFO - 127.0.0.1 - - [08/Feb/2026 14:45:36] "POST /api/subscription/upgrade HTTP/1.1" 200 -
+2026-02-08 14:46:18,440 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.20.10.3:5000
+2026-02-08 14:46:18,440 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-08 14:46:18,442 - INFO -  * Restarting with stat
+2026-02-08 14:46:21,091 - WARNING -  * Debugger is active!
+2026-02-08 14:46:21,096 - INFO -  * Debugger PIN: 900-091-490
+2026-02-08 14:47:48,423 - INFO - 127.0.0.1 - - [08/Feb/2026 14:47:48] "GET /health HTTP/1.1" 200 -
+2026-02-08 14:48:57,163 - INFO - 127.0.0.1 - - [08/Feb/2026 14:48:57] "OPTIONS /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 14:48:57,167 - INFO - 127.0.0.1 - - [08/Feb/2026 14:48:57] "OPTIONS /api/subscription/current HTTP/1.1" 200 -
+2026-02-08 14:48:57,168 - INFO - 127.0.0.1 - - [08/Feb/2026 14:48:57] "OPTIONS /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 14:48:57,171 - INFO - 127.0.0.1 - - [08/Feb/2026 14:48:57] "OPTIONS /api/subscription/current HTTP/1.1" 200 -
+2026-02-08 14:48:57,174 - INFO - 127.0.0.1 - - [08/Feb/2026 14:48:57] "GET /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 14:48:57,183 - INFO - 127.0.0.1 - - [08/Feb/2026 14:48:57] "GET /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 14:48:58,664 - INFO - 127.0.0.1 - - [08/Feb/2026 14:48:58] "[35m[1mGET /api/subscription/current HTTP/1.1[0m" 500 -
+2026-02-08 14:48:59,966 - INFO - 127.0.0.1 - - [08/Feb/2026 14:48:59] "[35m[1mGET /api/subscription/current HTTP/1.1[0m" 500 -
+2026-02-08 14:49:06,477 - INFO - 127.0.0.1 - - [08/Feb/2026 14:49:06] "OPTIONS /api/subscription/upgrade HTTP/1.1" 200 -
+2026-02-08 14:49:09,238 - INFO - 127.0.0.1 - - [08/Feb/2026 14:49:09] "POST /api/subscription/upgrade HTTP/1.1" 200 -
+2026-02-08 14:49:38,148 - INFO - 127.0.0.1 - - [08/Feb/2026 14:49:38] "OPTIONS /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 14:49:38,152 - INFO - 127.0.0.1 - - [08/Feb/2026 14:49:38] "OPTIONS /api/subscription/current HTTP/1.1" 200 -
+2026-02-08 14:49:38,156 - INFO - 127.0.0.1 - - [08/Feb/2026 14:49:38] "OPTIONS /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 14:49:38,159 - INFO - 127.0.0.1 - - [08/Feb/2026 14:49:38] "OPTIONS /api/subscription/current HTTP/1.1" 200 -
+2026-02-08 14:49:38,161 - INFO - 127.0.0.1 - - [08/Feb/2026 14:49:38] "GET /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 14:49:38,167 - INFO - 127.0.0.1 - - [08/Feb/2026 14:49:38] "GET /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 14:49:39,759 - INFO - 127.0.0.1 - - [08/Feb/2026 14:49:39] "[35m[1mGET /api/subscription/current HTTP/1.1[0m" 500 -
+2026-02-08 14:49:41,009 - INFO - 127.0.0.1 - - [08/Feb/2026 14:49:41] "OPTIONS /api/subscription/upgrade HTTP/1.1" 200 -
+2026-02-08 14:49:41,021 - INFO - 127.0.0.1 - - [08/Feb/2026 14:49:41] "[35m[1mGET /api/subscription/current HTTP/1.1[0m" 500 -
+2026-02-08 14:49:42,709 - INFO - 127.0.0.1 - - [08/Feb/2026 14:49:42] "POST /api/subscription/upgrade HTTP/1.1" 200 -
+2026-02-08 14:55:18,945 - INFO - 127.0.0.1 - - [08/Feb/2026 14:55:18] "OPTIONS /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 14:55:18,952 - INFO - 127.0.0.1 - - [08/Feb/2026 14:55:18] "OPTIONS /api/subscription/current HTTP/1.1" 200 -
+2026-02-08 14:55:18,956 - INFO - 127.0.0.1 - - [08/Feb/2026 14:55:18] "OPTIONS /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 14:55:18,960 - INFO - 127.0.0.1 - - [08/Feb/2026 14:55:18] "OPTIONS /api/subscription/current HTTP/1.1" 200 -
+2026-02-08 14:55:18,963 - INFO - 127.0.0.1 - - [08/Feb/2026 14:55:18] "GET /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 14:55:18,973 - INFO - 127.0.0.1 - - [08/Feb/2026 14:55:18] "GET /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 14:55:21,567 - INFO - 127.0.0.1 - - [08/Feb/2026 14:55:21] "[35m[1mGET /api/subscription/current HTTP/1.1[0m" 500 -
+2026-02-08 14:55:22,874 - INFO - 127.0.0.1 - - [08/Feb/2026 14:55:22] "[35m[1mGET /api/subscription/current HTTP/1.1[0m" 500 -
+2026-02-08 14:55:50,393 - INFO - 127.0.0.1 - - [08/Feb/2026 14:55:50] "OPTIONS /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 14:55:50,398 - INFO - 127.0.0.1 - - [08/Feb/2026 14:55:50] "OPTIONS /api/subscription/current HTTP/1.1" 200 -
+2026-02-08 14:55:50,400 - INFO - 127.0.0.1 - - [08/Feb/2026 14:55:50] "OPTIONS /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 14:55:50,401 - INFO - 127.0.0.1 - - [08/Feb/2026 14:55:50] "OPTIONS /api/subscription/current HTTP/1.1" 200 -
+2026-02-08 14:55:50,405 - INFO - 127.0.0.1 - - [08/Feb/2026 14:55:50] "GET /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 14:55:50,413 - INFO - 127.0.0.1 - - [08/Feb/2026 14:55:50] "GET /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 14:55:51,701 - INFO - 127.0.0.1 - - [08/Feb/2026 14:55:51] "[35m[1mGET /api/subscription/current HTTP/1.1[0m" 500 -
+2026-02-08 14:55:51,934 - INFO - 127.0.0.1 - - [08/Feb/2026 14:55:51] "OPTIONS /api/subscription/upgrade HTTP/1.1" 200 -
+2026-02-08 14:55:52,868 - INFO - 127.0.0.1 - - [08/Feb/2026 14:55:52] "[35m[1mGET /api/subscription/current HTTP/1.1[0m" 500 -
+2026-02-08 14:55:52,905 - INFO - 127.0.0.1 - - [08/Feb/2026 14:55:52] "[35m[1mPOST /api/subscription/upgrade HTTP/1.1[0m" 500 -
+2026-02-08 14:56:33,398 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=id&email=eq.test_27kps0hy%40example.com "HTTP/2 200 OK"
+2026-02-08 14:56:33,400 - INFO - Verifying Outlook credentials for test_27kps0hy@example.com
+2026-02-08 14:56:34,444 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users "HTTP/2 201 Created"
+2026-02-08 14:56:34,681 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/student_profiles "HTTP/2 201 Created"
+2026-02-08 14:56:34,882 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/subscriptions "HTTP/2 201 Created"
+2026-02-08 14:56:34,883 - INFO - 127.0.0.1 - - [08/Feb/2026 14:56:34] "[35m[1mPOST /api/auth/register HTTP/1.1[0m" 201 -
+2026-02-08 14:56:35,087 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=%2A%2Cstudent_profiles%28full_name%2Croll_number%29&email=eq.test_27kps0hy%40example.com "HTTP/2 200 OK"
+2026-02-08 14:56:35,407 - INFO - 127.0.0.1 - - [08/Feb/2026 14:56:35] "POST /api/auth/login HTTP/1.1" 200 -
+2026-02-08 14:56:35,410 - INFO - 127.0.0.1 - - [08/Feb/2026 14:56:35] "GET /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 14:56:37,875 - INFO - 127.0.0.1 - - [08/Feb/2026 14:56:37] "POST /api/subscription/upgrade HTTP/1.1" 200 -
+2026-02-08 14:57:24,130 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\api.py', reloading
+2026-02-08 14:57:24,569 - INFO -  * Restarting with stat
+2026-02-08 14:57:28,916 - WARNING -  * Debugger is active!
+2026-02-08 14:57:28,922 - INFO -  * Debugger PIN: 900-091-490
+2026-02-08 15:01:06,527 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.20.10.3:5000
+2026-02-08 15:01:06,527 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-08 15:01:06,530 - INFO -  * Restarting with stat
+2026-02-08 15:01:09,667 - WARNING -  * Debugger is active!
+2026-02-08 15:01:09,672 - INFO -  * Debugger PIN: 900-091-490
+2026-02-08 15:01:11,095 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=id&email=eq.test_3fept07z%40example.com "HTTP/2 200 OK"
+2026-02-08 15:01:11,096 - INFO - Verifying Outlook credentials for test_3fept07z@example.com
+2026-02-08 15:01:11,680 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users "HTTP/2 201 Created"
+2026-02-08 15:01:11,960 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/student_profiles "HTTP/2 201 Created"
+2026-02-08 15:01:12,161 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/subscriptions "HTTP/2 201 Created"
+2026-02-08 15:01:12,163 - INFO - 127.0.0.1 - - [08/Feb/2026 15:01:12] "[35m[1mPOST /api/auth/register HTTP/1.1[0m" 201 -
+2026-02-08 15:01:12,423 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=%2A%2Cstudent_profiles%28full_name%2Croll_number%29&email=eq.test_3fept07z%40example.com "HTTP/2 200 OK"
+2026-02-08 15:01:12,830 - INFO - 127.0.0.1 - - [08/Feb/2026 15:01:12] "POST /api/auth/login HTTP/1.1" 200 -
+2026-02-08 15:01:12,836 - INFO - 127.0.0.1 - - [08/Feb/2026 15:01:12] "GET /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 15:01:15,319 - INFO - 127.0.0.1 - - [08/Feb/2026 15:01:15] "POST /api/subscription/upgrade HTTP/1.1" 200 -
+2026-02-08 15:02:52,490 - INFO - 127.0.0.1 - - [08/Feb/2026 15:02:52] "OPTIONS /api/subscription/upgrade HTTP/1.1" 200 -
+2026-02-08 15:02:54,200 - INFO - 127.0.0.1 - - [08/Feb/2026 15:02:54] "POST /api/subscription/upgrade HTTP/1.1" 200 -
+2026-02-08 16:06:23,030 - INFO - 127.0.0.1 - - [08/Feb/2026 16:06:23] "OPTIONS /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 16:06:23,033 - INFO - 127.0.0.1 - - [08/Feb/2026 16:06:23] "OPTIONS /api/subscription/current HTTP/1.1" 200 -
+2026-02-08 16:06:23,037 - INFO - 127.0.0.1 - - [08/Feb/2026 16:06:23] "OPTIONS /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 16:06:23,042 - INFO - 127.0.0.1 - - [08/Feb/2026 16:06:23] "OPTIONS /api/subscription/current HTTP/1.1" 200 -
+2026-02-08 16:06:23,046 - INFO - 127.0.0.1 - - [08/Feb/2026 16:06:23] "GET /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 16:06:23,060 - INFO - 127.0.0.1 - - [08/Feb/2026 16:06:23] "GET /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 16:06:24,362 - INFO - 127.0.0.1 - - [08/Feb/2026 16:06:24] "[35m[1mGET /api/subscription/current HTTP/1.1[0m" 500 -
+2026-02-08 16:06:25,294 - INFO - 127.0.0.1 - - [08/Feb/2026 16:06:25] "OPTIONS /api/subscription/upgrade HTTP/1.1" 200 -
+2026-02-08 16:06:25,642 - INFO - 127.0.0.1 - - [08/Feb/2026 16:06:25] "[35m[1mGET /api/subscription/current HTTP/1.1[0m" 500 -
+2026-02-08 16:06:28,702 - INFO - 127.0.0.1 - - [08/Feb/2026 16:06:28] "POST /api/subscription/upgrade HTTP/1.1" 200 -
+2026-02-08 16:17:24,892 - INFO - 127.0.0.1 - - [08/Feb/2026 16:17:24] "OPTIONS /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 16:17:24,894 - INFO - 127.0.0.1 - - [08/Feb/2026 16:17:24] "OPTIONS /api/subscription/current HTTP/1.1" 200 -
+2026-02-08 16:17:24,898 - INFO - 127.0.0.1 - - [08/Feb/2026 16:17:24] "OPTIONS /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 16:17:24,903 - INFO - 127.0.0.1 - - [08/Feb/2026 16:17:24] "OPTIONS /api/subscription/current HTTP/1.1" 200 -
+2026-02-08 16:17:24,910 - INFO - 127.0.0.1 - - [08/Feb/2026 16:17:24] "GET /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 16:17:24,915 - INFO - 127.0.0.1 - - [08/Feb/2026 16:17:24] "GET /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 16:17:26,240 - INFO - 127.0.0.1 - - [08/Feb/2026 16:17:26] "[35m[1mGET /api/subscription/current HTTP/1.1[0m" 500 -
+2026-02-08 16:17:27,476 - INFO - 127.0.0.1 - - [08/Feb/2026 16:17:27] "OPTIONS /api/subscription/upgrade HTTP/1.1" 200 -
+2026-02-08 16:17:27,569 - INFO - 127.0.0.1 - - [08/Feb/2026 16:17:27] "[35m[1mGET /api/subscription/current HTTP/1.1[0m" 500 -
+2026-02-08 16:17:31,107 - INFO - 127.0.0.1 - - [08/Feb/2026 16:17:31] "POST /api/subscription/upgrade HTTP/1.1" 200 -
+2026-02-08 16:25:37,101 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.20.10.3:5000
+2026-02-08 16:25:37,103 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-08 16:25:37,107 - INFO -  * Restarting with stat
+2026-02-08 16:25:39,729 - WARNING -  * Debugger is active!
+2026-02-08 16:25:39,734 - INFO -  * Debugger PIN: 900-091-490
+2026-02-08 16:26:30,239 - INFO - 127.0.0.1 - - [08/Feb/2026 16:26:30] "OPTIONS /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 16:26:30,241 - INFO - 127.0.0.1 - - [08/Feb/2026 16:26:30] "OPTIONS /api/subscription/current HTTP/1.1" 200 -
+2026-02-08 16:26:30,244 - INFO - 127.0.0.1 - - [08/Feb/2026 16:26:30] "OPTIONS /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 16:26:30,246 - INFO - 127.0.0.1 - - [08/Feb/2026 16:26:30] "OPTIONS /api/subscription/current HTTP/1.1" 200 -
+2026-02-08 16:26:30,255 - INFO - 127.0.0.1 - - [08/Feb/2026 16:26:30] "GET /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 16:26:30,263 - INFO - 127.0.0.1 - - [08/Feb/2026 16:26:30] "GET /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 16:26:31,590 - INFO - 127.0.0.1 - - [08/Feb/2026 16:26:31] "[35m[1mGET /api/subscription/current HTTP/1.1[0m" 500 -
+2026-02-08 16:26:32,874 - INFO - 127.0.0.1 - - [08/Feb/2026 16:26:32] "[35m[1mGET /api/subscription/current HTTP/1.1[0m" 500 -
+2026-02-08 16:26:34,937 - INFO - 127.0.0.1 - - [08/Feb/2026 16:26:34] "OPTIONS /api/subscription/upgrade HTTP/1.1" 200 -
+2026-02-08 16:26:37,822 - INFO - 127.0.0.1 - - [08/Feb/2026 16:26:37] "POST /api/subscription/upgrade HTTP/1.1" 200 -
+2026-02-08 16:29:53,511 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=id&email=eq.test_lpz7eh11%40example.com "HTTP/2 200 OK"
+2026-02-08 16:29:53,513 - INFO - Verifying Outlook credentials for test_lpz7eh11@example.com
+2026-02-08 16:29:54,229 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users "HTTP/2 201 Created"
+2026-02-08 16:29:54,471 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/student_profiles "HTTP/2 201 Created"
+2026-02-08 16:29:54,754 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/subscriptions "HTTP/2 201 Created"
+2026-02-08 16:29:54,757 - INFO - 127.0.0.1 - - [08/Feb/2026 16:29:54] "[35m[1mPOST /api/auth/register HTTP/1.1[0m" 201 -
+2026-02-08 16:29:55,106 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=%2A%2Cstudent_profiles%28full_name%2Croll_number%29&email=eq.test_lpz7eh11%40example.com "HTTP/2 200 OK"
+2026-02-08 16:29:55,721 - INFO - 127.0.0.1 - - [08/Feb/2026 16:29:55] "POST /api/auth/login HTTP/1.1" 200 -
+2026-02-08 16:29:55,726 - INFO - 127.0.0.1 - - [08/Feb/2026 16:29:55] "GET /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 16:29:57,207 - INFO - 127.0.0.1 - - [08/Feb/2026 16:29:57] "POST /api/subscription/upgrade HTTP/1.1" 200 -
+2026-02-08 16:30:15,556 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\api.py', reloading
+2026-02-08 16:30:15,850 - INFO -  * Restarting with stat
+2026-02-08 16:30:18,937 - WARNING -  * Debugger is active!
+2026-02-08 16:30:18,943 - INFO -  * Debugger PIN: 900-091-490
+2026-02-08 16:30:26,950 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.20.10.3:5000
+2026-02-08 16:30:26,950 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-08 16:30:26,952 - INFO -  * Restarting with stat
+2026-02-08 16:30:29,754 - WARNING -  * Debugger is active!
+2026-02-08 16:30:29,758 - INFO -  * Debugger PIN: 900-091-490
+2026-02-08 16:30:40,227 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=id&email=eq.test_qp4aiwce%40example.com "HTTP/2 200 OK"
+2026-02-08 16:30:40,229 - INFO - Verifying Outlook credentials for test_qp4aiwce@example.com
+2026-02-08 16:30:41,184 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users "HTTP/2 201 Created"
+2026-02-08 16:30:41,433 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/student_profiles "HTTP/2 201 Created"
+2026-02-08 16:30:41,667 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/subscriptions "HTTP/2 201 Created"
+2026-02-08 16:30:41,671 - INFO - 127.0.0.1 - - [08/Feb/2026 16:30:41] "[35m[1mPOST /api/auth/register HTTP/1.1[0m" 201 -
+2026-02-08 16:30:41,944 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=%2A%2Cstudent_profiles%28full_name%2Croll_number%29&email=eq.test_qp4aiwce%40example.com "HTTP/2 200 OK"
+2026-02-08 16:30:42,492 - INFO - 127.0.0.1 - - [08/Feb/2026 16:30:42] "POST /api/auth/login HTTP/1.1" 200 -
+2026-02-08 16:30:42,497 - INFO - 127.0.0.1 - - [08/Feb/2026 16:30:42] "GET /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 16:30:45,185 - INFO - 127.0.0.1 - - [08/Feb/2026 16:30:45] "POST /api/subscription/upgrade HTTP/1.1" 200 -
+2026-02-08 16:30:57,458 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\api.py', reloading
+2026-02-08 16:30:57,784 - INFO -  * Restarting with stat
+2026-02-08 16:31:00,649 - WARNING -  * Debugger is active!
+2026-02-08 16:31:00,654 - INFO -  * Debugger PIN: 900-091-490
+2026-02-08 16:31:08,757 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.20.10.3:5000
+2026-02-08 16:31:08,759 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-08 16:31:08,761 - INFO -  * Restarting with stat
+2026-02-08 16:31:11,312 - WARNING -  * Debugger is active!
+2026-02-08 16:31:11,316 - INFO -  * Debugger PIN: 900-091-490
+2026-02-08 16:31:27,453 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\api.py', reloading
+2026-02-08 16:31:27,870 - INFO -  * Restarting with stat
+2026-02-08 16:31:30,578 - WARNING -  * Debugger is active!
+2026-02-08 16:31:30,583 - INFO -  * Debugger PIN: 900-091-490
+2026-02-08 16:31:50,292 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.20.10.3:5000
+2026-02-08 16:31:50,293 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-08 16:31:50,296 - INFO -  * Restarting with stat
+2026-02-08 16:31:52,976 - WARNING -  * Debugger is active!
+2026-02-08 16:31:52,981 - INFO -  * Debugger PIN: 900-091-490
+2026-02-08 16:32:15,213 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=id&email=eq.test_ph8sg6oy%40example.com "HTTP/2 200 OK"
+2026-02-08 16:32:15,217 - INFO - Verifying Outlook credentials for test_ph8sg6oy@example.com
+2026-02-08 16:32:15,898 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users "HTTP/2 201 Created"
+2026-02-08 16:32:16,230 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/student_profiles "HTTP/2 201 Created"
+2026-02-08 16:32:16,538 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/subscriptions "HTTP/2 201 Created"
+2026-02-08 16:32:16,540 - INFO - 127.0.0.1 - - [08/Feb/2026 16:32:16] "[35m[1mPOST /api/auth/register HTTP/1.1[0m" 201 -
+2026-02-08 16:32:16,905 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=%2A%2Cstudent_profiles%28full_name%2Croll_number%29&email=eq.test_ph8sg6oy%40example.com "HTTP/2 200 OK"
+2026-02-08 16:32:17,469 - INFO - 127.0.0.1 - - [08/Feb/2026 16:32:17] "POST /api/auth/login HTTP/1.1" 200 -
+2026-02-08 16:32:17,474 - INFO - 127.0.0.1 - - [08/Feb/2026 16:32:17] "GET /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 16:32:20,525 - INFO - 127.0.0.1 - - [08/Feb/2026 16:32:20] "POST /api/subscription/upgrade HTTP/1.1" 200 -
+2026-02-08 16:32:37,417 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\api.py', reloading
+2026-02-08 16:32:37,747 - INFO -  * Restarting with stat
+2026-02-08 16:32:40,688 - WARNING -  * Debugger is active!
+2026-02-08 16:32:40,693 - INFO -  * Debugger PIN: 900-091-490
+2026-02-08 16:32:54,463 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.20.10.3:5000
+2026-02-08 16:32:54,464 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-08 16:32:54,466 - INFO -  * Restarting with stat
+2026-02-08 16:32:57,087 - WARNING -  * Debugger is active!
+2026-02-08 16:32:57,092 - INFO -  * Debugger PIN: 900-091-490
+2026-02-08 16:33:35,663 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=id&email=eq.test_mh1ez99j%40example.com "HTTP/2 200 OK"
+2026-02-08 16:33:35,666 - INFO - Verifying Outlook credentials for test_mh1ez99j@example.com
+2026-02-08 16:33:36,699 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users "HTTP/2 201 Created"
+2026-02-08 16:33:37,034 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/student_profiles "HTTP/2 201 Created"
+2026-02-08 16:33:37,284 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/subscriptions "HTTP/2 201 Created"
+2026-02-08 16:33:37,286 - INFO - 127.0.0.1 - - [08/Feb/2026 16:33:37] "[35m[1mPOST /api/auth/register HTTP/1.1[0m" 201 -
+2026-02-08 16:33:37,492 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=%2A%2Cstudent_profiles%28full_name%2Croll_number%29&email=eq.test_mh1ez99j%40example.com "HTTP/2 200 OK"
+2026-02-08 16:33:38,168 - INFO - 127.0.0.1 - - [08/Feb/2026 16:33:38] "POST /api/auth/login HTTP/1.1" 200 -
+2026-02-08 16:33:38,173 - INFO - 127.0.0.1 - - [08/Feb/2026 16:33:38] "GET /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 16:33:40,881 - INFO - 127.0.0.1 - - [08/Feb/2026 16:33:40] "POST /api/subscription/upgrade HTTP/1.1" 200 -
+2026-02-08 16:35:09,301 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\api.py', reloading
+2026-02-08 16:35:09,623 - INFO -  * Restarting with stat
+2026-02-08 16:35:13,104 - WARNING -  * Debugger is active!
+2026-02-08 16:35:13,110 - INFO -  * Debugger PIN: 900-091-490
+2026-02-08 16:35:31,709 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.20.10.3:5000
+2026-02-08 16:35:31,712 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-08 16:35:31,714 - INFO -  * Restarting with stat
+2026-02-08 16:35:35,356 - WARNING -  * Debugger is active!
+2026-02-08 16:35:35,361 - INFO -  * Debugger PIN: 900-091-490
+2026-02-08 16:35:36,863 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=id&email=eq.test_zk5y03jh%40example.com "HTTP/2 200 OK"
+2026-02-08 16:35:36,866 - INFO - Verifying Outlook credentials for test_zk5y03jh@example.com
+2026-02-08 16:35:37,874 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users "HTTP/2 201 Created"
+2026-02-08 16:35:38,093 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/student_profiles "HTTP/2 201 Created"
+2026-02-08 16:35:38,313 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/subscriptions "HTTP/2 201 Created"
+2026-02-08 16:35:38,319 - INFO - 127.0.0.1 - - [08/Feb/2026 16:35:38] "[35m[1mPOST /api/auth/register HTTP/1.1[0m" 201 -
+2026-02-08 16:35:38,615 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=%2A%2Cstudent_profiles%28full_name%2Croll_number%29&email=eq.test_zk5y03jh%40example.com "HTTP/2 200 OK"
+2026-02-08 16:35:39,014 - INFO - 127.0.0.1 - - [08/Feb/2026 16:35:39] "POST /api/auth/login HTTP/1.1" 200 -
+2026-02-08 16:35:39,019 - INFO - 127.0.0.1 - - [08/Feb/2026 16:35:39] "GET /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 16:35:44,303 - INFO - 127.0.0.1 - - [08/Feb/2026 16:35:44] "[35m[1mPOST /api/subscription/upgrade HTTP/1.1[0m" 500 -
+2026-02-08 16:38:30,932 - INFO - 127.0.0.1 - - [08/Feb/2026 16:38:30] "OPTIONS /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 16:38:30,937 - INFO - 127.0.0.1 - - [08/Feb/2026 16:38:30] "OPTIONS /api/subscription/current HTTP/1.1" 200 -
+2026-02-08 16:38:30,939 - INFO - 127.0.0.1 - - [08/Feb/2026 16:38:30] "OPTIONS /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 16:38:30,943 - INFO - 127.0.0.1 - - [08/Feb/2026 16:38:30] "OPTIONS /api/subscription/current HTTP/1.1" 200 -
+2026-02-08 16:38:30,950 - INFO - 127.0.0.1 - - [08/Feb/2026 16:38:30] "GET /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 16:38:30,958 - INFO - 127.0.0.1 - - [08/Feb/2026 16:38:30] "GET /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 16:38:33,005 - INFO - 127.0.0.1 - - [08/Feb/2026 16:38:33] "OPTIONS /api/subscription/upgrade HTTP/1.1" 200 -
+2026-02-08 16:38:33,240 - INFO - 127.0.0.1 - - [08/Feb/2026 16:38:33] "[35m[1mGET /api/subscription/current HTTP/1.1[0m" 500 -
+2026-02-08 16:38:34,634 - INFO - 127.0.0.1 - - [08/Feb/2026 16:38:34] "[35m[1mGET /api/subscription/current HTTP/1.1[0m" 500 -
+2026-02-08 16:38:37,178 - INFO - 127.0.0.1 - - [08/Feb/2026 16:38:37] "[35m[1mPOST /api/subscription/upgrade HTTP/1.1[0m" 500 -
+2026-02-08 16:40:51,559 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\api.py', reloading
+2026-02-08 16:40:52,034 - INFO -  * Restarting with stat
+2026-02-08 16:40:55,160 - WARNING -  * Debugger is active!
+2026-02-08 16:40:55,165 - INFO -  * Debugger PIN: 900-091-490
+2026-02-08 16:41:24,257 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.20.10.3:5000
+2026-02-08 16:41:24,266 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-08 16:41:24,268 - INFO -  * Restarting with stat
+2026-02-08 16:41:27,444 - WARNING -  * Debugger is active!
+2026-02-08 16:41:27,449 - INFO -  * Debugger PIN: 900-091-490
+2026-02-08 16:41:29,763 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=id&email=eq.test_4rxaj4de%40example.com "HTTP/2 200 OK"
+2026-02-08 16:41:29,766 - INFO - Verifying Outlook credentials for test_4rxaj4de@example.com
+2026-02-08 16:41:30,512 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users "HTTP/2 201 Created"
+2026-02-08 16:41:30,770 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/student_profiles "HTTP/2 201 Created"
+2026-02-08 16:41:30,995 - INFO - HTTP Request: POST https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/subscriptions "HTTP/2 201 Created"
+2026-02-08 16:41:30,999 - INFO - 127.0.0.1 - - [08/Feb/2026 16:41:30] "[35m[1mPOST /api/auth/register HTTP/1.1[0m" 201 -
+2026-02-08 16:41:31,242 - INFO - HTTP Request: GET https://uehkqlamchtdzcusqmhi.supabase.co/rest/v1/users?select=%2A%2Cstudent_profiles%28full_name%2Croll_number%29&email=eq.test_4rxaj4de%40example.com "HTTP/2 200 OK"
+2026-02-08 16:41:31,720 - INFO - 127.0.0.1 - - [08/Feb/2026 16:41:31] "POST /api/auth/login HTTP/1.1" 200 -
+2026-02-08 16:41:31,724 - INFO - 127.0.0.1 - - [08/Feb/2026 16:41:31] "GET /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 16:41:34,660 - INFO - 127.0.0.1 - - [08/Feb/2026 16:41:34] "POST /api/subscription/upgrade HTTP/1.1" 200 -
+2026-02-08 16:41:58,127 - INFO - 127.0.0.1 - - [08/Feb/2026 16:41:58] "OPTIONS /api/subscription/upgrade HTTP/1.1" 200 -
+2026-02-08 16:41:59,723 - INFO - 127.0.0.1 - - [08/Feb/2026 16:41:59] "POST /api/subscription/upgrade HTTP/1.1" 200 -
+2026-02-08 16:51:27,219 - INFO - 127.0.0.1 - - [08/Feb/2026 16:51:27] "OPTIONS /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 16:51:27,224 - INFO - 127.0.0.1 - - [08/Feb/2026 16:51:27] "OPTIONS /api/subscription/current HTTP/1.1" 200 -
+2026-02-08 16:51:27,227 - INFO - 127.0.0.1 - - [08/Feb/2026 16:51:27] "OPTIONS /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 16:51:27,230 - INFO - 127.0.0.1 - - [08/Feb/2026 16:51:27] "OPTIONS /api/subscription/current HTTP/1.1" 200 -
+2026-02-08 16:51:27,237 - INFO - 127.0.0.1 - - [08/Feb/2026 16:51:27] "GET /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 16:51:27,244 - INFO - 127.0.0.1 - - [08/Feb/2026 16:51:27] "GET /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 16:51:28,853 - INFO - 127.0.0.1 - - [08/Feb/2026 16:51:28] "[35m[1mGET /api/subscription/current HTTP/1.1[0m" 500 -
+2026-02-08 16:51:28,926 - INFO - 127.0.0.1 - - [08/Feb/2026 16:51:28] "OPTIONS /api/subscription/upgrade HTTP/1.1" 200 -
+2026-02-08 16:51:30,036 - INFO - 127.0.0.1 - - [08/Feb/2026 16:51:30] "[35m[1mGET /api/subscription/current HTTP/1.1[0m" 500 -
+2026-02-08 16:51:32,127 - INFO - 127.0.0.1 - - [08/Feb/2026 16:51:32] "POST /api/subscription/upgrade HTTP/1.1" 200 -
+2026-02-08 16:57:46,327 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\api.py', reloading
+2026-02-08 16:57:46,656 - INFO -  * Restarting with stat
+2026-02-08 16:57:49,569 - WARNING -  * Debugger is active!
+2026-02-08 16:57:49,573 - INFO -  * Debugger PIN: 900-091-490
+2026-02-08 17:55:23,995 - INFO - 127.0.0.1 - - [08/Feb/2026 17:55:23] "OPTIONS /api/subscription/current HTTP/1.1" 200 -
+2026-02-08 17:55:23,998 - INFO - 127.0.0.1 - - [08/Feb/2026 17:55:23] "OPTIONS /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 17:55:24,003 - INFO - 127.0.0.1 - - [08/Feb/2026 17:55:24] "OPTIONS /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 17:55:24,006 - INFO - 127.0.0.1 - - [08/Feb/2026 17:55:24] "OPTIONS /api/subscription/current HTTP/1.1" 200 -
+2026-02-08 17:55:24,029 - INFO - 127.0.0.1 - - [08/Feb/2026 17:55:24] "GET /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 17:55:24,037 - INFO - 127.0.0.1 - - [08/Feb/2026 17:55:24] "GET /api/subscription/plans HTTP/1.1" 200 -
+2026-02-08 17:55:26,045 - INFO - 127.0.0.1 - - [08/Feb/2026 17:55:26] "[35m[1mGET /api/subscription/current HTTP/1.1[0m" 500 -
+2026-02-08 17:55:26,441 - INFO - 127.0.0.1 - - [08/Feb/2026 17:55:26] "OPTIONS /api/subscription/upgrade HTTP/1.1" 200 -
+2026-02-08 17:55:27,576 - INFO - 127.0.0.1 - - [08/Feb/2026 17:55:27] "[35m[1mGET /api/subscription/current HTTP/1.1[0m" 500 -
+2026-02-08 17:55:29,901 - INFO - 127.0.0.1 - - [08/Feb/2026 17:55:29] "POST /api/subscription/upgrade HTTP/1.1" 200 -
+2026-02-08 21:10:02,887 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\api.py', reloading
+2026-02-08 21:10:03,615 - INFO -  * Restarting with stat
+2026-02-08 21:10:08,404 - WARNING -  * Debugger is active!
+2026-02-08 21:10:08,414 - INFO -  * Debugger PIN: 900-091-490
+2026-02-08 23:05:25,542 - INFO - 127.0.0.1 - - [08/Feb/2026 23:05:25] "[33mGET /signatures/sig_7_9afacf23.png HTTP/1.1[0m" 404 -
+2026-02-08 23:38:27,609 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\api.py', reloading
+2026-02-08 23:38:28,138 - INFO -  * Restarting with stat
+2026-02-08 23:38:35,404 - WARNING -  * Debugger is active!
+2026-02-08 23:38:35,415 - INFO -  * Debugger PIN: 900-091-490
+2026-02-08 23:57:49,826 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\api.py', reloading
+2026-02-08 23:57:50,201 - INFO -  * Restarting with stat
+2026-02-08 23:57:54,136 - WARNING -  * Debugger is active!
+2026-02-08 23:57:54,140 - INFO -  * Debugger PIN: 900-091-490
+2026-02-09 00:15:44,530 - INFO - 127.0.0.1 - - [09/Feb/2026 00:15:44] "[33mOPTIONS /api/api/subscription/plans HTTP/1.1[0m" 404 -
+2026-02-09 00:15:44,534 - INFO - 127.0.0.1 - - [09/Feb/2026 00:15:44] "[33mOPTIONS /api/api/subscription/current HTTP/1.1[0m" 404 -
+2026-02-09 00:15:44,538 - INFO - 127.0.0.1 - - [09/Feb/2026 00:15:44] "[33mOPTIONS /api/api/subscription/plans HTTP/1.1[0m" 404 -
+2026-02-09 00:15:44,542 - INFO - 127.0.0.1 - - [09/Feb/2026 00:15:44] "[33mOPTIONS /api/api/subscription/current HTTP/1.1[0m" 404 -
+2026-02-09 07:28:24,910 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\find_latest_log.py', reloading
+2026-02-09 07:28:25,401 - INFO -  * Restarting with stat
+2026-02-09 07:28:29,510 - WARNING -  * Debugger is active!
+2026-02-09 07:28:29,515 - INFO -  * Debugger PIN: 900-091-490
+2026-02-09 07:35:51,368 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\extract_logs.py', reloading
+2026-02-09 07:35:51,667 - INFO -  * Restarting with stat
+2026-02-09 07:35:54,383 - WARNING -  * Debugger is active!
+2026-02-09 07:35:54,387 - INFO -  * Debugger PIN: 900-091-490
+2026-02-09 07:36:24,598 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\analyze_logs.py', reloading
+2026-02-09 07:36:24,902 - INFO -  * Restarting with stat
+2026-02-09 07:36:27,924 - WARNING -  * Debugger is active!
+2026-02-09 07:36:27,928 - INFO -  * Debugger PIN: 900-091-490
+2026-02-09 07:36:37,048 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\extract_logs.py', reloading
+2026-02-09 07:36:37,288 - INFO -  * Restarting with stat
+2026-02-09 07:36:40,319 - WARNING -  * Debugger is active!
+2026-02-09 07:36:40,324 - INFO -  * Debugger PIN: 900-091-490
+2026-02-09 07:48:49,387 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\extract_logs.py', reloading
+2026-02-09 07:48:49,652 - INFO -  * Restarting with stat
+2026-02-09 07:48:52,338 - WARNING -  * Debugger is active!
+2026-02-09 07:48:52,342 - INFO -  * Debugger PIN: 900-091-490
+2026-02-09 11:10:42,058 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\extract_logs.py', reloading
+2026-02-09 11:10:42,989 - INFO -  * Restarting with stat
+2026-02-09 11:10:49,792 - WARNING -  * Debugger is active!
+2026-02-09 11:10:49,803 - INFO -  * Debugger PIN: 900-091-490
+2026-02-09 11:14:44,533 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\extract_logs.py', reloading
+2026-02-09 11:14:45,569 - INFO -  * Restarting with stat
+2026-02-09 11:14:57,520 - WARNING -  * Debugger is active!
+2026-02-09 11:14:57,534 - INFO -  * Debugger PIN: 900-091-490
+2026-02-09 11:21:25,370 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\test_payment.py', reloading
+2026-02-09 11:21:25,732 - INFO -  * Restarting with stat
+2026-02-09 11:21:30,235 - WARNING -  * Debugger is active!
+2026-02-09 11:21:30,243 - INFO -  * Debugger PIN: 900-091-490
+2026-02-09 18:15:46,070 - INFO - 127.0.0.1 - - [09/Feb/2026 18:15:46] "[33mGET /signatures/sig_7_9afacf23.png HTTP/1.1[0m" 404 -
+2026-02-10 21:16:26,911 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.120:5000
+2026-02-10 21:16:26,912 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-10 21:16:26,914 - INFO -  * Restarting with stat
+2026-02-10 21:16:30,372 - WARNING -  * Debugger is active!
+2026-02-10 21:16:30,382 - INFO -  * Debugger PIN: 900-091-490
+2026-02-10 22:32:48,995 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\api.py', reloading
+2026-02-10 22:32:49,545 - INFO -  * Restarting with stat
+2026-02-10 22:32:53,685 - WARNING -  * Debugger is active!
+2026-02-10 22:32:53,690 - INFO -  * Debugger PIN: 900-091-490
+2026-02-10 23:04:32,951 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.120:5000
+2026-02-10 23:04:32,951 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-10 23:04:32,954 - INFO -  * Restarting with stat
+2026-02-10 23:04:37,032 - WARNING -  * Debugger is active!
+2026-02-10 23:04:37,037 - INFO -  * Debugger PIN: 900-091-490
+2026-02-10 23:05:20,800 - INFO - 127.0.0.1 - - [10/Feb/2026 23:05:20] "GET / HTTP/1.1" 200 -
+2026-02-10 23:11:30,169 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\api.py', reloading
+2026-02-10 23:11:30,468 - INFO -  * Restarting with stat
+2026-02-10 23:11:34,594 - WARNING -  * Debugger is active!
+2026-02-10 23:11:34,600 - INFO -  * Debugger PIN: 900-091-490
+2026-02-10 23:12:02,607 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.120:5000
+2026-02-10 23:12:02,609 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-10 23:12:02,613 - INFO -  * Restarting with stat
+2026-02-10 23:12:06,557 - WARNING -  * Debugger is active!
+2026-02-10 23:12:06,565 - INFO -  * Debugger PIN: 900-091-490
+2026-02-10 23:12:08,164 - INFO - 127.0.0.1 - - [10/Feb/2026 23:12:08] "GET /api/config/active-outing HTTP/1.1" 200 -
+2026-02-10 23:16:13,839 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\api.py', reloading
+2026-02-10 23:16:14,221 - INFO -  * Restarting with stat
+2026-02-10 23:16:18,614 - WARNING -  * Debugger is active!
+2026-02-10 23:16:18,621 - INFO -  * Debugger PIN: 900-091-490
+2026-02-10 23:22:54,331 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\inspect_db.py', reloading
+2026-02-10 23:22:54,714 - INFO -  * Restarting with stat
+2026-02-10 23:22:59,550 - WARNING -  * Debugger is active!
+2026-02-10 23:22:59,557 - INFO -  * Debugger PIN: 900-091-490
+2026-02-10 23:28:31,027 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\.venv\\Lib\\site-packages\\requests\\utils.py', reloading
+2026-02-10 23:28:31,659 - INFO -  * Restarting with stat
+2026-02-10 23:28:40,964 - WARNING -  * Debugger is active!
+2026-02-10 23:28:40,973 - INFO -  * Debugger PIN: 900-091-490
+2026-02-10 23:45:34,322 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\api.py', reloading
+2026-02-10 23:45:34,931 - INFO -  * Restarting with stat
+2026-02-10 23:45:41,380 - WARNING -  * Debugger is active!
+2026-02-10 23:45:41,389 - INFO -  * Debugger PIN: 900-091-490
+2026-02-10 23:46:08,346 - INFO - 127.0.0.1 - - [10/Feb/2026 23:46:08] "GET /health HTTP/1.1" 200 -
+2026-02-11 07:51:38,517 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\test_key.py', reloading
+2026-02-11 07:51:39,042 - INFO -  * Restarting with stat
+2026-02-11 07:51:42,429 - WARNING -  * Debugger is active!
+2026-02-11 07:51:42,438 - INFO -  * Debugger PIN: 900-091-490
+2026-02-11 08:03:51,226 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\api.py', reloading
+2026-02-11 08:03:51,508 - INFO -  * Restarting with stat
+2026-02-11 08:03:54,519 - WARNING -  * Debugger is active!
+2026-02-11 08:03:54,524 - INFO -  * Debugger PIN: 900-091-490
+2026-02-11 08:35:40,866 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\api.py', reloading
+2026-02-11 08:35:41,225 - INFO -  * Restarting with stat
+2026-02-11 08:35:46,686 - WARNING -  * Debugger is active!
+2026-02-11 08:35:46,691 - INFO -  * Debugger PIN: 900-091-490
+2026-02-11 08:36:47,746 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\api.py', reloading
+2026-02-11 08:36:48,032 - INFO -  * Restarting with stat
+2026-02-11 08:36:51,349 - WARNING -  * Debugger is active!
+2026-02-11 08:36:51,355 - INFO -  * Debugger PIN: 900-091-490
+2026-02-11 08:37:14,173 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\api.py', reloading
+2026-02-11 08:37:14,452 - INFO -  * Restarting with stat
+2026-02-11 08:37:17,869 - WARNING -  * Debugger is active!
+2026-02-11 08:37:17,875 - INFO -  * Debugger PIN: 900-091-490
+2026-02-11 08:38:17,312 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\api.py', reloading
+2026-02-11 08:38:17,585 - INFO -  * Restarting with stat
+2026-02-11 08:38:21,022 - WARNING -  * Debugger is active!
+2026-02-11 08:38:21,027 - INFO -  * Debugger PIN: 900-091-490
+2026-02-11 09:04:54,083 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\auth_system_v2.py', reloading
+2026-02-11 09:04:54,447 - INFO -  * Restarting with stat
+2026-02-11 09:04:58,015 - WARNING -  * Debugger is active!
+2026-02-11 09:04:58,020 - INFO -  * Debugger PIN: 900-091-490
+2026-02-11 09:08:07,439 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\api.py', reloading
+2026-02-11 09:08:07,753 - INFO -  * Restarting with stat
+2026-02-11 09:08:11,480 - WARNING -  * Debugger is active!
+2026-02-11 09:08:11,489 - INFO -  * Debugger PIN: 900-091-490
+2026-02-11 09:14:11,295 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\azure_storage_helper.py', reloading
+2026-02-11 09:14:11,573 - INFO -  * Restarting with stat
+2026-02-11 09:14:14,730 - WARNING -  * Debugger is active!
+2026-02-11 09:14:14,735 - INFO -  * Debugger PIN: 900-091-490
+2026-02-11 09:14:27,069 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\api.py', reloading
+2026-02-11 09:14:27,508 - INFO -  * Restarting with stat
+2026-02-11 09:14:30,487 - WARNING -  * Debugger is active!
+2026-02-11 09:14:30,491 - INFO -  * Debugger PIN: 900-091-490
+2026-02-11 09:14:46,364 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\api.py', reloading
+2026-02-11 09:14:46,698 - INFO -  * Restarting with stat
+2026-02-11 09:14:50,411 - WARNING -  * Debugger is active!
+2026-02-11 09:14:50,415 - INFO -  * Debugger PIN: 900-091-490
+2026-02-11 09:21:54,891 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\azure_storage_helper.py', reloading
+2026-02-11 09:21:55,227 - INFO -  * Restarting with stat
+2026-02-11 09:21:58,457 - WARNING -  * Debugger is active!
+2026-02-11 09:21:58,462 - INFO -  * Debugger PIN: 900-091-490
+2026-02-11 09:22:14,194 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\azure_storage_helper.py', reloading
+2026-02-11 09:22:14,479 - INFO -  * Restarting with stat
+2026-02-11 09:22:17,786 - WARNING -  * Debugger is active!
+2026-02-11 09:22:17,791 - INFO -  * Debugger PIN: 900-091-490
+2026-02-11 09:22:37,804 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\azure_storage_helper.py', reloading
+2026-02-11 09:22:38,087 - INFO -  * Restarting with stat
+2026-02-11 09:22:41,054 - WARNING -  * Debugger is active!
+2026-02-11 09:22:41,058 - INFO -  * Debugger PIN: 900-091-490
+2026-02-11 19:42:01,328 - INFO - Loading saved browser state (age: 0.2h)
+2026-02-11 19:42:02,526 - INFO - Browser started (saved session: yes)
+2026-02-11 19:42:02,527 - INFO - Attempting login with guntaka.reddy_2028@woxsen.edu.in...
+2026-02-11 19:42:02,528 - INFO - Waiting for redirect to login...
+2026-02-11 19:42:17,597 - ERROR - Login failed: Timeout 15000ms exceeded.
+=========================== logs ===========================
+waiting for navigation to "**/login.microsoftonline.com/**" until 'load'
+============================================================
+2026-02-14 10:17:47,331 - INFO - Using browser state file: browser_state_guntaka_reddy_2028_woxsen_edu_in.json
+2026-02-14 10:17:49,190 - INFO - Browser started (saved session: no)
+2026-02-14 10:17:57,388 - INFO - Attempting login with guntaka.reddy_2028@woxsen.edu.in...
+2026-02-14 10:17:57,389 - INFO - Current URL at login start: https://forms.office.com/pages/responsepage.aspx?id=LSD36rPvekOhA1Bbufv3X9NSKOayoK9NtQfVOU9-8dhUNTVLNjhLSDZYMUlRVUNOMEc1MDQ0WFNDTS4u&route=shorturl
+2026-02-14 10:17:57,390 - INFO - Waiting for page to settle (login page OR form content)...
+2026-02-14 10:18:02,219 - INFO - Page settled. URL: https://login.microsoftonline.com/organizations/oauth2/v2.0/authorize?client_id=c9a559d2-7aab-4f13-a6ed-e7e9c52aec87&redirect_uri=https%3A%2F%2Fforms.office.com%2Flanding&state=eyJ2ZXJzaW9uIjoxLCJkYXRhIjp7IklkZW50aXR5UHJvdmlkZXIiOiJBV3MzQ3ZRbUtoZnlFUXRtaWNJRlkyX2R3aHo0RUNweVU5UVM2cjBXQWJRT1drbDBiWjE5ajFkekpUYTRjYUFVQ1hRV3ZxYjVPazU3RHJsZWJVTmtwbjQiLCIucmVkaXJlY3QiOiJodHRwczovL2Zvcm1zLm9mZmljZS5jb20vcGFnZXMvcmVzcG9uc2VwYWdlLmFzcHg_aWQ9TFNEMzZyUHZla09oQTFCYnVmdjNYOU5TS09heW9LOU50UWZWT1U5LThkaFVOVFZMTmpoTFNEWllNVWxSVlVOT01FYzFNRFEwV0ZORFRTNHUmcm91dGU9c2hvcnR1cmwmc2lkPTEwNWRmMzZhLWQ5MDMtNGRiMy1hNWU1LTBiMjFmNTExN2U4YyIsIi54c3JmIjoiQVNGYXg3dWpCeW54aHF6azdVakZjRjYtMGlCVGxQYjVFSGF1VDJucFEyeUhscEVpNnR2NmowTmtPX1RhWDFSOUJHYnJNcFR5emhHVHhkVDlscHlIdUh0TTk2ZWpRYWVZdFcxWjlIRjF1Ny1QQnNUbjNVSkRVMDdEdTZyYkw4UkY4ZyIsIk9wZW5JZENvbm5lY3QuQ29kZS5SZWRpcmVjdFVyaSI6IkFZUy1JZjVnSFl5elM5bDRHc3lpVnE0Nm1wRGgycmJMd1ppYURnYnlobHdoWmVFNVJOemprWTNBbWVka2xscUhFZ3JSb1Fmd2l2SXBfVHhyQ2NKdGhNMGt5UlktLURpMW5pVndGNWxGZlJ0TGk1OUhxTGt2YUloU1RFVVZtU1Q1YVEifX0&response_type=code&scope=openid%20profile&response_mode=form_post&nonce=639066412793873467.Mjk2YmQ4NjktOGZlZi00ZGNiLTgzNzUtNDdkYjA2Y2Y3NzAzNTMwN2YxMmItZGFmNy00M2U1LWFiYmEtMzUzMGY1NTgxNWVk&msafed=0&x-client-SKU=ID_NET10_0&x-client-ver=8.15.0.0&sso_reload=true
+2026-02-14 10:18:02,263 - INFO - Login page detected (email input found)
+2026-02-14 10:18:02,263 - INFO - On login page. Proceeding with authentication...
+2026-02-14 10:18:02,350 - INFO - Email entered: guntaka.reddy_2028@woxsen.edu.in
+2026-02-14 10:18:05,899 - INFO - Password entered
+2026-02-14 10:18:10,250 - INFO - 'Stay signed in?' prompt - clicking Yes
+2026-02-14 10:18:12,609 - WARNING - MFA/2FA detected! Waiting 120s for approval...
+2026-02-14 10:18:12,677 - INFO - MFA approved!
+2026-02-14 10:18:12,677 - INFO - Waiting for form to load after login...
+2026-02-14 10:18:13,518 - INFO - Final URL after login: https://forms.office.com/pages/responsepage.aspx?id=LSD36rPvekOhA1Bbufv3X9NSKOayoK9NtQfVOU9-8dhUNTVLNjhLSDZYMUlRVUNOMEc1MDQ0WFNDTS4u&route=shorturl
+2026-02-14 10:18:13,519 - INFO - Login successful!
+2026-02-14 10:18:13,675 - INFO - Saved browser session to browser_state_guntaka_reddy_2028_woxsen_edu_in.json
+2026-02-14 10:18:21,752 - INFO - Form DOM dump:
+QuestionItems: 12
+VisibleInputs: 29
+  I[0] type=text aria=Single line text ph=Enter your answer
+  I[1] type=text aria=Single line text ph=Enter your answer
+  I[2] type=radio aria= ph=
+  I[3] type=radio aria= ph=
+  I[4] type=radio aria= ph=
+  I[5] type=radio aria= ph=
+  I[6] type=radio aria= ph=
+  I[7] type=radio aria= ph=
+  I[8] type=radio aria= ph=
+  I[9] type=radio aria= ph=
+  I[10] type=radio aria= ph=
+  I[11] type=radio aria= ph=
+  I[12] type=radio aria= ph=
+  I[13] type=radio aria= ph=
+  I[14] type=radio aria= ph=
+  I[15] type=radio aria= ph=
+  I[16] type=radio aria= ph=
+  I[17] type=radio aria= ph=
+  I[18] type=radio aria= ph=
+  I[19] type=radio aria= ph=
+  I[20] type=radio aria= ph=
+  I[21] type=radio aria= ph=
+  I[22] type=text aria=Single line text ph=Enter your answer
+  I[23] type=text aria=Single line text ph=Enter your answer
+  I[24] type=text aria=Date picker ph=Please input date (M/d/yyyy)
+  I[25] type=text aria=Single line text ph=Enter your answer
+  I[26] type=text aria=Single line text ph=Enter your answer
+  I[27] type=text aria=Single line text ph=Enter your answer
+  I[28] type=text aria=Single line text ph=Enter your answer
+VisibleTextareas: 0
+  H[0] demo
+  H[1] 1.
+Name of the Student
+  H[2] 2.
+Roll Number
+  H[3] 3.
+School Name
+  H[4] 4.
+Academic Session
+  H[5] 5.
+Specialization
+  H[6] 6.
+Reasons for Leave
+  H[7] 7.
+Leave Start Date
+  H[8] 8.
+Parents Contact No.
+  H[9] 9.
+Parents Email ID
+  H[10] 10.
+Student Contact No.
+  H[11] 11.
+Student Woxsen Email ID
+  H[12] 12.
+Attach Application by parent in Prescribed Format
+ (Non-anonymous question
+)
+RadioGroups: 2
+  RG[0] label= opts=[, , , , , , ]
+  RG[1] label= opts=[, , , , , , , , , , , , ]
+2026-02-14 10:18:26,238 - ERROR - ============================================================
+2026-02-14 10:18:26,238 - ERROR - AUTOMATION FAILED: PRE-SUBMIT VALIDATION FAILED:
+  Visible Errors: ['Required']
+
+2026-02-14 10:18:26,683 - INFO - Saved FAILURE screenshot to: error_20260214_101826.png
+2026-02-14 10:18:26,684 - ERROR - Error type: Exception
+2026-02-14 10:18:26,684 - ERROR - Full traceback:
+Traceback (most recent call last):
+  File "c:\Users\admin\Documents\outing\agent 4.0\form_filler\ms_form_automation.py", line 1194, in run_automation
+    self.submit_form(verification_callback=verification_callback)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\admin\Documents\outing\agent 4.0\form_filler\ms_form_automation.py", line 963, in submit_form
+    raise Exception(error_msg)
+Exception: PRE-SUBMIT VALIDATION FAILED:
+  Visible Errors: ['Required']
+
+2026-02-14 10:18:26,686 - ERROR - ============================================================
+2026-02-14 10:47:42,737 - INFO - Using browser state file: browser_state_guntaka_reddy_2028_woxsen_edu_in.json
+2026-02-14 10:47:42,875 - INFO - Loading saved browser state (age: 0.5h)
+2026-02-14 10:47:43,184 - INFO - Browser started (saved session: yes)
+2026-02-14 10:47:47,653 - INFO - Attempting login with guntaka.reddy_2028@woxsen.edu.in...
+2026-02-14 10:47:47,654 - INFO - Current URL at login start: https://forms.office.com/pages/responsepage.aspx?id=LSD36rPvekOhA1Bbufv3X9NSKOayoK9NtQfVOU9-8dhUNTVLNjhLSDZYMUlRVUNOMEc1MDQ0WFNDTS4u&route=shorturl
+2026-02-14 10:47:47,655 - INFO - Waiting for page to settle (login page OR form content)...
+2026-02-14 10:47:47,842 - INFO - Page settled. URL: https://forms.office.com/pages/responsepage.aspx?id=LSD36rPvekOhA1Bbufv3X9NSKOayoK9NtQfVOU9-8dhUNTVLNjhLSDZYMUlRVUNOMEc1MDQ0WFNDTS4u&route=shorturl
+2026-02-14 10:47:47,911 - INFO - Already logged in - form questions are visible! Skipping login.
+2026-02-14 10:47:56,032 - INFO - Form DOM dump:
+QuestionItems: 12
+VisibleInputs: 29
+  I[0] type=text aria=Single line text ph=Enter your answer
+  I[1] type=text aria=Single line text ph=Enter your answer
+  I[2] type=radio aria= ph=
+  I[3] type=radio aria= ph=
+  I[4] type=radio aria= ph=
+  I[5] type=radio aria= ph=
+  I[6] type=radio aria= ph=
+  I[7] type=radio aria= ph=
+  I[8] type=radio aria= ph=
+  I[9] type=radio aria= ph=
+  I[10] type=radio aria= ph=
+  I[11] type=radio aria= ph=
+  I[12] type=radio aria= ph=
+  I[13] type=radio aria= ph=
+  I[14] type=radio aria= ph=
+  I[15] type=radio aria= ph=
+  I[16] type=radio aria= ph=
+  I[17] type=radio aria= ph=
+  I[18] type=radio aria= ph=
+  I[19] type=radio aria= ph=
+  I[20] type=radio aria= ph=
+  I[21] type=radio aria= ph=
+  I[22] type=text aria=Single line text ph=Enter your answer
+  I[23] type=text aria=Single line text ph=Enter your answer
+  I[24] type=text aria=Date picker ph=Please input date (M/d/yyyy)
+  I[25] type=text aria=Single line text ph=Enter your answer
+  I[26] type=text aria=Single line text ph=Enter your answer
+  I[27] type=text aria=Single line text ph=Enter your answer
+  I[28] type=text aria=Single line text ph=Enter your answer
+VisibleTextareas: 0
+  H[0] demo
+  H[1] 1.
+Name of the Student
+  H[2] 2.
+Roll Number
+  H[3] 3.
+School Name
+  H[4] 4.
+Academic Session
+  H[5] 5.
+Specialization
+  H[6] 6.
+Reasons for Leave
+  H[7] 7.
+Leave Start Date
+  H[8] 8.
+Parents Contact No.
+  H[9] 9.
+Parents Email ID
+  H[10] 10.
+Student Contact No.
+  H[11] 11.
+Student Woxsen Email ID
+  H[12] 12.
+Attach Application by parent in Prescribed Format
+ (Non-anonymous question
+)
+RadioGroups: 2
+  RG[0] label= opts=[, , , , , , ]
+  RG[1] label= opts=[, , , , , , , , , , , , ]
+2026-02-14 10:47:56,577 - INFO - ðŸ” Looking for radio: 'School Name' -> 'School of Technology'...
+2026-02-14 10:47:56,661 - INFO -    âœ… Selected radio (text): School of Technology
+2026-02-14 10:47:56,662 - INFO - ðŸ” Looking for radio: 'Academic Session' -> '2024-2028'...
+2026-02-14 10:47:56,718 - INFO -    âœ… Selected radio (text): 2024-2028
+2026-02-14 10:47:56,718 - INFO - ðŸ” Looking for radio: 'Programme Name' -> 'BBA'...
+2026-02-14 10:47:56,748 - WARNING -    âš ï¸ Could not find option 'BBA'
+2026-02-14 10:48:01,762 - ERROR - ============================================================
+2026-02-14 10:48:01,762 - ERROR - AUTOMATION FAILED: PRE-SUBMIT VALIDATION FAILED:
+  Visible Errors: ['Required']
+
+2026-02-14 10:48:02,188 - INFO - Saved FAILURE screenshot to: error_20260214_104801.png
+2026-02-14 10:48:02,188 - ERROR - Error type: Exception
+2026-02-14 10:48:02,188 - ERROR - Full traceback:
+Traceback (most recent call last):
+  File "c:\Users\admin\Documents\outing\agent 4.0\form_filler\ms_form_automation.py", line 1218, in run_automation
+    self.submit_form(verification_callback=verification_callback)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\admin\Documents\outing\agent 4.0\form_filler\ms_form_automation.py", line 987, in submit_form
+    raise Exception(error_msg)
+Exception: PRE-SUBMIT VALIDATION FAILED:
+  Visible Errors: ['Required']
+
+2026-02-14 10:48:02,190 - ERROR - ============================================================
+2026-02-14 11:03:33,870 - INFO - Using browser state file: browser_state_guntaka_reddy_2028_woxsen_edu_in.json
+2026-02-14 11:03:33,997 - INFO - Loading saved browser state (age: 0.8h)
+2026-02-14 11:03:34,300 - INFO - Browser started (saved session: yes)
+2026-02-14 11:03:39,014 - INFO - Attempting login with guntaka.reddy_2028@woxsen.edu.in...
+2026-02-14 11:03:39,015 - INFO - Current URL at login start: https://forms.office.com/pages/responsepage.aspx?id=LSD36rPvekOhA1Bbufv3X9NSKOayoK9NtQfVOU9-8dhUNTVLNjhLSDZYMUlRVUNOMEc1MDQ0WFNDTS4u&route=shorturl
+2026-02-14 11:03:39,016 - INFO - Waiting for page to settle (login page OR form content)...
+2026-02-14 11:03:39,098 - INFO - Page settled. URL: https://forms.office.com/pages/responsepage.aspx?id=LSD36rPvekOhA1Bbufv3X9NSKOayoK9NtQfVOU9-8dhUNTVLNjhLSDZYMUlRVUNOMEc1MDQ0WFNDTS4u&route=shorturl
+2026-02-14 11:03:39,120 - INFO - Already logged in - form questions are visible! Skipping login.
+2026-02-14 11:03:47,226 - INFO - Form DOM dump:
+QuestionItems: 12
+VisibleInputs: 29
+  I[0] type=text aria=Single line text ph=Enter your answer
+  I[1] type=text aria=Single line text ph=Enter your answer
+  I[2] type=radio aria= ph=
+  I[3] type=radio aria= ph=
+  I[4] type=radio aria= ph=
+  I[5] type=radio aria= ph=
+  I[6] type=radio aria= ph=
+  I[7] type=radio aria= ph=
+  I[8] type=radio aria= ph=
+  I[9] type=radio aria= ph=
+  I[10] type=radio aria= ph=
+  I[11] type=radio aria= ph=
+  I[12] type=radio aria= ph=
+  I[13] type=radio aria= ph=
+  I[14] type=radio aria= ph=
+  I[15] type=radio aria= ph=
+  I[16] type=radio aria= ph=
+  I[17] type=radio aria= ph=
+  I[18] type=radio aria= ph=
+  I[19] type=radio aria= ph=
+  I[20] type=radio aria= ph=
+  I[21] type=radio aria= ph=
+  I[22] type=text aria=Single line text ph=Enter your answer
+  I[23] type=text aria=Single line text ph=Enter your answer
+  I[24] type=text aria=Date picker ph=Please input date (M/d/yyyy)
+  I[25] type=text aria=Single line text ph=Enter your answer
+  I[26] type=text aria=Single line text ph=Enter your answer
+  I[27] type=text aria=Single line text ph=Enter your answer
+  I[28] type=text aria=Single line text ph=Enter your answer
+VisibleTextareas: 0
+  H[0] demo
+  H[1] 1.
+Name of the Student
+  H[2] 2.
+Roll Number
+  H[3] 3.
+School Name
+  H[4] 4.
+Academic Session
+  H[5] 5.
+Specialization
+  H[6] 6.
+Reasons for Leave
+  H[7] 7.
+Leave Start Date
+  H[8] 8.
+Parents Contact No.
+  H[9] 9.
+Parents Email ID
+  H[10] 10.
+Student Contact No.
+  H[11] 11.
+Student Woxsen Email ID
+  H[12] 12.
+Attach Application by parent in Prescribed Format
+ (Non-anonymous question
+)
+RadioGroups: 2
+  RG[0] label= opts=[, , , , , , ]
+  RG[1] label= opts=[, , , , , , , , , , , , ]
+Buttons: 18
+  BTN[0] txt='' aria='Immersive Reader'
+  BTN[1] txt='' aria='Form Menu'
+  BTN[2] txt='' aria='Immersive Reader'
+  BTN[3] txt='' aria='Immersive Reader'
+  BTN[4] txt='' aria='Immersive Reader'
+  BTN[5] txt='' aria='Immersive Reader'
+  BTN[6] txt='' aria='Immersive Reader'
+  BTN[7] txt='' aria='Immersive Reader'
+  BTN[8] txt='' aria='Immersive Reader'
+  BTN[9] txt='' aria='Immersive Reader'
+  BTN[10] txt='' aria='Immersive Reader'
+  BTN[11] txt='' aria='Immersive Reader'
+  BTN[12] txt='' aria='Immersive Reader'
+  BTN[13] txt='' aria='(Non-anonymous question'
+  BTN[14] txt='' aria='Immersive Reader'
+  BTN[15] txt='Upload file' aria='Upload file File number limit: 1 Single file size limit: 10MB Allowed file types: PDF'
+  BTN[16] txt='Submit' aria=''
+  BTN[17] txt='Microsoft Forms' aria=''
+2026-02-14 11:03:47,690 - INFO - ðŸ” Looking for radio: 'School Name' -> 'School of Technology'...
+2026-02-14 11:03:47,795 - INFO -    âœ… Selected radio (text): School of Technology
+2026-02-14 11:03:47,795 - INFO - ðŸ” Looking for radio: 'Academic Session' -> '2024-2028'...
+2026-02-14 11:03:47,919 - INFO -    âœ… Selected radio (text): 2024-2028
+2026-02-14 11:03:47,919 - INFO - ðŸ” Looking for radio: 'Programme Name' -> 'B.B.A'...
+2026-02-14 11:03:47,951 - WARNING -    âš ï¸ Could not find option 'B.B.A'
+2026-02-14 11:03:50,109 - INFO - ðŸ“¤ Uploading PDF: c:\Users\admin\Documents\outing\agent 4.0\doc_handle\public\Consent Form.pdf
+2026-02-14 11:03:50,114 - INFO - â³ Waiting for file upload section...
+2026-02-14 11:04:00,137 - WARNING - âš ï¸ 'Upload' text not found, trying generic file input wait...
+2026-02-14 11:04:00,192 - INFO - ðŸ–±ï¸ Clicking 'Upload' button (text='Upload file')...
+2026-02-14 11:04:00,401 - INFO - PDF uploaded via FileChooser!
+2026-02-14 11:04:00,401 - INFO - â³ Waiting 15s for PDF to process...
+2026-02-14 11:04:18,060 - ERROR - ============================================================
+2026-02-14 11:04:18,061 - ERROR - AUTOMATION FAILED: PRE-SUBMIT VALIDATION FAILED:
+  Visible Errors: ['Required']
+
+2026-02-14 11:04:18,415 - INFO - Saved FAILURE screenshot to: error_20260214_110418.png
+2026-02-14 11:04:18,415 - ERROR - Error type: Exception
+2026-02-14 11:04:18,415 - ERROR - Full traceback:
+Traceback (most recent call last):
+  File "c:\Users\admin\Documents\outing\agent 4.0\form_filler\ms_form_automation.py", line 1232, in run_automation
+    self.submit_form(verification_callback=verification_callback)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\admin\Documents\outing\agent 4.0\form_filler\ms_form_automation.py", line 995, in submit_form
+    raise Exception(error_msg)
+Exception: PRE-SUBMIT VALIDATION FAILED:
+  Visible Errors: ['Required']
+
+2026-02-14 11:04:18,417 - ERROR - ============================================================
+2026-02-15 09:25:34,945 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.20.10.3:5000
+2026-02-15 09:25:34,946 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-15 09:25:34,948 - INFO -  * Restarting with stat
+2026-02-15 09:25:38,371 - WARNING -  * Debugger is active!
+2026-02-15 09:25:38,377 - INFO -  * Debugger PIN: 900-091-490
+2026-02-15 09:40:29,872 - INFO - 127.0.0.1 - - [15/Feb/2026 09:40:29] "[33mGET / HTTP/1.1[0m" 404 -
+2026-02-15 10:34:07,412 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\create_pdf.py', reloading
+2026-02-15 10:34:08,014 - INFO -  * Restarting with stat
+2026-02-15 10:34:13,276 - WARNING -  * Debugger is active!
+2026-02-15 10:34:13,281 - INFO -  * Debugger PIN: 900-091-490
+2026-02-15 10:36:31,877 - INFO -  * Detected change in 'C:\\Users\\admin\\Documents\\outing\\agent 4.0\\form_filler\\api.py', reloading
+2026-02-15 10:36:32,179 - INFO -  * Restarting with stat
+2026-02-19 22:14:30,171 - INFO - Automation worker thread started and ready to process tasks
+2026-02-19 22:14:31,536 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8080
+ * Running on http://192.168.0.120:8080
+2026-02-19 22:14:31,536 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-19 22:14:31,541 - INFO -  * Restarting with stat
+2026-02-19 22:14:35,044 - INFO - Automation worker thread started and ready to process tasks
+2026-02-19 22:14:35,400 - WARNING -  * Debugger is active!
+2026-02-19 22:14:35,419 - INFO -  * Debugger PIN: 841-223-485

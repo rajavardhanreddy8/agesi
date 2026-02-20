@@ -1,0 +1,32 @@
+--- Gmail Inbox Debugger ---
+Checking 'fetch' account (rajavreddy.g@gmail.com)...
+
+[Test 1] Searching for emails from: student.outing@woxsen.edu.in (and others)
+✅ Found 5 emails from student.outing@woxsen.edu.in.
+   - ID: 19c64e8e4e140f20 | Subject: Permission for Weekend Student Outing on 20/02/2026
+   - ID: 19c51baef2eed02c | Subject: Weekend Outing Permission for 13-02-2026
+   - ID: 19c40c17c25712e7 | Subject: Permission for Weekend Student Outing on 13/02/2026
+   - ID: 19c1cbbad3b837a9 | Subject: WEEKEND OUTING REQUEST FOR 06-02-2026
+   - ID: 19bff7806b30dca3 | Subject: 📧 Daily Email Digest - Tuesday, January 27, 2026
+
+[Test 2] Listing last 5 emails in Inbox (ANY sender):
+   - From: Render <no-reply@render.com>
+     Subject: build failed for outing-backend
+     ID: 19c66c72f3b91dc9
+     ---
+   - From: Shaik Subhani <invitations@linkedin.com>
+     Subject: I want to connect
+     ID: 19c66b700075d9ec
+     ---
+   - From: Render <no-reply@render.com>
+     Subject: build failed for outing-backend
+     ID: 19c66b43643728df
+     ---
+   - From: Mohan mamidi <invitations@linkedin.com>
+     Subject: I want to connect
+     ID: 19c6672e786fea70
+     ---
+   - From: Team Razorpay <support@razorpay.com>
+     Subject: Email Change Request for Merchant ID: S8T1sQ2DAkkywO
+     ID: 19c666d1dc7d62b8
+     ---

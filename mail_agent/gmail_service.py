@@ -88,18 +88,21 @@ def get_gmail_service(account_type='fetch'):
     service = build('gmail', 'v1', credentials=creds)
     return service
 
-def get_latest_email_content(sender_email):
+def get_latest_email_content(query_or_sender):
     service = get_gmail_service('fetch')
     
-    # query to filter by sender
-    q = f"from:{sender_email}"
+    # query to filter by sender or specific query
+    if "from:" in query_or_sender or " OR " in query_or_sender:
+        q = query_or_sender
+    else:
+        q = f"from:{query_or_sender}"
     
     # List search results, getting only the latest one (maxResults=1)
     results = service.users().messages().list(userId='me', q=q, maxResults=1).execute()
     messages = results.get('messages', [])
 
     if not messages:
-        print(f"No messages found from {sender_email}.")
+        print(f"No messages found matching: {query_or_sender}")
         return None
 
     message = messages[0]

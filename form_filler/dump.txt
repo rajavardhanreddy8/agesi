@@ -1,6 +1,6 @@
 demo
 Student (UG) Weekend Outing Form Details
-Hi, GUNTAKA RAJAVARDHAN REDDY. When you submit this form, the owner will see your name and email address.
+Hi, REDDY. When you submit this form, the owner will see your name and email address.
 Required
 1.
 Name of the Student

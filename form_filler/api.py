@@ -712,7 +712,11 @@ def auto_submit_from_email():
                     'programme': normalize_programme(user['programme']),
                     'specialization': user['specialization'],
                     'student_phone': user['student_phone'],
-                    'student_email': user['student_email'] or user['email'],
+                    # SMART EMAIL SELECTION: Prioritize Woxsen Login Email
+                    'student_email': (
+                        user['email'] if (user['email'] and 'woxsen.edu.in' in user['email'].lower())
+                        else (user['student_email'] or user['email'])
+                    ),
                     'parent_name': user['parent1_name'],
                     'parent_phone': user['parent1_phone'],
                     'parent_email': user['parent1_email'],

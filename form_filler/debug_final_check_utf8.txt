@@ -1,0 +1,131 @@
+﻿Warning: Encryption key issue: Fernet key must be 32 url-safe base64-encoded bytes.
+≡ƒÜÇ Starting Debug Script...
+≡ƒöæ Fetching user credentials...
+DEBUG: DB Connection SUCCESS!
+python : 2026-02-19 21:40:31,203 
+- INFO - Using browser state 
+file: browser_state_guntaka_reddy
+_2028_woxsen_edu_in.json
+At line:1 char:1
++ python debug_full.py > 
+debug_final_check.txt 2>&1
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : No 
+   tSpecified: (2026-02-19 21:4  
+  ...sen_edu_in.json:String) [   
+ ], RemoteException
+    + FullyQualifiedErrorId : Na 
+   tiveCommandError
+ 
+2026-02-19 21:40:31,352 - INFO - 
+Loading saved browser state 
+(age: 8.0h)
+2026-02-19 21:40:31,657 - INFO - 
+Browser started (saved session: 
+yes)
+2026-02-19 21:40:41,142 - INFO - 
+Attempting login with guntaka.red
+dy_2028@woxsen.edu.in...
+2026-02-19 21:40:41,143 - INFO - 
+Current URL at login start: https
+://login.microsoftonline.com/orga
+nizations/oauth2/v2.0/authorize?c
+lient_id=c9a559d2-7aab-4f13-a6ed-
+e7e9c52aec87&redirect_uri=https%3
+A%2F%2Fforms.office.com%2Flanding
+&state=eyJ2ZXJzaW9uIjoxLCJkYXRhIj
+p7IklkZW50aXR5UHJvdmlkZXIiOiJBWGl
+2c2hnMm92V21qbzZ3S0kwbUR1Q04ySFpf
+am1yRHpnRlkxZXRFR0lXdTU2eGdZRENXO
+XVxdHZqcVBRdlAtcTlNZG1iYzV5YWp2ZG
+9fYXpsZHBqalEiLCIucmVkaXJlY3QiOiJ
+odHRwczovL2Zvcm1zLm9mZmljZS5jb20v
+cGFnZXMvcmVzcG9uc2VwYWdlLmFzcHg_a
+WQ9TFNEMzZyUHZla09oQTFCYnVmdjNYOU
+5TS09heW9LOU50UWZWT1U5LThkaFVOVFZ
+MTmpoTFNEWllNVWxSVlVOT01FYzFNRFEw
+V0ZORFRTNHUmc2lkPTVlYmI3ZmJkLWIyY
+zctNDY0OS1hNjQ4LTdhYTkzZjRmOWViYy
+IsIi54c3JmIjoiQVNLeU8tTEZ1Y3JFUXk
+tUkJQUUdUaXJjS1NzUVhGVzY4TXF3ZUZK
+ZFZPX3c5WWNIZnBNQ3lKSnFEWkc1bFJtT
+VJJeFkwQTJRSEQ2YmNib28xVGl2SWY1M0
+ZqbGRZSTJsVXpHT2k3U05UNVVwaXMyM2J
+1a2JEb04yM2pqa2xPWEhTQSIsIk9wZW5J
+ZENvbm5lY3QuQ29kZS5SZWRpcmVjdFVya
+SI6IkFjb0h5dVhILWs5QS1kZF9JMURuMm
+JzWFBwTUptN21feEZud01SSUo1a2E2dmR
+RQlN5WGlUVU5YNnZLakRNR3EwV2szMTJP
+eHY0Q1FrSUo2T1N1Z19Ma1Jqd3F6cW5hR
+i1jcl9CM29lSnFfS2tkd2Y4MGFwemlRWW
+MtWnlJdkNXOXcifX0&response_type=c
+ode&scope=openid%20profile&respon
+se_mode=form_post&nonce=639071142
+403371956.NDkwYzRiNmQtYjQzMC00M2F
+iLWJiOTItNmQ5OTQ0ZjIyOTYwZDQ4MTQ0
+NjctYjU4YS00MTk5LWJiZDItNGIwMmJjM
+GMzNmNl&msafed=0&x-client-SKU=ID_
+NET10_0&x-client-ver=8.15.0.0
+2026-02-19 21:40:41,144 - INFO - 
+Waiting for page to settle 
+(login page OR form content)...
+2026-02-19 21:40:42,399 - INFO - 
+Page settled. URL: https://forms.
+office.com/pages/responsepage.asp
+x?id=LSD36rPvekOhA1Bbufv3X9NSKOay
+oK9NtQfVOU9-8dhUNTVLNjhLSDZYMUlRV
+UNOMEc1MDQ0WFNDTS4u
+2026-02-19 21:40:42,456 - INFO - 
+Already logged in - form 
+questions are visible! Skipping 
+login.
+2026-02-19 21:40:56,135 - INFO - 
+\U0001f50d Looking for radio: 
+'9. Programme Nameá ' -> 
+'B.Tech'...
+2026-02-19 21:40:56,463 - INFO - 
+   \u26a0\ufe0f Strict match 
+failed, trying aggressive global 
+search...
+2026-02-19 21:40:56,921 - INFO - 
+   \U0001f3af Found match: 
+'B.Tech' (Strategy: value)
+2026-02-19 21:40:56,979 - INFO - 
+   \u2705 Selected radio: B.Tech
+Γ£à User found: guntaka.reddy_2028@woxsen.edu.in
+≡ƒîÉ Navigating to Form URL: https://forms.office.com/pages/responsepage.aspx?id=LSD36rPvekOhA1Bbufv3X9NSKOayoK9NtQfVOU9-8dhUNTVLNjhLSDZYMUlRVUNOMEc1MDQ0WFNDTS4u
+ΓÅ│ Checking for loading indicators...
+Γ£à Loading screen cleared.
+Current URL: https://forms.office.com/pages/responsepage.aspx?id=LSD36rPvekOhA1Bbufv3X9NSKOayoK9NtQfVOU9-8dhUNTVLNjhLSDZYMUlRVUNOMEc1MDQ0WFNDTS4u
+DEBUG: 'Sign in' count: 0, Email input count: 0
+≡ƒöÆ Login required. Attempting login...
+Γ£à Login successful!
+ΓÅ│ Checking for loading indicators...
+Γä╣∩╕Å No persistent loading screen found (or cleared).
+
+≡ƒöÄ Selecting 'School of Technology'...
+Γ¥î Could not find 'School of Technology' radio button! Trying text match...
+Γ£à Clicked text 'School of Technology'
+ΓÅ│ Waiting 3s for any conditional fields to appear...
+
+≡ƒôï DUMPING QUESTIONS:
+Q1: 1. Name of the Student
+Q2: 2. Roll Number
+Q3: 3. School Name
+Q4: 4. Academic Session
+Q5: 5. Specialization
+Q6: 6. Reasons for Leave
+Q7: 7. Leave Start Date
+Q8: 8. Parents Contact No.
+Q9: 9. Programme Name┬á 
+   ≡ƒÄ» FOUND PROGRAMME FIELD! Title: '9. Programme Name┬á '
+      Γ£à Dumped HTML to debug_programme_html.html
+      OPTIONS: [None, None, None, None, None, None, None, None, None, None, None, None]
+   ≡ƒöì Testing selection of 'B.Tech' via bot.select_radio...
+      Γ£à bot.select_radio returned True
+Q10: 10. Parents Email ID
+Q11: 11. leave end date
+Q12: 12. Student Contact No.
+Q13: 13. Student Woxsen Email ID
+Q14: 14. Attach Application by parent in Prescribed Format  (Non-anonymous question )
