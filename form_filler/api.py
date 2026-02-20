@@ -1006,7 +1006,7 @@ def admin_create_user():
         logging.error(f"Failed to create user: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
-@app.route('/api/admin/users/<int:user_id>', methods=['DELETE'])
+@app.route('/api/admin/users/<user_id>', methods=['DELETE'])
 @admin_required
 def admin_delete_user(user_id):
     try:
