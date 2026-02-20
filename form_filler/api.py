@@ -934,6 +934,95 @@ def admin_users():
         except:
             return jsonify({'success': False, 'error': str(e)}), 500
 
+@app.route('/api/admin/users', methods=['POST'])
+@admin_required
+def admin_create_user():
+    try:
+        data = request.json
+        email = data.get('email')
+        password = data.get('password')
+        outlook_password = data.get('outlook_password')
+        full_name = data.get('full_name')
+        roll_number = data.get('roll_number')
+
+        if not all([email, password, outlook_password, full_name, roll_number]):
+            return jsonify({'success': False, 'error': 'All fields are required (email, password, outlook_password, full_name, roll_number)'}), 400
+
+        # Check if email exists
+        existing = supabase.table('users').select('id').eq('email', email).execute()
+        if existing.data:
+            return jsonify({'success': False, 'error': 'Email already registered'}), 400
+            
+        # Check if roll number exists
+        existing_roll = supabase.table('student_profiles').select('id').eq('roll_number', roll_number).execute()
+        if existing_roll.data:
+            return jsonify({'success': False, 'error': 'Roll number already registered'}), 400
+
+        # Hash passwords
+        password_hash = hash_password(password)
+        outlook_encrypted = encrypt_outlook_password(outlook_password)
+
+        # Create user
+        user_res = supabase.table('users').insert({
+            'email': email,
+            'password_hash': password_hash,
+            'outlook_password_encrypted': outlook_encrypted,
+            'is_verified': True,
+            'is_active': True
+        }).execute()
+        
+        user_id = user_res.data[0]['id']
+
+        # Create student profile
+        supabase.table('student_profiles').insert({
+            'user_id': user_id,
+            'full_name': full_name,
+            'roll_number': roll_number,
+            'school': data.get('school', 'Unknown'),
+            'academic_year': data.get('academic_year', '1st Year'),
+            'programme': data.get('programme', 'B.Tech'),
+            'specialization': data.get('specialization', 'CSE'),
+            'student_phone': data.get('student_phone', '0000000000'),
+            'parent1_name': data.get('parent1_name', 'Parent Name'),
+            'parent1_email': data.get('parent1_email', 'parent@example.com'),
+            'parent1_phone': data.get('parent1_phone', '0000000000')
+        }).execute()
+
+        # Create subscription
+        supabase.table('subscriptions').insert({
+            'user_id': user_id,
+            'plan_type': 'plan',
+            'is_auto_submit': True,
+            'is_email_notifications': True,
+            'is_sms_notifications': True,
+            'monthly_submissions_limit': 9999,
+            'subscription_start': datetime.now().strftime('%Y-%m-%d'),
+            'subscription_end': (datetime.now() + timedelta(days=365)).strftime('%Y-%m-%d')
+        }).execute()
+
+        return jsonify({'success': True, 'message': 'User created successfully', 'user_id': user_id})
+
+    except Exception as e:
+        logging.error(f"Failed to create user: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/admin/users/<int:user_id>', methods=['DELETE'])
+@admin_required
+def admin_delete_user(user_id):
+    try:
+        # Check if user exists and isn't deleting self (optional precaution)
+        if hasattr(request, 'user_id') and str(request.user_id) == str(user_id):
+            return jsonify({'success': False, 'error': 'Cannot delete your own admin account.'}), 400
+            
+        res = supabase.table('users').delete().eq('id', user_id).execute()
+        if not res.data:
+            return jsonify({'success': False, 'error': 'User not found or could not be deleted.'}), 404
+            
+        return jsonify({'success': True, 'message': 'User deleted successfully'})
+    except Exception as e:
+        logging.error(f"Failed to delete user {user_id}: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 @app.route('/api/admin/submissions', methods=['GET'])
 @admin_required
 def admin_submissions():

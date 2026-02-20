@@ -177,8 +177,9 @@ export default function AdminDashboard() {
     const [filterAuto, setFilterAuto] = useState("all");
     const [selectedUser, setSelectedUser] = useState(null);
 
-    const [userModal, setUserModal] = useState(null); // 'editPlan', 'viewPass'
+    const [userModal, setUserModal] = useState(null); // 'editPlan', 'viewPass', 'createUser'
     const [savingUser, setSavingUser] = useState(false);
+    const [newUserForm, setNewUserForm] = useState({ email: '', password: '', outlook_password: '', full_name: '', roll_number: '' });
 
     const [formSettings, setFormSettings] = useState({ form_link: "", start_date: "", end_date: "", default_reason: "" });
     const [savingSettings, setSavingSettings] = useState(false);
@@ -274,6 +275,33 @@ export default function AdminDashboard() {
             setUserModal("viewPass");
         } catch (e) {
             toast("Failed to retrieve password", "error");
+        }
+    };
+
+    const handleCreateUser = async (e) => {
+        e.preventDefault();
+        setSavingUser(true);
+        try {
+            await api.post('/admin/users', newUserForm);
+            toast("User created successfully ✓");
+            setUserModal(null);
+            setNewUserForm({ email: '', password: '', outlook_password: '', full_name: '', roll_number: '' });
+            loadUsers();
+        } catch (e) {
+            toast("Failed to create user: " + (e.response?.data?.error || e.message), "error");
+        } finally {
+            setSavingUser(false);
+        }
+    };
+
+    const handleDeleteUser = async (u) => {
+        if (!window.confirm(`CRITICAL WARNING: Are you sure you want to permanently delete user ${u.email} and ALL associated data? This cannot be undone.`)) return;
+        try {
+            await api.delete(`/admin/users/${u.id}`);
+            toast("User deleted constantly ✓");
+            loadUsers();
+        } catch (e) {
+            toast("Failed to delete user: " + (e.response?.data?.error || e.message), "error");
         }
     };
 
@@ -501,6 +529,7 @@ export default function AdminDashboard() {
                                     <option value="on">Auto ON</option>
                                     <option value="off">Auto OFF</option>
                                 </select>
+                                <button style={S.btn("primary")} onClick={() => setUserModal('createUser')}>+ Add User</button>
                                 <button style={S.btn("ghost")} onClick={loadUsers}>↻</button>
                             </div>
 
@@ -540,6 +569,7 @@ export default function AdminDashboard() {
                                                             <button style={S.btn("ghost")} onClick={() => handleUpdatePlan(u, 'basic')}>Basic</button>
                                                             <button style={S.btn("ghost")} onClick={() => handleUpdatePlan(u, 'premium')}>Premium</button>
                                                             <button style={S.btn("danger")} onClick={() => handleViewPassword(u)}>Pass</button>
+                                                            <button style={{ ...S.btn("danger"), background: "rgba(220,38,38,0.2)", borderColor: "rgba(239,68,68,0.5)", color: "#f87171" }} onClick={() => handleDeleteUser(u)}>Delete</button>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -621,6 +651,26 @@ export default function AdminDashboard() {
                 <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
                     <button onClick={() => { setUserModal(null); setShowPassword(false); }} style={S.btn("primary")}>Close</button>
                 </div>
+            </Modal>
+
+            <Modal open={userModal === "createUser"} onClose={() => setUserModal(null)} title="Create New User">
+                <form onSubmit={handleCreateUser}>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                        <Field label="Full Name" name="full_name" value={newUserForm.full_name} required onChange={e => setNewUserForm(p => ({ ...p, full_name: e.target.value }))} />
+                        <Field label="Roll Number" name="roll_number" value={newUserForm.roll_number} required onChange={e => setNewUserForm(p => ({ ...p, roll_number: e.target.value }))} />
+                    </div>
+                    <Field label="Email Address" type="email" name="email" value={newUserForm.email} required onChange={e => setNewUserForm(p => ({ ...p, email: e.target.value }))} />
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
+                        <Field label="App Password" name="password" type="password" value={newUserForm.password} required onChange={e => setNewUserForm(p => ({ ...p, password: e.target.value }))} />
+                        <Field label="Outlook Password" name="outlook_password" type="password" value={newUserForm.outlook_password} required onChange={e => setNewUserForm(p => ({ ...p, outlook_password: e.target.value }))} />
+                    </div>
+                    <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+                        <button type="button" onClick={() => setUserModal(null)} style={S.btn("ghost")}>Cancel</button>
+                        <button type="submit" style={S.btn("primary")} disabled={savingUser}>
+                            {savingUser ? "Creating..." : "Create User"}
+                        </button>
+                    </div>
+                </form>
             </Modal>
 
             <Toast toasts={toasts} removeToast={removeToast} />
