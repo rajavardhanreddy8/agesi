@@ -523,8 +523,16 @@ export default function AdminDashboard() {
                                                         <div style={{ fontWeight: 600 }}>{u.full_name || 'N/A'}</div>
                                                         <div style={{ fontSize: 11, color: "#64748b", fontFamily: "'DM Mono', monospace" }}>{u.email}</div>
                                                     </td>
-                                                    <td style={S.td}>{planBadge(u.plan_type || 'free')}</td>
-                                                    <td style={S.td}>{autoBadge(u.automation_enabled)}</td>
+                                                    <td style={S.td}>
+                                                        <span style={planBadge(u.plan_type || 'free')}>
+                                                            {(u.plan_type || 'free').toUpperCase()}
+                                                        </span>
+                                                    </td>
+                                                    <td style={S.td}>
+                                                        <span style={autoBadge(u.automation_enabled)}>
+                                                            {u.automation_enabled ? 'Auto ON' : 'Auto OFF'}
+                                                        </span>
+                                                    </td>
                                                     <td style={S.td}>
                                                         <div style={{ display: "flex", gap: 6 }}>
                                                             <button style={S.btn("action")} onClick={() => handleToggleAutomation(u)}>{u.automation_enabled ? "Disable Auto" : "Enable Auto"}</button>
