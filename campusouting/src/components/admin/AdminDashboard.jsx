@@ -574,9 +574,10 @@ export default function AdminDashboard() {
                                                         </span>
                                                     </td>
                                                     <td style={S.td}>
-                                                        <div style={{ display: "flex", gap: 6 }}>
-                                                            <button style={S.btn("ghost")} onClick={() => handleEditUser(u)}>Edit</button>
-                                                            <button style={S.btn("action")} onClick={() => handleToggleAutomation(u)}>{u.automation_enabled ? "Disable Auto" : "Enable Auto"}</button>
+                                                        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", maxWidth: 400 }}>
+                                                            <button style={S.btn("primary")} onClick={() => { setSelectedUser(u); setUserModal("viewProfile"); }}>👁️ View Profile</button>
+                                                            <button style={S.btn("action")} onClick={() => handleEditUser(u)}>✏️ Edit Profile</button>
+                                                            <button style={S.btn("ghost")} onClick={() => handleToggleAutomation(u)}>{u.automation_enabled ? "Disable Auto" : "Enable Auto"}</button>
                                                             <button style={S.btn("ghost")} onClick={() => handleUpdatePlan(u, 'free')}>Free</button>
                                                             <button style={S.btn("ghost")} onClick={() => handleUpdatePlan(u, 'basic')}>Basic</button>
                                                             <button style={S.btn("ghost")} onClick={() => handleUpdatePlan(u, 'premium')}>Premium</button>
@@ -686,6 +687,28 @@ export default function AdminDashboard() {
                         </button>
                     </div>
                 </form>
+            </Modal>
+
+            {/* View Full Profile Modal */}
+            <Modal open={userModal === "viewProfile"} onClose={() => setUserModal(null)} title="Student Profile Overview">
+                {selectedUser && (
+                    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+                        <div style={{ padding: 16, background: "rgba(15, 23, 42, 0.4)", borderRadius: 8, border: "1px solid rgba(255,255,255,0.05)" }}>
+                            <h4 style={{ margin: "0 0 12px 0", color: "#f8fafc", fontSize: 16 }}>Academic Details</h4>
+                            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px 24px" }}>
+                                <div><span style={{ color: "#64748b", fontSize: 12 }}>Name</span><div style={{ color: "#e2e8f0" }}>{selectedUser.full_name || 'N/A'}</div></div>
+                                <div><span style={{ color: "#64748b", fontSize: 12 }}>Roll</span><div style={{ color: "#e2e8f0" }}>{selectedUser.roll_number || 'N/A'}</div></div>
+                                <div><span style={{ color: "#64748b", fontSize: 12 }}>Email</span><div style={{ color: "#e2e8f0" }}>{selectedUser.email || 'N/A'}</div></div>
+                                <div><span style={{ color: "#64748b", fontSize: 12 }}>Programme</span><div style={{ color: "#e2e8f0", textTransform: "capitalize" }}>{selectedUser.programme || 'Default'}</div></div>
+                            </div>
+                        </div>
+
+                        <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 10 }}>
+                            <button type="button" onClick={() => handleEditUser(selectedUser)} style={S.btn("primary")}>Edit Details</button>
+                            <button type="button" onClick={() => setUserModal(null)} style={S.btn("ghost")}>Close</button>
+                        </div>
+                    </div>
+                )}
             </Modal>
 
             <Toast toasts={toasts} removeToast={removeToast} />
