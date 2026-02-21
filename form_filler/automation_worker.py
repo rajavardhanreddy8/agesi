@@ -93,6 +93,7 @@ def run_worker(task_id, form_url, email, password, form_data, pdf_path, blob_nam
     try:
         automation = MSFormAutomation(headless=True)
         
+        worker_state = {'screenshot_path': None}
         def status_callback(msg, prog, screenshot_bytes):
             print(f"Callback: {msg} {prog}%")
             # In a real subprocess, we can't easily update the parent's memory
@@ -110,6 +111,7 @@ def run_worker(task_id, form_url, email, password, form_data, pdf_path, blob_nam
                 with open(filename, "wb") as f:
                     f.write(screenshot_bytes)
                 
+                worker_state['screenshot_path'] = filename
                 # Update DB with screenshot path
                 update_db_status(task_id, None, msg, screenshot_path=filename)
             else:
@@ -154,14 +156,6 @@ def run_worker(task_id, form_url, email, password, form_data, pdf_path, blob_nam
             verification_callback=verification_wrapper
         )
         
-        # Cleanup temp file
-        if temp_pdf_created and os.path.exists(local_pdf_path):
-            try:
-                os.remove(local_pdf_path)
-                print(f"DEBUG: Removed temp PDF {local_pdf_path}")
-            except:
-                pass
-        
         if success:
             update_db_status(task_id, 'completed', 'Automation Success')
             
@@ -178,7 +172,7 @@ def run_worker(task_id, form_url, email, password, form_data, pdf_path, blob_nam
                     f"Hello {student_name},\n\n"
                     f"Your outing form for {start_date} to {end_date} has been successfully submitted automatically.\n\n"
                     f"Status: COMPLETED\n"
-                    f"PDF Proof: {pdf_path}\n\n"
+                    f"See the attached PDF and confirmation screenshot.\n\n"
                     f"Regards,\nCampus Outing Team"
                 )
                 html_body = f"""
@@ -192,28 +186,42 @@ def run_worker(task_id, form_url, email, password, form_data, pdf_path, blob_nam
                         Start Date: {start_date}<br/>
                         End Date: {end_date}<br/>
                     </div>
-                    <p>You can view your generated PDF here: <a href="{pdf_path}" style="color: #6366f1; text-decoration: none; font-weight: bold;">View PDF Proof</a></p>
+                    <p>Please find the generated PDF pass and the final MS Forms submission screenshot attached to this email.</p>
                     <p style="color: #6b7280; font-size: 0.9em; border-top: 1px solid #eee; padding-top: 20px;">
                         This is an automated notification. Please ensure you carry your ID card when leaving the campus.
                     </p>
                 </div>
                 """
                 
+                attachments = []
+                if local_pdf_path and os.path.exists(local_pdf_path):
+                    attachments.append(local_pdf_path)
+                if worker_state.get('screenshot_path') and os.path.exists(worker_state['screenshot_path']):
+                    attachments.append(worker_state['screenshot_path'])
+                
                 # Send to student
                 if student_addr:
-                    send_email(student_addr, subject, body, html_body)
+                    send_email(student_addr, subject, body, html_body, attachments=attachments)
                 
                 # Send to parent (using a slightly different message)
                 if parent_addr:
                     parent_body = body.replace(f"Hello {student_name}", "Hello Parent")
                     parent_html = html_body.replace(f"Hello <b>{student_name}</b>", "Hello Parent")
-                    send_email(parent_addr, subject, parent_body, parent_html)
+                    send_email(parent_addr, subject, parent_body, parent_html, attachments=attachments)
                     
             except Exception as mail_err:
                 print(f"Failed to send confirmation emails: {mail_err}")
                 
         else:
              update_db_status(task_id, 'failed', 'Automation Failed via implementation')
+
+        # Cleanup temp file
+        if temp_pdf_created and os.path.exists(local_pdf_path):
+            try:
+                os.remove(local_pdf_path)
+                print(f"DEBUG: Removed temp PDF {local_pdf_path}")
+            except:
+                pass
 
     except Exception as e:
         print(f"Worker specific error: {e}")

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { auth } from '../../utils/auth';
+import Logo from '../common/Logo';
 
 export const RegisterForm = () => {
     const [formData, setFormData] = useState({
@@ -59,10 +60,11 @@ export const RegisterForm = () => {
     };
 
     const handleChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        });
+        const { name, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
     };
 
     const handleSubmit = async (e) => {
@@ -70,18 +72,35 @@ export const RegisterForm = () => {
         setError('');
         setSuccess('');
 
-        if (!formData.email.endsWith('@woxsen.edu.in')) {
-            setError('Please use your college email (@college.edu.in)');
-            return;
-        }
+        if (isLoading) return;
 
         setIsLoading(true);
         setVerifyingCredentials(true);
 
         try {
+            // First verify Outlook credentials
+            try {
+                const verifyRes = await import('../../utils/api').then(m => m.default.post('/verify-outlook', {
+                    email: formData.email,
+                    outlook_password: formData.outlookPassword
+                }));
+
+                if (!verifyRes.data.success) {
+                    throw new Error(verifyRes.data.error || 'Invalid college email or password');
+                }
+            } catch (err) {
+                // If the error has a response from the server, use that specific message
+                const errorMsg = err.response?.data?.error || err.message || 'Verification failed';
+                console.error("Verification error details:", err.response?.data || err);
+                throw new Error(errorMsg);
+            }
+
+            setVerifyingCredentials(false);
+            setSuccess('Credentials verified! Creating account...');
+
             const result = await auth.register({
                 email: formData.email,
-                password: formData.outlookPassword, // Use Outlook password for login too
+                password: formData.password,
                 outlook_password: formData.outlookPassword,
                 full_name: formData.fullName,
                 roll_number: formData.rollNumber,
@@ -110,7 +129,7 @@ export const RegisterForm = () => {
             }
 
         } catch (err) {
-            setError(err.response?.data?.error || 'Registration failed. Please try again.');
+            setError(err.message || err.response?.data?.error || 'Registration failed. Please try again.');
         } finally {
             setIsLoading(false);
             setVerifyingCredentials(false);
@@ -119,7 +138,12 @@ export const RegisterForm = () => {
 
     return (
         <div className="register-container">
-            <h2>Register for Outing Automation</h2>
+            <div className="text-center mb-10 flex flex-col items-center">
+                <Logo className="scale-125 mb-4" />
+                <h2 style={{ marginBottom: 0 }}>Create your account</h2>
+                <p className="text-slate-400 mt-2 text-sm">Join CampusAgent for intelligent outing automation.</p>
+            </div>
+
 
             <form onSubmit={handleSubmit}>
                 {/* Document Upload Section */}

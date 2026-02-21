@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { auth } from '../utils/auth';
+import Logo from './common/Logo';
 
 const Navigation = () => {
     const user = auth.getUser();
@@ -68,9 +69,7 @@ const Navigation = () => {
     return (
         <nav style={navStyle}>
             <div style={containerStyle}>
-                <Link to="/" style={logoStyle}>
-                    🚀 Outing Automation
-                </Link>
+                <Logo />
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     {auth.isAuthenticated() ? (

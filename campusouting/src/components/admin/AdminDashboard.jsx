@@ -278,17 +278,28 @@ export default function AdminDashboard() {
         }
     };
 
+    const handleEditUser = (u) => {
+        setNewUserForm({
+            email: u.email || '',
+            password: '',
+            outlook_password: '',
+            full_name: u.full_name || '',
+            roll_number: u.roll_number || ''
+        });
+        setUserModal('upsertUser');
+    };
+
     const handleCreateUser = async (e) => {
         e.preventDefault();
         setSavingUser(true);
         try {
             await api.post('/admin/users', newUserForm);
-            toast("User created successfully ✓");
+            toast("User saved successfully ✓");
             setUserModal(null);
             setNewUserForm({ email: '', password: '', outlook_password: '', full_name: '', roll_number: '' });
             loadUsers();
         } catch (e) {
-            toast("Failed to create user: " + (e.response?.data?.error || e.message), "error");
+            toast("Failed to save user: " + (e.response?.data?.error || e.message), "error");
         } finally {
             setSavingUser(false);
         }
@@ -529,7 +540,7 @@ export default function AdminDashboard() {
                                     <option value="on">Auto ON</option>
                                     <option value="off">Auto OFF</option>
                                 </select>
-                                <button style={S.btn("primary")} onClick={() => setUserModal('createUser')}>+ Add User</button>
+                                <button style={S.btn("primary")} onClick={() => { setNewUserForm({ email: '', password: '', outlook_password: '', full_name: '', roll_number: '' }); setUserModal('upsertUser'); }}>+ Add User</button>
                                 <button style={S.btn("ghost")} onClick={loadUsers}>↻</button>
                             </div>
 
@@ -564,6 +575,7 @@ export default function AdminDashboard() {
                                                     </td>
                                                     <td style={S.td}>
                                                         <div style={{ display: "flex", gap: 6 }}>
+                                                            <button style={S.btn("ghost")} onClick={() => handleEditUser(u)}>Edit</button>
                                                             <button style={S.btn("action")} onClick={() => handleToggleAutomation(u)}>{u.automation_enabled ? "Disable Auto" : "Enable Auto"}</button>
                                                             <button style={S.btn("ghost")} onClick={() => handleUpdatePlan(u, 'free')}>Free</button>
                                                             <button style={S.btn("ghost")} onClick={() => handleUpdatePlan(u, 'basic')}>Basic</button>
@@ -653,21 +665,24 @@ export default function AdminDashboard() {
                 </div>
             </Modal>
 
-            <Modal open={userModal === "createUser"} onClose={() => setUserModal(null)} title="Create New User">
+            <Modal open={userModal === "upsertUser"} onClose={() => setUserModal(null)} title="Create / Edit User">
                 <form onSubmit={handleCreateUser}>
+                    <p style={{ fontSize: 13, color: '#94a3b8', marginBottom: 16 }}>
+                        Note: For existing users, only the filled fields will be updated. Passwords can be left blank if you don't want to change them.
+                    </p>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
                         <Field label="Full Name" name="full_name" value={newUserForm.full_name} required onChange={e => setNewUserForm(p => ({ ...p, full_name: e.target.value }))} />
                         <Field label="Roll Number" name="roll_number" value={newUserForm.roll_number} required onChange={e => setNewUserForm(p => ({ ...p, roll_number: e.target.value }))} />
                     </div>
                     <Field label="Email Address" type="email" name="email" value={newUserForm.email} required onChange={e => setNewUserForm(p => ({ ...p, email: e.target.value }))} />
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
-                        <Field label="App Password" name="password" type="password" value={newUserForm.password} required onChange={e => setNewUserForm(p => ({ ...p, password: e.target.value }))} />
-                        <Field label="Outlook Password" name="outlook_password" type="password" value={newUserForm.outlook_password} required onChange={e => setNewUserForm(p => ({ ...p, outlook_password: e.target.value }))} />
+                        <Field label="App Password" name="password" type="password" value={newUserForm.password} onChange={e => setNewUserForm(p => ({ ...p, password: e.target.value }))} />
+                        <Field label="Outlook Password" name="outlook_password" type="password" value={newUserForm.outlook_password} onChange={e => setNewUserForm(p => ({ ...p, outlook_password: e.target.value }))} />
                     </div>
                     <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
                         <button type="button" onClick={() => setUserModal(null)} style={S.btn("ghost")}>Cancel</button>
                         <button type="submit" style={S.btn("primary")} disabled={savingUser}>
-                            {savingUser ? "Creating..." : "Create User"}
+                            {savingUser ? "Saving..." : "Save User"}
                         </button>
                     </div>
                 </form>

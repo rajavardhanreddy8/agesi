@@ -164,30 +164,48 @@ def get_latest_email_content(query_or_sender):
         "form_links": [l for l in links if "forms.office.com" in l or "docs.google.com" in l or "forms.gle" in l]
     }
 
-def send_email(to, subject, body, html_body=None):
+def send_email(to, subject, body, html_body=None, attachments=None):
     """Send an email using Gmail API"""
     try:
         from email.mime.text import MIMEText
         from email.mime.multipart import MIMEMultipart
+        from email.mime.base import MIMEBase
+        from email import encoders
+        import mimetypes
         import base64
 
         service = get_gmail_service('send')
         
+        message = MIMEMultipart('alternative') if not attachments else MIMEMultipart('mixed')
+        message['Subject'] = subject
+        message['From'] = 'me'
+        message['To'] = to
+        
         if html_body:
-            message = MIMEMultipart('alternative')
-            message['Subject'] = subject
-            message['From'] = 'me'
-            message['To'] = to
-            
-            part1 = MIMEText(body, 'plain')
-            part2 = MIMEText(html_body, 'html')
-            message.attach(part1)
-            message.attach(part2)
+            msg_alt = MIMEMultipart('alternative')
+            msg_alt.attach(MIMEText(body, 'plain'))
+            msg_alt.attach(MIMEText(html_body, 'html'))
+            message.attach(msg_alt)
         else:
-            message = MIMEText(body)
-            message['to'] = to
-            message['from'] = 'me'
-            message['subject'] = subject
+            message.attach(MIMEText(body, 'plain'))
+            
+        if attachments:
+            for filepath in attachments:
+                if not filepath or not os.path.exists(filepath):
+                    continue
+                content_type, encoding = mimetypes.guess_type(filepath)
+                if content_type is None or encoding is not None:
+                    content_type = 'application/octet-stream'
+                main_type, sub_type = content_type.split('/', 1)
+                
+                with open(filepath, 'rb') as fp:
+                    attachment_part = MIMEBase(main_type, sub_type)
+                    attachment_part.set_payload(fp.read())
+                
+                encoders.encode_base64(attachment_part)
+                filename = os.path.basename(filepath)
+                attachment_part.add_header('Content-Disposition', 'attachment', filename=filename)
+                message.attach(attachment_part)
 
         raw_message = base64.urlsafe_b64encode(message.as_bytes()).decode('utf-8')
         

@@ -99,24 +99,25 @@ const Landing = () => {
 
     const features = [
         { icon: '📄', title: 'Auto-Fill Forms', desc: 'Upload your document and let AI extract all details automatically.', color: '#6366f1' },
-        { icon: '🔐', title: 'Secure Login', desc: 'Your Outlook credentials are encrypted and stored safely.', color: '#10b981' },
+        { icon: '💸', title: 'Just ₹50 / mo', desc: 'Unlimited automation. One simple, ultra-affordable payment.', color: '#10b981' },
         { icon: '🚀', title: 'One-Click Submit', desc: 'Generate PDF and submit to portal with a single click.', color: '#f97316' },
     ];
 
     return (
-        <div style={{ minHeight: '100vh' }}>
+        <div style={{ minHeight: '100vh', background: '#0f172a', fontFamily: "'Inter', sans-serif" }}>
             <Navigation />
             <div style={heroStyle}>
+                <div style={{ padding: '4px 12px', background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.3)', borderRadius: '20px', color: '#c7d2fe', fontSize: '14px', marginBottom: '24px', fontWeight: 'bold', tracking: 'wide', textTransform: 'uppercase' }}>Now Available ✨</div>
                 <h1 style={titleStyle}>
                     Campus Outing<br />Made Simple
                 </h1>
                 <p style={subtitleStyle}>
                     Automate your leave requests with AI-powered form filling.
-                    Upload your document, generate PDFs, and submit instantly.
+                    No more tedious typing—just ₹50 per month.
                 </p>
                 <div style={buttonContainerStyle}>
                     <a href="/register" style={primaryBtnStyle}>
-                        🚀 Get Started Free
+                        🚀 Get Started Now
                     </a>
                     <a href="/login" style={secondaryBtnStyle}>
                         Sign In

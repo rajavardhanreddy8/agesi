@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { auth } from '../../utils/auth';
+import Logo from '../common/Logo';
 
 export const LoginForm = () => {
     const [email, setEmail] = useState('');
@@ -28,16 +29,10 @@ export const LoginForm = () => {
     return (
         <div className="login-container">
             <div className="login-card">
-                <div className="login-header">
-                    <div className="logo-icon">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M12 2L2 7l10 5 10-5-10-5z" />
-                            <path d="M2 17l10 5 10-5" />
-                            <path d="M2 12l10 5 10-5" />
-                        </svg>
-                    </div>
+                <div className="login-header flex flex-col items-center">
+                    <Logo className="scale-125 mb-6" />
                     <h1>Welcome Back</h1>
-                    <p>Sign in to your Outing Automation account</p>
+                    <p>Sign in to your CampusAgent account</p>
                 </div>
 
                 {error && (

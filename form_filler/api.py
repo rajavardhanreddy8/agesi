@@ -955,62 +955,132 @@ def admin_create_user():
         if not all([email, password, outlook_password, full_name, roll_number]):
             return jsonify({'success': False, 'error': 'All fields are required (email, password, outlook_password, full_name, roll_number)'}), 400
 
+        # Hash passwords
+        password_hash = hash_password(password) if password else None
+        outlook_encrypted = encrypt_outlook_password(outlook_password) if outlook_password else None
+
         # Check if email exists
         existing = supabase.table('users').select('id').eq('email', email).execute()
-        if existing.data:
-            return jsonify({'success': False, 'error': 'Email already registered'}), 400
-            
-        # Check if roll number exists
-        existing_roll = supabase.table('student_profiles').select('id').eq('roll_number', roll_number).execute()
-        if existing_roll.data:
-            return jsonify({'success': False, 'error': 'Roll number already registered'}), 400
-
-        # Hash passwords
-        password_hash = hash_password(password)
-        outlook_encrypted = encrypt_outlook_password(outlook_password)
-
-        # Create user
-        user_res = supabase.table('users').insert({
-            'email': email,
-            'password_hash': password_hash,
-            'outlook_password_encrypted': outlook_encrypted,
-            'is_verified': True,
-            'is_active': True
-        }).execute()
         
-        user_id = user_res.data[0]['id']
+        user_id = None
+        if existing.data:
+            user_id = existing.data[0]['id']
+            # Update existing user
+            update_data = {}
+            if password_hash: update_data['password_hash'] = password_hash
+            if outlook_encrypted: update_data['outlook_password_encrypted'] = outlook_encrypted
+            if update_data:
+                supabase.table('users').update(update_data).eq('id', user_id).execute()
+                
+            # Update student profile
+            profile_updates = {
+                'full_name': full_name,
+                'roll_number': roll_number,
+                'school': data.get('school', 'Unknown'),
+                'academic_year': data.get('academic_year', '1st Year'),
+                'programme': data.get('programme', 'B.Tech'),
+                'specialization': data.get('specialization', 'CSE'),
+                'student_phone': data.get('student_phone', '0000000000'),
+                'parent1_name': data.get('parent1_name', 'Parent Name'),
+                'parent1_email': data.get('parent1_email', 'parent@example.com'),
+                'parent1_phone': data.get('parent1_phone', '0000000000')
+            }
+            supabase.table('student_profiles').update(profile_updates).eq('user_id', user_id).execute()
+            
+            message = 'User updated successfully'
+        else:
+            # Check if roll number exists on a different user
+            existing_roll = supabase.table('student_profiles').select('id, user_id').eq('roll_number', roll_number).execute()
+            if existing_roll.data:
+                return jsonify({'success': False, 'error': 'Roll number already registered to another user'}), 400
 
-        # Create student profile
-        supabase.table('student_profiles').insert({
-            'user_id': user_id,
-            'full_name': full_name,
-            'roll_number': roll_number,
-            'school': data.get('school', 'Unknown'),
-            'academic_year': data.get('academic_year', '1st Year'),
-            'programme': data.get('programme', 'B.Tech'),
-            'specialization': data.get('specialization', 'CSE'),
-            'student_phone': data.get('student_phone', '0000000000'),
-            'parent1_name': data.get('parent1_name', 'Parent Name'),
-            'parent1_email': data.get('parent1_email', 'parent@example.com'),
-            'parent1_phone': data.get('parent1_phone', '0000000000')
-        }).execute()
+            # Create new user
+            user_res = supabase.table('users').insert({
+                'email': email,
+                'password_hash': password_hash,
+                'outlook_password_encrypted': outlook_encrypted,
+                'is_verified': True,
+                'is_active': True
+            }).execute()
+            
+            user_id = user_res.data[0]['id']
 
-        # Create subscription
-        supabase.table('subscriptions').insert({
-            'user_id': user_id,
-            'plan_type': 'plan',
-            'is_auto_submit': True,
-            'is_email_notifications': True,
-            'is_sms_notifications': True,
-            'monthly_submissions_limit': 9999,
-            'subscription_start': datetime.now().strftime('%Y-%m-%d'),
-            'subscription_end': (datetime.now() + timedelta(days=365)).strftime('%Y-%m-%d')
-        }).execute()
+            # Create student profile
+            supabase.table('student_profiles').insert({
+                'user_id': user_id,
+                'full_name': full_name,
+                'roll_number': roll_number,
+                'school': data.get('school', 'Unknown'),
+                'academic_year': data.get('academic_year', '1st Year'),
+                'programme': data.get('programme', 'B.Tech'),
+                'specialization': data.get('specialization', 'CSE'),
+                'student_phone': data.get('student_phone', '0000000000'),
+                'parent1_name': data.get('parent1_name', 'Parent Name'),
+                'parent1_email': data.get('parent1_email', 'parent@example.com'),
+                'parent1_phone': data.get('parent1_phone', '0000000000')
+            }).execute()
+            
+            message = 'User created successfully'
 
-        return jsonify({'success': True, 'message': 'User created successfully', 'user_id': user_id})
+        if not existing.data:
+            # Create subscription only for new users
+            supabase.table('subscriptions').insert({
+                'user_id': user_id,
+                'plan_type': 'plan',
+                'is_auto_submit': True,
+                'is_email_notifications': True,
+                'is_sms_notifications': True,
+                'monthly_submissions_limit': 9999,
+                'subscription_start': datetime.now().strftime('%Y-%m-%d'),
+                'subscription_end': (datetime.now() + timedelta(days=365)).strftime('%Y-%m-%d')
+            }).execute()
+
+        return jsonify({'success': True, 'message': message, 'user_id': user_id})
 
     except Exception as e:
         logging.error(f"Failed to create user: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/admin/user/<user_id>/subscription', methods=['POST'])
+@admin_required
+def admin_update_subscription(user_id):
+    try:
+        plan_type = request.json.get('plan_type')
+        if not plan_type:
+            return jsonify({'success': False, 'error': 'plan_type required'}), 400
+        supabase.table('subscriptions').update({'plan_type': plan_type}).eq('user_id', user_id).execute()
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/admin/user/<user_id>/automation', methods=['POST'])
+@admin_required
+def admin_toggle_automation(user_id):
+    try:
+        enabled = request.json.get('enabled')
+        if enabled is None:
+            return jsonify({'success': False, 'error': 'enabled flag required'}), 400
+        supabase.table('subscriptions').update({'is_auto_submit': enabled}).eq('user_id', user_id).execute()
+        # Also map it to 'automation_enabled' if it's stored in a different table, or return it directly
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/admin/user/<user_id>/password', methods=['GET'])
+@admin_required
+def admin_view_password(user_id):
+    try:
+        res = supabase.table('users').select('outlook_password_encrypted').eq('id', user_id).execute()
+        if not res.data:
+            return jsonify({'success': False, 'error': 'User not found'}), 404
+        
+        enc_pass = res.data[0].get('outlook_password_encrypted')
+        if not enc_pass:
+            return jsonify({'success': False, 'error': 'No encrypted password found'}), 404
+            
+        decrypted = decrypt_outlook_password(enc_pass)
+        return jsonify({'success': True, 'password': decrypted})
+    except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/api/admin/users/<user_id>', methods=['DELETE'])
@@ -1162,12 +1232,24 @@ def update_profile():
             'parent2_name', 'parent2_email', 'parent2_phone'
         ]
         
+        def clean_val(val, field_name):
+            if not isinstance(val, str): return val
+            cleaned = " ".join(val.split())
+            if field_name == 'programme' and cleaned.startswith('CSE'):
+                return 'B.Tech'
+            return cleaned
+
+        prog = data.get('programme', '')
+        if isinstance(prog, str) and prog.strip().startswith('CSE'):
+            if 'specialization' not in data or not data.get('specialization'):
+                data['specialization'] = prog.strip()
+
         updates = []
         values = []
         for field in allowed_fields:
             if field in data:
                 updates.append(f"{field} = %s")
-                values.append(data[field])
+                values.append(clean_val(data[field], field))
         
         # Handle Signature separately
         # Handle Signature separately

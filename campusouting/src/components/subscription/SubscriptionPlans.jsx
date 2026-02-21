@@ -5,6 +5,7 @@ const SubscriptionPlans = () => {
     const [plans, setPlans] = useState(null);
     const [currentPlan, setCurrentPlan] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [hover, setHover] = useState(false);
 
     useEffect(() => {
         fetchPlans();
@@ -49,7 +50,7 @@ const SubscriptionPlans = () => {
                     key: response.data.key,
                     amount: response.data.amount * 100,
                     currency: response.data.currency,
-                    name: 'Outing Automation',
+                    name: 'Campus Outing',
                     description: `${planType.charAt(0).toUpperCase() + planType.slice(1)} Plan`,
                     order_id: response.data.order_id,
                     handler: async function (paymentResponse) {
@@ -83,115 +84,357 @@ const SubscriptionPlans = () => {
         }
     };
 
+    // --- Styles ---
+    const S = {
+        page: {
+            minHeight: '100vh',
+            background: '#070d1a',
+            fontFamily: "'Inter', system-ui, sans-serif",
+            color: '#e2e8f0',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            padding: '60px 24px 80px',
+            position: 'relative',
+            overflow: 'hidden',
+        },
+        glow1: {
+            position: 'absolute',
+            top: '-120px',
+            left: '-100px',
+            width: '500px',
+            height: '500px',
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(99,102,241,0.25) 0%, transparent 70%)',
+            filter: 'blur(80px)',
+            pointerEvents: 'none',
+        },
+        glow2: {
+            position: 'absolute',
+            bottom: '-120px',
+            right: '-100px',
+            width: '600px',
+            height: '600px',
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(168,85,247,0.15) 0%, transparent 70%)',
+            filter: 'blur(100px)',
+            pointerEvents: 'none',
+        },
+        badge: {
+            display: 'inline-block',
+            padding: '6px 18px',
+            borderRadius: '20px',
+            border: '1px solid rgba(99,102,241,0.35)',
+            background: 'rgba(99,102,241,0.1)',
+            backdropFilter: 'blur(8px)',
+            fontSize: '12px',
+            fontWeight: '700',
+            letterSpacing: '2px',
+            textTransform: 'uppercase',
+            background: 'linear-gradient(135deg, #818cf8, #c084fc)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            marginBottom: '20px',
+        },
+        heading: {
+            fontSize: 'clamp(2rem, 5vw, 3.2rem)',
+            fontWeight: '800',
+            color: '#fff',
+            marginBottom: '16px',
+            lineHeight: '1.15',
+        },
+        headingGradient: {
+            background: 'linear-gradient(135deg, #818cf8, #a78bfa, #c084fc)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+        },
+        subtitle: {
+            fontSize: '1.1rem',
+            color: '#94a3b8',
+            maxWidth: '520px',
+            margin: '0 auto',
+            lineHeight: '1.7',
+            fontWeight: '300',
+        },
+        card: {
+            position: 'relative',
+            maxWidth: '440px',
+            width: '100%',
+            marginTop: '48px',
+            borderRadius: '24px',
+            padding: '2px',
+            background: 'linear-gradient(135deg, #6366f1, #a855f7, #ec4899)',
+            transition: 'transform 0.4s ease, box-shadow 0.4s ease',
+            cursor: 'default',
+        },
+        cardHover: {
+            transform: 'translateY(-6px) scale(1.01)',
+            boxShadow: '0 30px 80px -20px rgba(99,102,241,0.45), 0 0 40px rgba(168,85,247,0.2)',
+        },
+        cardInner: {
+            background: 'linear-gradient(160deg, #0e1629 0%, #0a0f1f 100%)',
+            borderRadius: '22px',
+            padding: '48px 40px 40px',
+            position: 'relative',
+            overflow: 'hidden',
+        },
+        innerGlow: {
+            position: 'absolute',
+            top: '-40px',
+            right: '-40px',
+            width: '160px',
+            height: '160px',
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(99,102,241,0.3) 0%, transparent 70%)',
+            filter: 'blur(40px)',
+            pointerEvents: 'none',
+        },
+        offerBadge: {
+            display: 'inline-block',
+            padding: '4px 14px',
+            borderRadius: '12px',
+            background: 'rgba(99,102,241,0.15)',
+            border: '1px solid rgba(99,102,241,0.3)',
+            color: '#a5b4fc',
+            fontSize: '11px',
+            fontWeight: '700',
+            letterSpacing: '1.5px',
+            textTransform: 'uppercase',
+            marginBottom: '16px',
+        },
+        planName: {
+            fontSize: '1.6rem',
+            fontWeight: '700',
+            color: '#fff',
+            marginBottom: '8px',
+        },
+        priceRow: {
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'baseline',
+            gap: '6px',
+            margin: '20px 0 8px',
+        },
+        price: {
+            fontSize: '3.5rem',
+            fontWeight: '800',
+            background: 'linear-gradient(135deg, #c7d2fe, #fff)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            lineHeight: 1,
+        },
+        pricePeriod: {
+            fontSize: '1.1rem',
+            color: '#64748b',
+            fontWeight: '500',
+        },
+        priceSubtext: {
+            fontSize: '0.85rem',
+            color: '#818cf8',
+            fontWeight: '500',
+            marginBottom: '32px',
+        },
+        featureList: {
+            listStyle: 'none',
+            padding: 0,
+            margin: '0 0 36px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '14px',
+        },
+        featureItem: {
+            display: 'flex',
+            alignItems: 'center',
+            gap: '14px',
+        },
+        checkIcon: {
+            width: '24px',
+            height: '24px',
+            borderRadius: '50%',
+            background: 'rgba(99,102,241,0.15)',
+            border: '1px solid rgba(99,102,241,0.4)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0,
+            boxShadow: '0 0 12px rgba(99,102,241,0.2)',
+        },
+        featureText: {
+            fontSize: '0.95rem',
+            color: '#cbd5e1',
+            fontWeight: '500',
+        },
+        featureTextDisabled: {
+            fontSize: '0.95rem',
+            color: '#475569',
+            fontWeight: '500',
+            textDecoration: 'line-through',
+        },
+        disabledIcon: {
+            width: '24px',
+            height: '24px',
+            borderRadius: '50%',
+            background: 'rgba(30,41,59,0.6)',
+            border: '1px solid rgba(51,65,85,0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0,
+        },
+        button: {
+            width: '100%',
+            padding: '16px 24px',
+            borderRadius: '14px',
+            border: 'none',
+            fontSize: '1rem',
+            fontWeight: '700',
+            letterSpacing: '0.5px',
+            cursor: 'pointer',
+            transition: 'all 0.3s ease',
+            position: 'relative',
+            overflow: 'hidden',
+        },
+        buttonActive: {
+            background: 'linear-gradient(135deg, #6366f1, #8b5cf6, #a855f7)',
+            color: '#fff',
+            boxShadow: '0 8px 30px rgba(99,102,241,0.4)',
+        },
+        buttonActiveHover: {
+            boxShadow: '0 12px 40px rgba(139,92,246,0.5)',
+            transform: 'translateY(-2px)',
+        },
+        buttonDisabled: {
+            background: 'rgba(30,41,59,0.7)',
+            color: '#64748b',
+            cursor: 'not-allowed',
+            border: '1px solid rgba(51,65,85,0.5)',
+            boxShadow: 'none',
+        },
+        securedText: {
+            textAlign: 'center',
+            fontSize: '0.75rem',
+            color: '#475569',
+            fontWeight: '500',
+            marginTop: '20px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '6px',
+        },
+    };
+
     if (!plans) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-[#070d1a]">
-                <div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin shadow-[0_0_15px_rgba(99,102,241,0.5)]"></div>
+            <div style={{ ...S.page, justifyContent: 'center' }}>
+                <div style={{
+                    width: '48px', height: '48px',
+                    border: '3px solid rgba(99,102,241,0.3)',
+                    borderTopColor: '#6366f1',
+                    borderRadius: '50%',
+                    animation: 'spin 0.8s linear infinite',
+                }}></div>
+                <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen relative overflow-hidden bg-[#070d1a] font-sans text-slate-200 py-16 px-6 sm:px-10 flex flex-col items-center">
-            {/* Animated Glow Background Effects */}
-            <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] rounded-full bg-indigo-600/20 blur-[120px] mix-blend-screen pointer-events-none animate-pulse" style={{ animationDuration: '6s' }}></div>
-            <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] rounded-full bg-fuchsia-600/10 blur-[150px] mix-blend-screen pointer-events-none animate-pulse" style={{ animationDuration: '8s', animationDelay: '2s' }}></div>
+        <div style={S.page}>
+            {/* Background glows */}
+            <div style={S.glow1}></div>
+            <div style={S.glow2}></div>
 
-            <div className="relative z-10 max-w-5xl w-full text-center mb-16 mt-8">
-                <div className="inline-block mb-4 px-4 py-1.5 rounded-full border border-indigo-500/30 bg-indigo-500/10 backdrop-blur-md">
-                    <span className="bg-gradient-to-r from-indigo-400 to-fuchsia-400 text-transparent bg-clip-text font-bold text-sm tracking-widest uppercase">
-                        Campus Automation
-                    </span>
-                </div>
-                <h1 className="text-5xl sm:text-6xl font-extrabold tracking-tight mb-6 text-white leading-tight">
-                    Elevate Your <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-fuchsia-400 text-transparent bg-clip-text">Experience</span>
+            {/* Header */}
+            <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', marginBottom: '8px' }}>
+                <div style={S.badge}>Campus Automation</div>
+                <h1 style={S.heading}>
+                    Elevate Your <span style={S.headingGradient}>Experience</span>
                 </h1>
-                <p className="text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto font-light leading-relaxed">
-                    Unlock limitless potential with complete outing automation. Say goodbye to missed forms and hello to instant approvals.
+                <p style={S.subtitle}>
+                    Unlock limitless potential with complete outing automation.
+                    Say goodbye to missed forms and hello to instant approvals.
                 </p>
             </div>
 
-            <div className="relative z-10 w-full max-w-md mx-auto perspective-1000">
+            {/* Plan Card */}
+            <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: '440px' }}>
                 {Object.entries(plans).map(([key, plan]) => {
                     const isCurrentPlan = currentPlan?.plan_type === key || (currentPlan && currentPlan?.plan_type !== 'free' && currentPlan?.plan_type !== 'plan');
 
                     return (
                         <div
                             key={key}
-                            className="group relative flex flex-col p-px rounded-[2rem] overflow-hidden transition-all duration-500 hover:scale-[1.02] hover:-translate-y-2 hover:shadow-[0_20px_60px_-15px_rgba(99,102,241,0.4)]"
+                            style={{
+                                ...S.card,
+                                ...(hover ? S.cardHover : {}),
+                            }}
+                            onMouseEnter={() => setHover(true)}
+                            onMouseLeave={() => setHover(false)}
                         >
-                            {/* Animated Gradient Border */}
-                            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 via-purple-500 to-fuchsia-500 opacity-60 group-hover:opacity-100 transition-opacity duration-500 rounded-[2rem]"></div>
+                            <div style={S.cardInner}>
+                                <div style={S.innerGlow}></div>
 
-                            {/* Card Content Backing */}
-                            <div className="relative flex-1 flex flex-col bg-[#0b1329]/95 backdrop-blur-2xl rounded-[calc(2rem-1px)] p-10 sm:p-12 w-full h-full overflow-hidden">
-
-                                {/* Inner glow */}
-                                <div className="absolute top-0 right-0 -mt-16 -mr-16 w-32 h-32 bg-gradient-to-br from-indigo-500 to-fuchsia-500 rounded-full blur-3xl opacity-30 group-hover:opacity-60 transition-opacity duration-500"></div>
-
-                                <div className="text-center mb-10 relative">
-                                    <h2 className="text-3xl font-bold text-white mb-4 tracking-tight">{plan.name}</h2>
-                                    <div className="flex justify-center items-baseline gap-2">
-                                        <span className="text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 to-white">
-                                            ₹{plan.price}
-                                        </span>
-                                        <span className="text-lg text-slate-400 font-medium tracking-wide">/ mo</span>
+                                {/* Pricing Header */}
+                                <div style={{ textAlign: 'center', position: 'relative', zIndex: 1 }}>
+                                    <div style={S.offerBadge}>✨ Special Student Offer</div>
+                                    <h2 style={S.planName}>{plan.name}</h2>
+                                    <div style={S.priceRow}>
+                                        <span style={S.price}>₹{plan.price}</span>
+                                        <span style={S.pricePeriod}>/ mo</span>
                                     </div>
+                                    <p style={S.priceSubtext}>Billed monthly · Cancel anytime</p>
                                 </div>
 
-                                <div className="flex-1">
-                                    <ul className="space-y-5 mb-10">
-                                        {Object.entries(plan.features).map(([feature, enabled]) => (
-                                            <li key={feature} className="flex items-start">
-                                                <div className="flex-shrink-0 mt-1">
-                                                    {enabled ? (
-                                                        <div className="flex items-center justify-center w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 ring-1 ring-indigo-500/50 shadow-[0_0_10px_rgba(99,102,241,0.3)]">
-                                                            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
-                                                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                                                            </svg>
-                                                        </div>
-                                                    ) : (
-                                                        <div className="flex items-center justify-center w-6 h-6 rounded-full bg-slate-800 text-slate-500 ring-1 ring-slate-700">
-                                                            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                                                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                                            </svg>
-                                                        </div>
-                                                    )}
+                                {/* Features */}
+                                <ul style={S.featureList}>
+                                    {Object.entries(plan.features).map(([feature, enabled]) => (
+                                        <li key={feature} style={S.featureItem}>
+                                            {enabled ? (
+                                                <div style={S.checkIcon}>
+                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#818cf8" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                                        <path d="M5 13l4 4L19 7" />
+                                                    </svg>
                                                 </div>
-                                                <span className={`ml-4 text-base ${enabled ? 'text-slate-200' : 'text-slate-500'} font-medium`}>
-                                                    {feature.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
-                                                </span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
+                                            ) : (
+                                                <div style={S.disabledIcon}>
+                                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#475569" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                        <path d="M6 18L18 6M6 6l12 12" />
+                                                    </svg>
+                                                </div>
+                                            )}
+                                            <span style={enabled ? S.featureText : S.featureTextDisabled}>
+                                                {feature.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
+                                            </span>
+                                        </li>
+                                    ))}
+                                </ul>
 
+                                {/* CTA Button */}
                                 <button
                                     onClick={() => handleUpgrade(key)}
                                     disabled={isLoading || isCurrentPlan}
-                                    className={`relative w-full py-4 rounded-xl font-bold tracking-wide transition-all duration-300 overflow-hidden outline-none ring-offset-2 ring-offset-[#070d1a] focus:ring-2 focus:ring-indigo-500 ${isCurrentPlan
-                                        ? 'bg-slate-800/80 text-slate-400 cursor-not-allowed border border-slate-700'
-                                        : 'text-white transform active:scale-[0.98] shadow-[0_0_20px_rgba(99,102,241,0.4)] hover:shadow-[0_0_30px_rgba(192,132,252,0.6)]'
-                                        }`}
+                                    style={{
+                                        ...S.button,
+                                        ...(isCurrentPlan ? S.buttonDisabled : S.buttonActive),
+                                    }}
+                                    onMouseEnter={e => { if (!isCurrentPlan) Object.assign(e.target.style, S.buttonActiveHover); }}
+                                    onMouseLeave={e => { if (!isCurrentPlan) { e.target.style.boxShadow = S.buttonActive.boxShadow; e.target.style.transform = 'none'; } }}
                                 >
-                                    {!isCurrentPlan && (
-                                        <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 via-purple-500 to-fuchsia-500 hover:from-indigo-400 hover:via-purple-400 hover:to-fuchsia-400 transition-colors z-0"></div>
-                                    )}
-                                    <span className="relative z-10 flex items-center justify-center gap-2">
-                                        {isLoading ? (
-                                            <>
-                                                <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                                </svg>
-                                                Processing Securely...
-                                            </>
-                                        ) : isCurrentPlan ? '✓ Current Plan Active' : 'Start Automating Now'}
-                                    </span>
+                                    {isLoading ? (
+                                        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ animation: 'spin 0.8s linear infinite' }}>
+                                                <circle cx="12" cy="12" r="10" strokeDasharray="60" strokeDashoffset="20" />
+                                            </svg>
+                                            Processing Securely...
+                                        </span>
+                                    ) : isCurrentPlan ? '✓ Current Plan Active' : '🚀 Start Automating Now'}
                                 </button>
 
-                                <p className="text-center text-xs text-slate-500 mt-6 font-medium flex items-center justify-center gap-1.5">
-                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                                {/* Security note */}
+                                <p style={S.securedText}>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                    </svg>
                                     Secured by Razorpay Encryption
                                 </p>
                             </div>
@@ -199,6 +442,8 @@ const SubscriptionPlans = () => {
                     );
                 })}
             </div>
+
+            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
         </div>
     );
 };

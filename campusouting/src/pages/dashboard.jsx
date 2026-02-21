@@ -177,72 +177,16 @@ const Dashboard = () => {
             const res = await api.post('/submit-form', payload);
 
             if (res.data.success && res.data.task_id) {
-                setSubmission(prev => ({
-                    ...prev,
-                    taskId: res.data.task_id,
-                    status: 'pending',
-                    message: 'Task queued...',
-                    queuePosition: res.data.queue_position
-                }));
+                setSubmission({
+                    loading: false,
+                    taskId: null,
+                    status: 'completed',
+                    message: '✅ Form queued successfully!',
+                    progress: 100,
+                    queuePosition: 0
+                });
 
-                // Poll for status
-                let retryCount = 0;
-                let errorCount = 0;
-                const maxRetries = 600; // 10-20 minutes depending on speed
-
-                const pollStatus = async () => {
-                    if (retryCount >= maxRetries) {
-                        setSubmission(prev => ({
-                            ...prev,
-                            loading: false,
-                            status: 'failed',
-                            message: '❌ Submission is taking longer than usual. Please check the History tab in a few minutes to see if it completed.'
-                        }));
-                        return;
-                    }
-                    retryCount++;
-
-                    try {
-                        const statusRes = await api.get(`/task-status/${res.data.task_id}`);
-                        const task = statusRes.data.task || statusRes.data; // Handle both formats if needed
-
-                        setSubmission(prev => ({
-                            ...prev,
-                            status: task.status,
-                            message: task.message || task.status,
-                            progress: task.progress || 0,
-                            queuePosition: task.queue_position !== undefined ? task.queue_position : prev.queuePosition
-                        }));
-
-                        if (task.status === 'completed') {
-                            setSubmission(prev => ({ ...prev, loading: false, message: '✅ Form submitted successfully!' }));
-                        } else if (task.status === 'failed') {
-                            setSubmission(prev => ({ ...prev, loading: false, message: `❌ Failed: ${task.error || 'Unknown error'}` }));
-
-                            // Check for auth failure in error message or status
-                            if (task.error && (
-                                task.error.includes('Invalid credentials') ||
-                                task.error.includes('Login failed') ||
-                                task.error.includes('Authentication failed')
-                            )) {
-                                setReverifyModal({ show: true, loading: false, password: '', error: 'Previous login failed. Please re-verify your password.' });
-                            }
-                        } else {
-                            // Continue polling
-                            setTimeout(pollStatus, 2000);
-                        }
-                    } catch (e) {
-                        console.error('Status poll error:', e);
-                        errorCount++;
-                        if (errorCount > 5) {
-                            setSubmission(prev => ({ ...prev, loading: false, status: 'failed', message: '❌ Connection lost. Please check history.' }));
-                        } else {
-                            setTimeout(pollStatus, 3000);
-                        }
-                    }
-                };
-
-                pollStatus();
+                alert("Your application has been queued. You will receive a confirmation mail after completion.");
             } else {
                 setSubmission({ loading: false, taskId: null, status: 'failed', message: res.data.error || 'Failed to start', progress: 0 });
             }
@@ -518,24 +462,6 @@ const Dashboard = () => {
                                     </div>
                                 )}
                                 {submission.message}
-
-                                {/* Live View Iframe */}
-                                {(submission.status === 'running' || submission.status === 'pending') && submission.taskId && (
-                                    <div style={{ marginTop: '15px' }}>
-                                        <div style={{ fontSize: '0.7rem', color: theme.textMuted, marginBottom: '5px' }}>LIVE AUTOMATION MONITOR:</div>
-                                        <iframe
-                                            src={`https://outing-backend-api.azurewebsites.net/api/live-view/${submission.taskId}`}
-                                            style={{
-                                                width: '100%',
-                                                height: '250px',
-                                                border: '1px solid #334155',
-                                                borderRadius: '8px',
-                                                background: '#000'
-                                            }}
-                                            title="Live View"
-                                        />
-                                    </div>
-                                )}
                             </div>
                         )}
                     </div>

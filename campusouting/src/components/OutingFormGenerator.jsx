@@ -210,9 +210,8 @@ export default function OutingFormGenerator() {
             const res = await api.post('/submit-form', fd);
 
             if (res.data.success) {
-                setTaskId(res.data.task_id);
-                setSubmissionStatus('Automation Running...');
-                pollStatus(res.data.task_id);
+                setSubmissionStatus('✅ Form queued successfully!');
+                alert("Your application has been queued. You will receive a confirmation mail after completion.");
             } else {
                 setSubmissionStatus(`Failed: ${res.data.error || 'Unknown error'}`);
             }
@@ -222,17 +221,6 @@ export default function OutingFormGenerator() {
             const errorDetails = e.response?.data?.details || '';
             setSubmissionStatus(`❌ Failed: ${errorMsg}${errorDetails ? ` - ${errorDetails}` : ''}`);
         }
-    };
-
-    const pollStatus = (id) => {
-        const interval = setInterval(async () => {
-            try {
-                const res = await api.get(`/task-status/${id}`);
-                const task = res.data.task;
-                setSubmissionStatus(`${task.status}: ${task.message} (${task.progress}%)`);
-                if (task.status === 'completed' || task.status === 'failed') clearInterval(interval);
-            } catch (e) { clearInterval(interval); }
-        }, 2000);
     };
 
     if (isLoadingProfile) return <div className="p-8 text-center">Loading Profile...</div>;

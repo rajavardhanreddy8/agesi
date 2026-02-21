@@ -188,25 +188,35 @@ def register_user(data: dict) -> dict:
         
         user_id = user_result.data[0]['id']
         
+        def clean_val(val):
+            if not isinstance(val, str): return val
+            return " ".join(val.split())
+            
+        prog = clean_val(data.get('programme'))
+        spec = clean_val(data.get('specialization'))
+        if prog and prog.startswith('CSE'):
+            if not spec: spec = prog
+            prog = 'B.Tech'
+            
         # Insert Profile
         supabase.table('student_profiles').insert({
             'user_id': user_id,
-            'full_name': data['full_name'],
-            'roll_number': data['roll_number'],
-            'school': data['school'],
-            'academic_year': data.get('academic_year'),
-            'programme': data.get('programme'),
-            'specialization': data.get('specialization'),
-            'student_phone': data.get('student_phone'),
-            'student_email': data.get('student_email'),
-            'parent1_name': data.get('parent1_name'),
-            'parent1_email': data.get('parent1_email'),
-            'parent1_phone': data.get('parent1_phone'),
-            'parent1_relation': data.get('parent1_relation', 'Father'),
-            'parent2_name': data.get('parent2_name'),
-            'parent2_email': data.get('parent2_email'),
-            'parent2_phone': data.get('parent2_phone'),
-            'parent2_relation': data.get('parent2_relation', 'Mother'),
+            'full_name': clean_val(data.get('full_name')),
+            'roll_number': clean_val(data.get('roll_number')),
+            'school': clean_val(data.get('school')),
+            'academic_year': clean_val(data.get('academic_year')),
+            'programme': prog,
+            'specialization': spec,
+            'student_phone': clean_val(data.get('student_phone')),
+            'student_email': clean_val(data.get('student_email')),
+            'parent1_name': clean_val(data.get('parent1_name')),
+            'parent1_email': clean_val(data.get('parent1_email')),
+            'parent1_phone': clean_val(data.get('parent1_phone')),
+            'parent1_relation': clean_val(data.get('parent1_relation', 'Father')),
+            'parent2_name': clean_val(data.get('parent2_name')),
+            'parent2_email': clean_val(data.get('parent2_email')),
+            'parent2_phone': clean_val(data.get('parent2_phone')),
+            'parent2_relation': clean_val(data.get('parent2_relation', 'Mother')),
             'signature_data': data.get('signature_data')
         }).execute()
         
