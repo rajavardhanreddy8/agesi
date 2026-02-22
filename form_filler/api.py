@@ -776,6 +776,31 @@ def auto_submit_from_email():
 # AUTHENTICATION ROUTES
 # ============================================================================
 
+@app.route('/api/verify-outlook', methods=['POST'])
+def api_verify_outlook():
+    try:
+        data = request.json
+        email = data.get('email')
+        password = data.get('outlook_password')
+        
+        if not email or not password:
+            return jsonify({'success': False, 'error': 'Email and Outlook password required'}), 400
+            
+        logging.info(f"Frontend requested Outlook verification for {email}")
+        
+        # Call the existing verify function from auth_system_v2
+        from auth_system_v2 import verify_outlook_credentials
+        is_valid, error_msg = verify_outlook_credentials(email, password)
+        
+        if is_valid:
+            return jsonify({'success': True, 'message': 'Credentials verified successfully'})
+        else:
+            return jsonify({'success': False, 'error': error_msg or 'Invalid Outlook credentials'}), 401
+            
+    except Exception as e:
+        logging.error(f"Verify Outlook API Error: {e}", exc_info=True)
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 @app.route('/api/auth/register', methods=['POST'])
 def api_register():
     try:
