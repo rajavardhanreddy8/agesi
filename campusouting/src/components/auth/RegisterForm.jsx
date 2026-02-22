@@ -74,6 +74,32 @@ export const RegisterForm = () => {
 
         if (isLoading) return;
 
+        // Client-side validation for required fields
+        const requiredFields = [
+            { key: 'email', label: 'College Email' },
+            { key: 'password', label: 'Password' },
+            { key: 'outlookPassword', label: 'Outlook Password' },
+            { key: 'fullName', label: 'Full Name' },
+            { key: 'rollNumber', label: 'Roll Number' },
+            { key: 'school', label: 'School' },
+            { key: 'programme', label: 'Programme' },
+            { key: 'specialization', label: 'Specialization' },
+            { key: 'studentPhone', label: 'Phone Number' },
+            { key: 'fatherName', label: "Father's Name" },
+            { key: 'fatherEmail', label: "Father's Email" },
+            { key: 'fatherPhone', label: "Father's Phone" },
+            { key: 'motherName', label: "Mother's Name" },
+            { key: 'motherEmail', label: "Mother's Email" },
+            { key: 'motherPhone', label: "Mother's Phone" },
+        ];
+
+        for (const { key, label } of requiredFields) {
+            if (!formData[key] || !formData[key].trim()) {
+                setError(`${label} is required. Please fill in all fields.`);
+                return;
+            }
+        }
+
         setIsLoading(true);
         setVerifyingCredentials(true);
 
