@@ -214,8 +214,8 @@ def send_email(to, subject, body, html_body=None, attachments=None):
             body={'raw': raw_message}
         ).execute()
         
-        print(f"✓ Email sent to {to}. Message ID: {send_result['id']}")
+        print(f"Email sent to {to}. Message ID: {send_result['id']}")
         return True
     except Exception as e:
-        print(f"❌ Failed to send email: {e}")
+        print(f"Failed to send email: {e}")
         return False
