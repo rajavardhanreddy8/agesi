@@ -529,12 +529,13 @@ class MSFormAutomation:
             logging.info("   ⚠️ Strict match failed, trying aggressive global search...")
             all_radios = self.page.locator('[role="radio"]').all()
             for radio in all_radios:
-                if not radio.is_visible(): continue
+                # Microsoft Forms visually hides the actual radio input (e.g. opacity 0), so it fails is_visible().
+                # We skip the visibility check and rely on the label wrapper clicking logic below.
                 radio_aria = normalize_text(radio.get_attribute('aria-label'))
                 
                 # Check for inclusion
                 if target_normalized in radio_aria:
-                    radio.click()
+                    radio.click(force=True)
                     logging.info(f"   ✅ Selected radio (global fallback): {option_text}")
                     return True
                     
@@ -554,7 +555,7 @@ class MSFormAutomation:
                         logging.info(f"   ✅ Clicked parent label for value match: {option_text}")
                     else:
                         # Fallback to direct input click
-                        radio.click()
+                        radio.click(force=True)
                     
                     # Verification
                     if not radio.is_checked():
