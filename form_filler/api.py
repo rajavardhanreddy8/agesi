@@ -945,26 +945,48 @@ def admin_dashboard():
 @admin_required
 def admin_users():
     try:
-        # Fetch users with profile and subscription info
-        # This is a complex join, might need multiple queries if views aren't used
-        # Using the view v_user_profiles if it exists
-        res = supabase.table('v_user_profiles').select('*').execute()
-        # The view returns 'user_id' but frontend expects 'id', so normalize
+        # Fetch all users directly (avoids INNER JOIN issue in v_user_profiles view
+        # which silently drops users without a student_profile or subscription)
+        users_res = supabase.table('users').select('id, email, is_admin, is_active, is_verified, last_login, created_at').execute()
+        profiles_res = supabase.table('student_profiles').select('user_id, full_name, roll_number, school, academic_year, programme, specialization, student_phone').execute()
+        subs_res = supabase.table('subscriptions').select('user_id, plan_type, submissions_used, monthly_submissions_limit').execute()
+
+        # Build lookup maps
+        profiles = {p['user_id']: p for p in (profiles_res.data or [])}
+        subs = {s['user_id']: s for s in (subs_res.data or [])}
+
         users = []
-        for u in res.data:
-            user = dict(u)
-            if 'user_id' in user and 'id' not in user:
-                user['id'] = user['user_id']
-            users.append(user)
+        for u in (users_res.data or []):
+            uid = u['id']
+            profile = profiles.get(uid, {})
+            sub = subs.get(uid, {})
+            merged = {
+                'id': uid,
+                'user_id': uid,
+                'email': u.get('email'),
+                'is_admin': u.get('is_admin', False),
+                'is_active': u.get('is_active', True),
+                'is_verified': u.get('is_verified', False),
+                'last_login': u.get('last_login'),
+                'full_name': profile.get('full_name'),
+                'roll_number': profile.get('roll_number'),
+                'school': profile.get('school'),
+                'academic_year': profile.get('academic_year'),
+                'programme': profile.get('programme'),
+                'specialization': profile.get('specialization'),
+                'student_phone': profile.get('student_phone'),
+                'plan_type': sub.get('plan_type', 'free'),
+                'automation_enabled': sub.get('plan_type', 'free') != 'free',
+                'is_auto_submit': sub.get('plan_type', 'free') != 'free',
+                'monthly_submissions_limit': sub.get('monthly_submissions_limit', 10),
+                'submissions_used': sub.get('submissions_used', 0),
+            }
+            users.append(merged)
+
         return jsonify({'success': True, 'users': users})
     except Exception as e:
-        # Fallback if view doesn't exist
-        try:
-            res = supabase.table('users').select('*, student_profiles(*), subscriptions(*)').execute()
-            # Flatten or format data
-            return jsonify({'success': True, 'users': res.data})
-        except:
-            return jsonify({'success': False, 'error': str(e)}), 500
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 
 @app.route('/api/admin/users', methods=['POST'])
 @admin_required
