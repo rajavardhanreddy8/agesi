@@ -135,7 +135,7 @@ export const RegisterForm = () => {
                 programme: formData.programme,
                 specialization: formData.specialization,
                 student_phone: formData.studentPhone,
-                student_email: formData.studentEmail || null,
+                student_email: formData.email,
                 parent1_name: formData.fatherName,
                 parent1_email: formData.fatherEmail,
                 parent1_phone: formData.fatherPhone,
@@ -155,7 +155,7 @@ export const RegisterForm = () => {
             }
 
         } catch (err) {
-            setError(err.message || err.response?.data?.error || 'Registration failed. Please try again.');
+            setError(err.response?.data?.error || err.message || 'Registration failed. Please try again.');
         } finally {
             setIsLoading(false);
             setVerifyingCredentials(false);
