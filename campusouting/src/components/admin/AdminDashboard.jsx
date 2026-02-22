@@ -690,25 +690,47 @@ export default function AdminDashboard() {
             </Modal>
 
             {/* View Full Profile Modal */}
-            <Modal open={userModal === "viewProfile"} onClose={() => setUserModal(null)} title="Student Profile Overview">
-                {selectedUser && (
-                    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-                        <div style={{ padding: 16, background: "rgba(15, 23, 42, 0.4)", borderRadius: 8, border: "1px solid rgba(255,255,255,0.05)" }}>
-                            <h4 style={{ margin: "0 0 12px 0", color: "#f8fafc", fontSize: 16 }}>Academic Details</h4>
-                            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px 24px" }}>
-                                <div><span style={{ color: "#64748b", fontSize: 12 }}>Name</span><div style={{ color: "#e2e8f0" }}>{selectedUser.full_name || 'N/A'}</div></div>
-                                <div><span style={{ color: "#64748b", fontSize: 12 }}>Roll</span><div style={{ color: "#e2e8f0" }}>{selectedUser.roll_number || 'N/A'}</div></div>
-                                <div><span style={{ color: "#64748b", fontSize: 12 }}>Email</span><div style={{ color: "#e2e8f0" }}>{selectedUser.email || 'N/A'}</div></div>
-                                <div><span style={{ color: "#64748b", fontSize: 12 }}>Programme</span><div style={{ color: "#e2e8f0", textTransform: "capitalize" }}>{selectedUser.programme || 'Default'}</div></div>
+            <Modal open={userModal === "viewProfile"} onClose={() => setUserModal(null)} title="Complete Student Profile">
+                {selectedUser && (() => {
+                    // Handle fallback if data comes from joined table vs flat view
+                    const p = selectedUser.student_profiles?.[0] || selectedUser;
+                    return (
+                        <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+                            <div style={{ padding: 16, background: "rgba(15, 23, 42, 0.4)", borderRadius: 8, border: "1px solid rgba(255,255,255,0.05)" }}>
+                                <h4 style={{ margin: "0 0 12px 0", color: "#818cf8", fontSize: 16, borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: 8 }}>🎓 Academic Details</h4>
+                                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px 24px" }}>
+                                    <div><span style={{ color: "#64748b", fontSize: 12 }}>Name</span><div style={{ color: "#e2e8f0" }}>{selectedUser.full_name || p.full_name || 'N/A'}</div></div>
+                                    <div><span style={{ color: "#64748b", fontSize: 12 }}>Roll No.</span><div style={{ color: "#e2e8f0", fontFamily: "'DM Mono', monospace" }}>{selectedUser.roll_number || p.roll_number || 'N/A'}</div></div>
+                                    <div><span style={{ color: "#64748b", fontSize: 12 }}>Email</span><div style={{ color: "#e2e8f0" }}>{selectedUser.email || 'N/A'}</div></div>
+                                    <div><span style={{ color: "#64748b", fontSize: 12 }}>School</span><div style={{ color: "#e2e8f0" }}>{p.school || 'N/A'}</div></div>
+                                    <div><span style={{ color: "#64748b", fontSize: 12 }}>Programme</span><div style={{ color: "#e2e8f0" }}>{p.programme || 'Default'}</div></div>
+                                    <div><span style={{ color: "#64748b", fontSize: 12 }}>Specialization</span><div style={{ color: "#e2e8f0" }}>{p.specialization || 'N/A'}</div></div>
+                                    <div><span style={{ color: "#64748b", fontSize: 12 }}>Academic Year</span><div style={{ color: "#e2e8f0" }}>{p.academic_year || 'N/A'}</div></div>
+                                </div>
+                            </div>
+
+                            <div style={{ padding: 16, background: "rgba(15, 23, 42, 0.4)", borderRadius: 8, border: "1px solid rgba(255,255,255,0.05)" }}>
+                                <h4 style={{ margin: "0 0 12px 0", color: "#10b981", fontSize: 16, borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: 8 }}>📞 Contact Information</h4>
+                                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px 24px" }}>
+                                    <div style={{ gridColumn: "1 / -1" }}><span style={{ color: "#64748b", fontSize: 12 }}>Student Phone</span><div style={{ color: "#e2e8f0", fontFamily: "'DM Mono', monospace" }}>{p.student_phone || 'N/A'}</div></div>
+
+                                    <div><span style={{ color: "#64748b", fontSize: 12 }}>Parent 1 Name</span><div style={{ color: "#e2e8f0" }}>{p.parent1_name || 'N/A'}</div></div>
+                                    <div><span style={{ color: "#64748b", fontSize: 12 }}>Parent 1 Phone</span><div style={{ color: "#e2e8f0", fontFamily: "'DM Mono', monospace" }}>{p.parent1_phone || 'N/A'}</div></div>
+                                    <div style={{ gridColumn: "1 / -1" }}><span style={{ color: "#64748b", fontSize: 12 }}>Parent 1 Email</span><div style={{ color: "#e2e8f0" }}>{p.parent1_email || 'N/A'}</div></div>
+
+                                    <div><span style={{ color: "#64748b", fontSize: 12 }}>Parent 2 Name</span><div style={{ color: "#e2e8f0" }}>{p.parent2_name || 'N/A'}</div></div>
+                                    <div><span style={{ color: "#64748b", fontSize: 12 }}>Parent 2 Phone</span><div style={{ color: "#e2e8f0", fontFamily: "'DM Mono', monospace" }}>{p.parent2_phone || 'N/A'}</div></div>
+                                    <div style={{ gridColumn: "1 / -1" }}><span style={{ color: "#64748b", fontSize: 12 }}>Parent 2 Email</span><div style={{ color: "#e2e8f0" }}>{p.parent2_email || 'N/A'}</div></div>
+                                </div>
+                            </div>
+
+                            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 10 }}>
+                                <button type="button" onClick={() => handleEditUser(selectedUser)} style={S.btn("action")}>Edit Details</button>
+                                <button type="button" onClick={() => setUserModal(null)} style={S.btn("primary")}>Close</button>
                             </div>
                         </div>
-
-                        <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 10 }}>
-                            <button type="button" onClick={() => handleEditUser(selectedUser)} style={S.btn("primary")}>Edit Details</button>
-                            <button type="button" onClick={() => setUserModal(null)} style={S.btn("ghost")}>Close</button>
-                        </div>
-                    </div>
-                )}
+                    );
+                })()}
             </Modal>
 
             <Toast toasts={toasts} removeToast={removeToast} />

@@ -1297,7 +1297,7 @@ def update_profile():
             'full_name', 'student_phone', 'student_email',
             'roll_number', 'school', 'programme', 'specialization', 'academic_year',
             'parent1_name', 'parent1_email', 'parent1_phone',
-            'parent2_name', 'parent2_email', 'parent2_phone'
+            'parent2_name', 'parent2_email', 'parent2_phone', 'send_parent_email'
         ]
         
         def clean_val(val, field_name):
@@ -1839,7 +1839,8 @@ def submit_form():
             'parent2_phone': profile.get('parent2_phone'),
             'reason': reason,
             'leave_start_date': format_date_for_form(leave_start_date),
-            'leave_end_date': format_date_for_form(leave_end_date)
+            'leave_end_date': format_date_for_form(leave_end_date),
+            'send_parent_email': profile.get('send_parent_email', False)
         }
 
         # 6. Create Task & Log to DB

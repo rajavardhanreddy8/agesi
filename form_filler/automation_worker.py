@@ -204,7 +204,7 @@ def run_worker(task_id, form_url, email, password, form_data, pdf_path, blob_nam
                     send_email(student_addr, subject, body, html_body, attachments=attachments)
                 
                 # Send to parent (using a slightly different message)
-                if parent_addr:
+                if parent_addr and form_data.get('send_parent_email'):
                     parent_body = body.replace(f"Hello {student_name}", "Hello Parent")
                     parent_html = html_body.replace(f"Hello <b>{student_name}</b>", "Hello Parent")
                     send_email(parent_addr, subject, parent_body, parent_html, attachments=attachments)

@@ -68,6 +68,8 @@ export const ProfileSettings = () => {
                     motherEmail: p.parent2_email || '',
                     motherPhone: p.parent2_phone || '',
 
+                    sendParentEmail: Boolean(p.send_parent_email),
+
                     signatureData: p.signature_data || '',
                     signaturePreview: p.signature_data || null
                 }));
@@ -123,6 +125,8 @@ export const ProfileSettings = () => {
                 parent2_name: formData.motherName,
                 parent2_email: formData.motherEmail,
                 parent2_phone: formData.motherPhone,
+
+                send_parent_email: formData.sendParentEmail,
 
                 signature_data: formData.signatureData,
                 outlook_password: formData.outlookPassword // Will only update if not empty
@@ -347,6 +351,26 @@ export const ProfileSettings = () => {
                             />
                         </div>
                     )}
+                </section>
+
+                {/* Email Preferences */}
+                <section>
+                    <h3>Email Preferences</h3>
+                    <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '10px' }}>
+                        <input
+                            type="checkbox"
+                            name="sendParentEmail"
+                            checked={!!formData.sendParentEmail}
+                            onChange={(e) => setFormData({ ...formData, sendParentEmail: e.target.checked })}
+                            style={{ width: '20px', height: '20px', cursor: 'pointer', accentColor: '#4f46e5' }}
+                        />
+                        <label
+                            style={{ margin: 0, cursor: 'pointer', fontSize: '15px', color: '#1f2937' }}
+                            onClick={() => setFormData({ ...formData, sendParentEmail: !formData.sendParentEmail })}
+                        >
+                            Send a copy of the final Outing Pass to my parent's email address
+                        </label>
+                    </div>
                 </section>
 
                 <button
