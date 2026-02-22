@@ -1,5 +1,0 @@
-<step title="Incoming Request" date="2026-02-07T14:09:32.058" instance="9d5f45" url="/logstream" method="GET" type="request" pid="769,1,3" Host="outing-backend-api.scm.azurewebsites.net" User-Agent="AZURECLI/2.80.0 (MSI)" Accept-Encoding="identity" Authorization="Bea..." x-ms-client-request-id="90ed1cc7-042e-11f1-ba92-d0c637ff8993" X-ARR-LOG-ID="90ed1cc7-042e-11f1-ba92-d0c637ff8993" CLIENT-IP="152.57.238.63:54488" X-SITE-DEPLOYMENT-ID="outing-backend-api" WAS-DEFAULT-HOSTNAME="outing-backend-api.scm.azurewebsites.net" X-Forwarded-Proto="https" X-AppService-Proto="https" X-Forwarded-TlsVersion="1.3" X-WAWS-Unencoded-URL="/logstream" X-Client-IP="152.57.238.63" X-Client-Port="54488" >
-  <step title="Cleanup Xml Logs" date="2026-02-07T14:09:32.063" >
-    <step title="Cleanup Infos" date="2026-02-07T14:09:32.075" totalFiles="367" totalCleanup="207" /><!-- duration: 7ms -->
-  </step><!-- duration: 22ms -->
-  <step title="LogStreamHandlerMiddleware.Invoke" date="2026-02-07T14:09:32.098" /><!-- duration: 310ms -->

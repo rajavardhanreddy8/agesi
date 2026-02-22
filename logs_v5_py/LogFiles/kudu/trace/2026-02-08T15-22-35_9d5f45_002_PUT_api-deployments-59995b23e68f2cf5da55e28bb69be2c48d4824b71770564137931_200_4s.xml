@@ -1,6 +1,0 @@
-<step title="Incoming Request" date="2026-02-08T15:22:35.563" instance="9d5f45" url="/api/deployments/59995b23e68f2cf5da55e28bb69be2c48d4824b71770564137931" method="PUT" type="request" pid="768,1,7" Host="outing-backend-api.scm.azurewebsites.net" User-Agent="GITHUBACTIONS_DeployWebAppToAzure_1cd51d1c1fe349e361c2ab93379d3c8cc18b164b0a18eb4480d27d12ac5c2cb6" Authorization="Bea..." Content-Type="application/json; charset=utf-8" Content-Length="328" X-ARR-LOG-ID="c5363fd5-de91-4eb7-8970-bc46bdd37609" CLIENT-IP="172.184.211.17:18440" X-SITE-DEPLOYMENT-ID="outing-backend-api" WAS-DEFAULT-HOSTNAME="outing-backend-api.scm.azurewebsites.net" X-Forwarded-Proto="https" X-AppService-Proto="https" X-Forwarded-TlsVersion="1.3" X-WAWS-Unencoded-URL="/api/deployments/59995b23e68f2cf5da55e28bb69be2c48d4824b71770564137931" X-Client-IP="172.184.211.17" X-Client-Port="18440" >
-  <step title="DeploymentService.Deploy(id)" date="2026-02-08T15:22:37.411" >
-    <step title="DeploymentService.Create(id)" date="2026-02-08T15:22:37.442" /><!-- duration: 1631ms -->
-  </step><!-- duration: 1701ms -->
-  <step title="Outgoing response" date="2026-02-08T15:22:39.233" type="response" statusCode="200" statusText="OK" /><!-- duration: 11ms -->
-</step><!-- duration: 3698ms -->

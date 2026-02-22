@@ -1,9 +1,0 @@
-<step title="Incoming Request" date="2026-02-07T13:44:44.361" instance="9d5f45" url="/api/deployments/e2b9e59aa173d2f642179dc3d87377abf46f78271770471883268" method="PUT" type="request" pid="768,1,24" Host="outing-backend-api.scm.azurewebsites.net" User-Agent="GITHUBACTIONS_DeployWebAppToAzure_1cd51d1c1fe349e361c2ab93379d3c8cc18b164b0a18eb4480d27d12ac5c2cb6" Authorization="Bea..." Content-Type="application/json; charset=utf-8" Content-Length="328" X-ARR-LOG-ID="4b8073e0-53b9-439c-803f-00ca36cb6f4e" CLIENT-IP="20.98.18.65:63488" X-SITE-DEPLOYMENT-ID="outing-backend-api" WAS-DEFAULT-HOSTNAME="outing-backend-api.scm.azurewebsites.net" X-Forwarded-Proto="https" X-AppService-Proto="https" X-Forwarded-TlsVersion="1.3" X-WAWS-Unencoded-URL="/api/deployments/e2b9e59aa173d2f642179dc3d87377abf46f78271770471883268" X-Client-IP="20.98.18.65" X-Client-Port="63488" >
-  <step title="Cleanup Xml Logs" date="2026-02-07T13:44:44.365" >
-    <step title="Cleanup Infos" date="2026-02-07T13:44:44.376" totalFiles="361" totalCleanup="201" /><!-- duration: 23ms -->
-  </step><!-- duration: 46ms -->
-  <step title="DeploymentService.Deploy(id)" date="2026-02-07T13:44:44.612" >
-    <step title="DeploymentService.Create(id)" date="2026-02-07T13:44:44.619" /><!-- duration: 1188ms -->
-  </step><!-- duration: 1200ms -->
-  <step title="Outgoing response" date="2026-02-07T13:44:45.865" type="response" statusCode="200" statusText="OK" /><!-- duration: 4ms -->
-</step><!-- duration: 1511ms -->
