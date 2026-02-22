@@ -805,6 +805,27 @@ def api_verify_outlook():
 def api_register():
     try:
         data = request.json
+        
+        # Validate required fields before inserting
+        required = {
+            'email': 'College email',
+            'password': 'Password',
+            'outlook_password': 'Outlook password',
+            'full_name': 'Full name',
+            'roll_number': 'Roll number',
+            'school': 'School',
+            'academic_year': 'Academic year',
+            'programme': 'Programme',
+            'specialization': 'Specialization',
+            'student_phone': 'Student phone',
+            'parent1_name': "Father's name",
+            'parent1_email': "Father's email",
+            'parent1_phone': "Father's phone",
+        }
+        for field, label in required.items():
+            if not data.get(field, '').strip():
+                return jsonify({'success': False, 'error': f'{label} is required'}), 400
+        
         result = register_user(data)
         return jsonify(result), 201 if result['success'] else 400
     except Exception as e:
