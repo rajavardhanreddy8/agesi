@@ -21,7 +21,7 @@ html_body = """
 """
 
 # Test address (from previous known context)
-to_address = "guntaka.reddy_2028@woxsen.edu.in"
+to_address = "campusouting.go@gmail.com"
 print(f"Sending test email to {to_address}...")
 try:
     send_email(to_address, subject, body, html_body)

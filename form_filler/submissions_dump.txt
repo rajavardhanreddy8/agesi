@@ -1,0 +1,97 @@
+Columns: ['id', 'user_id', 'form_url', 'task_id', 'leave_start_date', 'leave_end_date', 'status', 'progress', 'message', 'error_details', 'pdf_path', 'screenshot_path', 'submitted_at', 'completed_at', 'ip_address', 'user_agent', 'form_data', 'blob_name']
+
+  id: 128
+  user_id: 36
+  form_url: https://forms.office.com/r/sXXXCpkSWY
+  task_id: task_36_20260222_181521
+  leave_start_date: 2026-02-20
+  leave_end_date: 2026-02-22
+  status: failed
+  progress: 0
+  message: Authentication method not supported - password field not found
+  error_details: None
+  pdf_path: https://agesi.blob.core.windows.net/outing-submissions/20260222_124521_outing_36_20260222181520.pdf?se=2026-02-22T14%3A45%3A21Z&sp=r&sv=2026-02-06&sr=b&sig=2M67jB00PVUhHxrVjF7aWiOBLcF8jAWieh9gBJGqMEk%3D
+  screenshot_path: screenshots/task_36_20260222_181521_1771764382.jpg
+  submitted_at: 2026-02-22 12:45:20.412031
+  completed_at: None
+  ip_address: 169.254.129.4
+  user_agent: None
+  form_data: {'reason': 'Home Visit', 'school': 'School of Technology', 'programme': 'B.Tech', 'parent_name': 'Dummy Parent 1', 'roll_number': 'TEST-AD-001', 'parent2_name': None, 'parent_email': 'parent1@example.com', 'parent_phone': '9999999992', 'student_name': 'Test Adithya (Adivers)', 'parent2_phone': None, 'student_email': 'adithya.test@example.com', 'student_phone': '9999999991', 'leave_end_date': '2/22/2026', 'specialization': 'CSE', 'academic_session': '1st Year', 'leave_start_date': '2/20/2026'}
+  blob_name: 20260222_124521_outing_36_20260222181520.pdf
+---
+  id: 127
+  user_id: 7
+  form_url: https://forms.office.com/r/sXXXCpkSWY
+  task_id: task_7_20260222_123302
+  leave_start_date: 2026-02-20
+  leave_end_date: 2026-02-22
+  status: queued
+  progress: 0
+  message: None
+  error_details: None
+  pdf_path: https://agesi.blob.core.windows.net/outing-submissions/20260222_070302_outing_7_20260222123302.pdf?se=2026-02-22T09%3A03%3A02Z&sp=r&sv=2026-02-06&sr=b&sig=%2Br/BfAolIIDTtCZ00PkJhI34i4PHDvJI7SLuEJE/beE%3D
+  screenshot_path: None
+  submitted_at: 2026-02-22 07:03:00.749018
+  completed_at: None
+  ip_address: 169.254.129.3
+  user_agent: None
+  form_data: {'reason': 'Home Visit', 'school': 'Unknown', 'programme': 'B.Tech', 'parent_name': 'Raghunadha reddy', 'roll_number': '24WU0101111', 'parent2_name': 'Pranitha', 'parent_email': 'rrtradersind@gmail.com', 'parent_phone': '8919455860', 'student_name': 'GUNTAKA. RAJAVARDHAN REDDY', 'parent2_phone': '9010787739', 'student_email': 'rajaravardhanerddy@gmail.com', 'student_phone': '8639929405', 'leave_end_date': '2/22/2026', 'specialization': 'CSE', 'academic_session': '2025', 'leave_start_date': '2/20/2026'}
+  blob_name: 20260222_070302_outing_7_20260222123302.pdf
+---
+  id: 126
+  user_id: 7
+  form_url: https://forms.office.com/r/sXXXCpkSWY
+  task_id: task_7_20260222_123236
+  leave_start_date: 2026-02-20
+  leave_end_date: 2026-02-22
+  status: running
+  progress: 0
+  message: Filling form data...
+  error_details: None
+  pdf_path: https://agesi.blob.core.windows.net/outing-submissions/20260222_070235_outing_7_20260222123235.pdf?se=2026-02-22T09%3A02%3A36Z&sp=r&sv=2026-02-06&sr=b&sig=Pf9nAcp%2BoydMILfbp5shLkcAwLAnuevnGTxHiMUUbOg%3D
+  screenshot_path: screenshots/task_7_20260222_123236_1771743863.jpg
+  submitted_at: 2026-02-22 07:02:35.142232
+  completed_at: None
+  ip_address: 169.254.129.3
+  user_agent: None
+  form_data: {'reason': 'Home Visit', 'school': 'Unknown', 'programme': 'B.Tech', 'parent_name': 'Raghunadha reddy', 'roll_number': '24WU0101111', 'parent2_name': 'Pranitha', 'parent_email': 'rrtradersind@gmail.com', 'parent_phone': '8919455860', 'student_name': 'GUNTAKA. RAJAVARDHAN REDDY', 'parent2_phone': '9010787739', 'student_email': 'rajaravardhanerddy@gmail.com', 'student_phone': '8639929405', 'leave_end_date': '2/22/2026', 'specialization': 'CSE', 'academic_session': '2025', 'leave_start_date': '2/20/2026'}
+  blob_name: 20260222_070235_outing_7_20260222123235.pdf
+---
+  id: 125
+  user_id: 7
+  form_url: https://forms.office.com/r/sXXXCpkSWY
+  task_id: task_7_20260222_111429
+  leave_start_date: 2026-02-20
+  leave_end_date: 2026-02-22
+  status: failed
+  progress: 0
+  message: Form Validation Errors Found: ["'School Name': This question is required."]
+  error_details: None
+  pdf_path: https://agesi.blob.core.windows.net/outing-submissions/20260222_054429_outing_7_20260222111429.pdf?se=2026-02-22T07%3A44%3A29Z&sp=r&sv=2026-02-06&sr=b&sig=YjC2kwQ4Y1a7W/RHetf6/cV9GOWrME65tTVCpFERC58%3D
+  screenshot_path: screenshots/task_7_20260222_111429_1771739186.jpg
+  submitted_at: 2026-02-22 05:44:29.429789
+  completed_at: None
+  ip_address: 169.254.129.3
+  user_agent: None
+  form_data: {'reason': 'Home Visit', 'school': 'Unknown', 'programme': 'B.Tech', 'parent_name': 'Raghunadha reddy', 'roll_number': '24WU0101111', 'parent2_name': 'Pranitha', 'parent_email': 'rrtradersind@gmail.com', 'parent_phone': '8919455860', 'student_name': 'GUNTAKA. RAJAVARDHAN REDDY', 'parent2_phone': '9010787739', 'student_email': 'rajaravardhanerddy@gmail.com', 'student_phone': '8639929405', 'leave_end_date': '2/22/2026', 'specialization': 'CSE', 'academic_session': '2025', 'leave_start_date': '2/20/2026'}
+  blob_name: 20260222_054429_outing_7_20260222111429.pdf
+---
+  id: 124
+  user_id: 7
+  form_url: https://forms.office.com/r/sXXXCpkSWY
+  task_id: task_7_20260222_110837
+  leave_start_date: 2026-02-20
+  leave_end_date: 2026-02-22
+  status: failed
+  progress: 0
+  message: Form Validation Errors Found: ["'School Name': This question is required.", "'Academic Session': This question is required."]
+  error_details: None
+  pdf_path: https://agesi.blob.core.windows.net/outing-submissions/20260222_053837_outing_7_20260222110836.pdf?se=2026-02-22T07%3A38%3A37Z&sp=r&sv=2026-02-06&sr=b&sig=CajYtmWsdffsVtfoy8FAYOIMFkAryhOfDIMRHtk7xNE%3D
+  screenshot_path: screenshots/task_7_20260222_110837_1771738859.jpg
+  submitted_at: 2026-02-22 05:38:36.165912
+  completed_at: None
+  ip_address: 169.254.129.3
+  user_agent: None
+  form_data: {'reason': 'Home Visit', 'school': 'Unknown', 'programme': 'B.Tech', 'parent_name': 'Parent Name', 'roll_number': '23WUO1O1111', 'parent2_name': 'Pranitha', 'parent_email': 'parent@example.com', 'parent_phone': '0000000000', 'student_name': 'TEST_ADITHYA', 'parent2_phone': '9010787739', 'student_email': 'guntaka.reddy_2028@woxsen.edu.in', 'student_phone': '0000000000', 'leave_end_date': '2/22/2026', 'specialization': 'CSE', 'academic_session': '1st Year', 'leave_start_date': '2/20/2026'}
+  blob_name: 20260222_053837_outing_7_20260222110836.pdf
+---
