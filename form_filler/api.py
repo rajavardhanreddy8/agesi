@@ -1589,9 +1589,8 @@ def sync_config_from_mail():
         return jsonify({'success': False, 'error': 'Gmail service not available'}), 503
 
     try:
-        # Search for emails from campusouting.go OR self (rajavreddy.g) OR student.outing@woxsen.edu.in
-        # Note: get_latest_email_content takes a query string now, not just an email
-        SENDER_QUERY = "from:campusouting.go@gmail.com OR from:rajavreddy.g@gmail.com OR from:student.outing@woxsen.edu.in OR from:me"
+        # Search for emails strictly from campusouting.go@gmail.com
+        SENDER_QUERY = "from:campusouting.go@gmail.com"
         print(f"DEBUG: Fetching email matching '{SENDER_QUERY}' for config sync...", flush=True)
         email_data = get_latest_email_content(SENDER_QUERY)
         

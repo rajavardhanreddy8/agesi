@@ -25,25 +25,15 @@ SCOPES = [
     'https://www.googleapis.com/auth/gmail.send'
 ]
 
-def get_gmail_service(account_type='fetch'):
+def get_gmail_service():
     """
     Get Gmail API service, supporting both:
     - Railway deployment (via GMAIL_TOKEN_JSON env var)
     - Local development (via token.json file)
-    
-    account_type: 'fetch' (rajavreddy.g) or 'send' (campusouting.go)
     """
     creds = None
     
-    # Define token file based on account type
-    if account_type == 'fetch':
-        token_filename = 'token_fetch.json'
-    elif account_type == 'send':
-        token_filename = 'token_send.json'
-    else:
-        # Default fallback or error
-        token_filename = 'token_fetch.json' 
-
+    token_filename = 'token.json'
     token_path = os.path.join(SCRIPT_DIR, token_filename)
     credentials_path = os.path.join(SCRIPT_DIR, 'credentials.json')
     
@@ -54,14 +44,13 @@ def get_gmail_service(account_type='fetch'):
     # Fallback to file-based token (local development)
     if not creds and os.path.exists(token_path):
         creds = Credentials.from_authorized_user_file(token_path, SCOPES)
-        # print(f"✓ Loaded Gmail credentials from {token_filename}")
     
     # If there are no (valid) credentials available, let the user log in.
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             try:
                 creds.refresh(Request())
-                print(f"✓ Refreshed Gmail credentials for {account_type}")
+                print(f"✓ Refreshed Gmail credentials")
                 # Save refreshed token
                 with open(token_path, 'w') as token:
                     token.write(creds.to_json())
@@ -72,24 +61,24 @@ def get_gmail_service(account_type='fetch'):
         if not creds:
             # Only works in local development (interactive flow)
             if os.path.exists(credentials_path):
-                print(f"Initiating OAuth flow for {account_type}...")
+                print(f"Initiating OAuth flow...")
                 flow = InstalledAppFlow.from_client_secrets_file(
                     credentials_path, SCOPES)
                 # Force 'consent' to ensure we get a refresh_token every time (critical for offline access)
-                creds = flow.run_local_server(port=8080, prompt='consent', access_type='offline')
-                print(f"✓ Obtained new Gmail credentials for {account_type}")
+                creds = flow.run_local_server(port=8081, prompt='consent', access_type='offline')
+                print(f"✓ Obtained new Gmail credentials")
                 
                  # Save the credentials for the next run (local only)
                 with open(token_path, 'w') as token:
                     token.write(creds.to_json())
             else:
-                raise Exception(f"No valid credentials available for {account_type}. Set env var or run locally first.")
+                raise Exception(f"No valid credentials available. Set env var or run locally first.")
 
     service = build('gmail', 'v1', credentials=creds)
     return service
 
 def get_latest_email_content(query_or_sender):
-    service = get_gmail_service('fetch')
+    service = get_gmail_service()
     
     # query to filter by sender or specific query
     if "from:" in query_or_sender or " OR " in query_or_sender:
@@ -174,7 +163,7 @@ def send_email(to, subject, body, html_body=None, attachments=None):
         import mimetypes
         import base64
 
-        service = get_gmail_service('send')
+        service = get_gmail_service()
         
         message = MIMEMultipart('alternative') if not attachments else MIMEMultipart('mixed')
         message['Subject'] = subject
