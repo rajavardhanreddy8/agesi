@@ -1589,8 +1589,9 @@ def sync_config_from_mail():
         return jsonify({'success': False, 'error': 'Gmail service not available'}), 503
 
     try:
-        # Search for actual form emails from allowed senders
-        SENDER_QUERY = '(from:student.outing@woxsen.edu.in OR from:rajavreddy.g@gmail.com OR from:campusouting.go@gmail.com OR from:me) ("forms.office.com" OR "Microsoft Forms")'
+        # Expanded query to catch forwarded emails and original emails from trusted sources
+        # We rely on extraction validation (if not form_link) below to skip irrelevant emails
+        SENDER_QUERY = '(from:student.outing@woxsen.edu.in OR from:rajavreddy.g@gmail.com OR from:campusouting.go@gmail.com OR from:me)'
         print(f"DEBUG: Fetching email matching '{SENDER_QUERY}' for config sync...", flush=True)
         email_data = get_latest_email_content(SENDER_QUERY)
         
