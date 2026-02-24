@@ -61,6 +61,8 @@ const SubscriptionPlans = () => {
                                 razorpay_signature: paymentResponse.razorpay_signature
                             });
                             alert('Payment Successful! Plan Upgraded to ' + planType);
+                            // Refresh subscription status
+                            fetchCurrentSubscription();
                             window.location.href = '/dashboard';
                         } catch (err) {
                             console.error(err);
