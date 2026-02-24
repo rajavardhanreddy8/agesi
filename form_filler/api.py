@@ -1996,8 +1996,8 @@ ADMIN_PASSWORD_HASH = os.getenv('ADMIN_PASSWORD_HASH', '$2b$12$W0VJrQxqHdmO.oSjb
 
 # Subscription Plans (NO FREE PLAN)
 SUBSCRIPTION_PLANS = {
-    'plan': {
-        'name': 'Plan',
+    'basic': {
+        'name': 'Basic',
         'price': 50,
         'currency': 'INR',
         'duration_days': 30, # Monthly

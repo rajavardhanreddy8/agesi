@@ -56,7 +56,7 @@ const Dashboard = () => {
                     const subRes = await api.get('/subscription/current');
                     if (subRes.data.success) {
                         const plan = subRes.data.subscription;
-                        if (!plan || (plan.plan_type !== 'basic' && plan.plan_type !== 'premium')) {
+                        if (!plan || plan.plan_type === 'free') {
                             // No valid plan, redirect to payment
                             console.log("No active plan found, redirecting to plans...");
                             navigate('/plans');

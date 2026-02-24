@@ -361,7 +361,7 @@ const SubscriptionPlans = () => {
             {/* Plan Card */}
             <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: '440px' }}>
                 {Object.entries(plans).map(([key, plan]) => {
-                    const isCurrentPlan = currentPlan?.plan_type === key || (currentPlan && currentPlan?.plan_type !== 'free' && currentPlan?.plan_type !== 'plan');
+                    const isCurrentPlan = currentPlan?.plan_type === key || (currentPlan && currentPlan?.plan_type !== 'free');
 
                     return (
                         <div
