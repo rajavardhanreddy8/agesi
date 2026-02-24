@@ -35,10 +35,9 @@ def get_gmail_service():
     
     token_filename = 'token.json'
     token_path = os.path.join(SCRIPT_DIR, token_filename)
-    credentials_path = os.path.join(SCRIPT_DIR, 'credentials.json')
-    
     # First, try environment variable (for Azure/Docker deployment)
     gmail_token_json = os.getenv('GMAIL_TOKEN_JSON')
+    env_error = None
     if not creds and gmail_token_json:
         try:
             import json as _json
@@ -46,13 +45,14 @@ def get_gmail_service():
             creds = Credentials.from_authorized_user_info(token_data, SCOPES)
             print("✓ Loaded Gmail credentials from GMAIL_TOKEN_JSON env var")
         except Exception as e:
+            env_error = str(e)
             print(f"Warning: Failed to load GMAIL_TOKEN_JSON env var: {e}")
     
     # Fallback to file-based token (local development)
     if not creds and os.path.exists(token_path):
         creds = Credentials.from_authorized_user_file(token_path, SCOPES)
     
-    # If there are no (valid) credentials available, let the user log in.
+    # If there are no (valid) credentials available, try refreshing.
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             try:
@@ -64,22 +64,10 @@ def get_gmail_service():
             except Exception as e:
                 print(f"Error refreshing token: {e}")
                 creds = None
-
+        
         if not creds:
-            # Only works in local development (interactive flow)
-            if os.path.exists(credentials_path):
-                print(f"Initiating OAuth flow...")
-                flow = InstalledAppFlow.from_client_secrets_file(
-                    credentials_path, SCOPES)
-                # Force 'consent' to ensure we get a refresh_token every time (critical for offline access)
-                creds = flow.run_local_server(port=8081, prompt='consent', access_type='offline')
-                print(f"✓ Obtained new Gmail credentials")
-                
-                 # Save the credentials for the next run (local only)
-                with open(token_path, 'w') as token:
-                    token.write(creds.to_json())
-            else:
-                raise Exception(f"No valid credentials available. Set env var or run locally first.")
+             raw_env_preview = str(gmail_token_json)[:100] if gmail_token_json else "None"
+             raise Exception(f"No valid credentials available. Fallback interactive auth is disabled in production. Env error: {env_error}. Token raw preview: {raw_env_preview}")
 
     service = build('gmail', 'v1', credentials=creds)
     return service
