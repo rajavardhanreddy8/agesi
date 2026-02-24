@@ -2195,7 +2195,7 @@ def verify_payment():
         cur.execute("UPDATE payments SET status = 'completed', payment_id = %s, completed_at = NOW() WHERE id = %s",
                    (data['razorpay_payment_id'], payment['id']))
                    
-        print("DEBUG: Updating subscription...", flush=True)
+        print(f"DEBUG: Updating subscription for user_id={user_id}...", flush=True)
         cur.execute("""
             UPDATE subscriptions SET 
                 plan_type = %s,
@@ -2205,6 +2205,25 @@ def verify_payment():
                 subscription_end = %s
             WHERE user_id = %s
         """, (payment['plan_type'], plan['features']['auto_submit'], plan['features']['monthly_submissions'], sub_end, user_id))
+        
+        # SAFEGUARD: If no subscription row existed, insert one
+        if cur.rowcount == 0:
+            print(f"DEBUG: No subscription row found for user {user_id}, inserting new one...", flush=True)
+            cur.execute("""
+                INSERT INTO subscriptions (user_id, plan_type, is_auto_submit, monthly_submissions_limit, 
+                    submissions_used, subscription_start, subscription_end)
+                VALUES (%s, %s, %s, %s, 0, CURRENT_DATE, %s)
+            """, (user_id, payment['plan_type'], plan['features']['auto_submit'], plan['features']['monthly_submissions'], sub_end))
+        
+        print(f"DEBUG: Subscription updated/inserted. Rows affected: {cur.rowcount}", flush=True)
+        
+        # Verify the subscription was actually applied
+        cur.execute("SELECT plan_type FROM subscriptions WHERE user_id = %s", (user_id,))
+        verify_row = cur.fetchone()
+        if not verify_row or verify_row['plan_type'] == 'free':
+            print(f"CRITICAL: Subscription still shows free after update for user {user_id}!", flush=True)
+        else:
+            print(f"DEBUG: Verified subscription is now: {verify_row['plan_type']}", flush=True)
         
         cur.execute("INSERT INTO activity_logs (user_id, action, description) VALUES (%s, 'subscription_upgrade', %s)",
                    (user_id, f"Upgraded to {plan['name']}"))
