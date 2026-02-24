@@ -1616,7 +1616,7 @@ def sync_config_from_mail():
                         except:
                             try:
                                 s_obj = datetime.strptime(start_date_raw, "%Y-%m-%d")
-                                start_date = start_obj.strftime("%Y-%m-%d")
+                                start_date = s_obj.strftime("%Y-%m-%d")
                             except:
                                 pass
                         
