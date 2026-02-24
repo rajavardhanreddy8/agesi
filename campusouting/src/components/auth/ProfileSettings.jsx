@@ -28,6 +28,9 @@ export const ProfileSettings = () => {
         fatherEmail: '',
         fatherPhone: '',
 
+        // Email Prefs
+        sendParentEmail: false,
+
         // Signature
         signatureData: '',
         signaturePreview: null
@@ -68,7 +71,7 @@ export const ProfileSettings = () => {
                     motherEmail: p.parent2_email || '',
                     motherPhone: p.parent2_phone || '',
 
-                    sendParentEmail: Boolean(p.send_parent_email),
+                    sendParentEmail: p.send_parent_email === true,
 
                     signatureData: p.signature_data || '',
                     signaturePreview: p.signature_data || null
@@ -356,20 +359,84 @@ export const ProfileSettings = () => {
                 {/* Email Preferences */}
                 <section>
                     <h3>Email Preferences</h3>
-                    <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '10px' }}>
-                        <input
-                            type="checkbox"
-                            name="sendParentEmail"
-                            checked={!!formData.sendParentEmail}
-                            onChange={(e) => setFormData({ ...formData, sendParentEmail: e.target.checked })}
-                            style={{ width: '20px', height: '20px', cursor: 'pointer', accentColor: '#4f46e5' }}
-                        />
-                        <label
-                            style={{ margin: 0, cursor: 'pointer', fontSize: '15px', color: '#1f2937' }}
-                            onClick={() => setFormData({ ...formData, sendParentEmail: !formData.sendParentEmail })}
-                        >
-                            Send a copy of the final Outing Pass to my parent's email address
-                        </label>
+                    <div
+                        onClick={() => setFormData({ ...formData, sendParentEmail: !formData.sendParentEmail })}
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            gap: '16px',
+                            marginTop: '12px',
+                            padding: '16px 20px',
+                            borderRadius: '12px',
+                            background: formData.sendParentEmail
+                                ? 'linear-gradient(135deg, rgba(79,70,229,0.15) 0%, rgba(139,92,246,0.1) 100%)'
+                                : 'rgba(255,255,255,0.04)',
+                            border: formData.sendParentEmail
+                                ? '1.5px solid rgba(139,92,246,0.6)'
+                                : '1.5px solid rgba(255,255,255,0.1)',
+                            cursor: 'pointer',
+                            transition: 'all 0.25s ease',
+                            userSelect: 'none',
+                        }}
+                    >
+                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                            <span style={{ fontSize: '22px', marginTop: '2px' }}>
+                                {formData.sendParentEmail ? '📧' : '🔕'}
+                            </span>
+                            <div>
+                                <div style={{ fontWeight: '600', fontSize: '15px', color: formData.sendParentEmail ? '#a78bfa' : '#e2e8f0', marginBottom: '3px' }}>
+                                    Send Outing Pass to Parent
+                                </div>
+                                <div style={{ fontSize: '13px', color: '#94a3b8', lineHeight: '1.4' }}>
+                                    {formData.sendParentEmail
+                                        ? `A copy will be emailed to your parent when submission is complete.`
+                                        : 'Your parent will not receive an email. Only you will be notified.'}
+                                </div>
+                            </div>
+                        </div>
+                        {/* Toggle Switch */}
+                        <div style={{ flexShrink: 0 }}>
+                            <div style={{
+                                width: '48px',
+                                height: '26px',
+                                borderRadius: '13px',
+                                background: formData.sendParentEmail ? '#4f46e5' : '#374151',
+                                position: 'relative',
+                                transition: 'background 0.25s ease',
+                                boxShadow: formData.sendParentEmail ? '0 0 12px rgba(99,102,241,0.5)' : 'none',
+                            }}>
+                                <div style={{
+                                    position: 'absolute',
+                                    top: '3px',
+                                    left: formData.sendParentEmail ? '25px' : '3px',
+                                    width: '20px',
+                                    height: '20px',
+                                    borderRadius: '50%',
+                                    background: '#fff',
+                                    transition: 'left 0.25s ease',
+                                    boxShadow: '0 1px 4px rgba(0,0,0,0.3)',
+                                }} />
+                            </div>
+                        </div>
+                    </div>
+                    {/* Status pill */}
+                    <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <span style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '5px',
+                            fontSize: '12px',
+                            fontWeight: '600',
+                            padding: '3px 10px',
+                            borderRadius: '20px',
+                            background: formData.sendParentEmail ? 'rgba(79,70,229,0.2)' : 'rgba(239,68,68,0.15)',
+                            color: formData.sendParentEmail ? '#a5b4fc' : '#fca5a5',
+                            border: formData.sendParentEmail ? '1px solid rgba(99,102,241,0.4)' : '1px solid rgba(239,68,68,0.3)',
+                        }}>
+                            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: formData.sendParentEmail ? '#818cf8' : '#f87171', display: 'inline-block' }} />
+                            {formData.sendParentEmail ? 'Parent email ON' : 'Parent email OFF'}
+                        </span>
                     </div>
                 </section>
 

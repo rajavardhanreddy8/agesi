@@ -2158,6 +2158,10 @@ def verify_payment():
     print("DEBUG: /verify-payment called", flush=True)
     try:
         data = request.json
+        # Determine user ID: prefer JWT-authenticated user, fallback to explicit user_id in payload
+        user_id = getattr(request, 'user_id', None) or data.get('user_id')
+        if not user_id:
+            return jsonify({'success': False, 'error': 'User identification missing'}), 400
         print(f"DEBUG: Verify Data: {data}", flush=True)
         
         try:
@@ -2200,7 +2204,7 @@ def verify_payment():
                 subscription_start = CURRENT_DATE,
                 subscription_end = %s
             WHERE user_id = %s
-        """, (payment['plan_type'], plan['features']['auto_submit'], plan['features']['monthly_submissions'], sub_end, request.user_id))
+        """, (payment['plan_type'], plan['features']['auto_submit'], plan['features']['monthly_submissions'], sub_end, user_id))
         
         cur.execute("INSERT INTO activity_logs (user_id, action, description) VALUES (%s, 'subscription_upgrade', %s)",
                    (request.user_id, f"Upgraded to {plan['name']}"))
