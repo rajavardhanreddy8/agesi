@@ -2207,7 +2207,7 @@ def verify_payment():
         """, (payment['plan_type'], plan['features']['auto_submit'], plan['features']['monthly_submissions'], sub_end, user_id))
         
         cur.execute("INSERT INTO activity_logs (user_id, action, description) VALUES (%s, 'subscription_upgrade', %s)",
-                   (request.user_id, f"Upgraded to {plan['name']}"))
+                   (user_id, f"Upgraded to {plan['name']}"))
                    
         conn.commit()
         cur.close()
