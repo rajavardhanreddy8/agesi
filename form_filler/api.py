@@ -1589,76 +1589,69 @@ def sync_config_from_mail():
         return jsonify({'success': False, 'error': 'Gmail service not available'}), 503
 
     try:
-        # Search for emails strictly from campusouting.go@gmail.com
-        SENDER_QUERY = "from:campusouting.go@gmail.com"
+        # Search for emails from the university, the dev, or self
+        SENDER_QUERY = "from:student.outing@woxsen.edu.in OR from:rajavreddy.g@gmail.com OR from:campusouting.go@gmail.com OR from:me"
         print(f"DEBUG: Fetching email matching '{SENDER_QUERY}' for config sync...", flush=True)
         email_data = get_latest_email_content(SENDER_QUERY)
         
         if not email_data:
             return jsonify({'success': False, 'error': 'No relevant email found'}), 404
 
-        # Extraction Logic (Ported from bridge.py)
         form_link = None
-        if email_data.get('form_links'):
-            form_link = email_data['form_links'][0]
-
-        combined_text = f"{email_data.get('subject', '')} {email_data.get('body', '')}"
-        
-        # Regex for Date (DD.MM.YYYY or DD/MM/YYYY or DD-MM-YYYY)
-        import re
-        # Matches dd.mm.yyyy, dd/mm/yyyy, or dd-mm-yyyy
-        date_pattern = re.compile(r'\b(\d{2}[./-]\d{2}[./-]\d{4})\b')
-        match = date_pattern.search(combined_text)
-        start_date = match.group(1) if match else None
-        
+        start_date = None
         end_date = None
         reason = None
 
-        # Calculate End Date if Start Date found
-        if start_date:
-            try:
-                # Normalize separator to dot for strptime if needed, or handle variations
-                # actually strptime requires specific format. Let's try to detect or normalize.
-                clean_date = start_date.replace('/', '.').replace('-', '.')
-                start_obj = datetime.strptime(clean_date, "%d.%m.%Y")
-                end_obj = start_obj + timedelta(days=2)
-                end_date = end_obj.strftime("%d.%m.%Y")
-                # Convert to YYYY-MM-DD for DB/Frontend consistency if needed, 
-                # but system_config seems to store what bridge.py sends.
-                # Let's standardize on YYYY-MM-DD for the frontend inputs
-                start_date = start_obj.strftime("%Y-%m-%d")
-                end_date = end_obj.strftime("%Y-%m-%d")
-            except Exception as e:
-                print(f"Date parse error: {e}")
-
-        # Grok Fallback
-        if (not form_link or not start_date or not reason) and process_content_with_groq:
-            print("DEBUG: Using Grok for fallback/enrichment...", flush=True)
+        # 1. Try Groq AI First for intelligent extraction
+        if process_content_with_groq:
+            print("DEBUG: Using Groq AI for primary data extraction...", flush=True)
             try:
                 grok_result = process_content_with_groq(email_data)
                 if grok_result:
-                    if not start_date and grok_result.get('start_date'):
-                        # Grok usually returns DD.MM.YYYY based on prompt, verify and convert
-                        sd_raw = grok_result['start_date']
+                    start_date_raw = grok_result.get('start_date')
+                    if start_date_raw:
                         try:
-                            s_obj = datetime.strptime(sd_raw, "%d.%m.%Y")
+                            s_obj = datetime.strptime(start_date_raw, "%d.%m.%Y")
                             start_date = s_obj.strftime("%Y-%m-%d")
-                            end_date = (s_obj + timedelta(days=2)).strftime("%Y-%m-%d")
                         except:
-                            # Try YYYY-MM-DD just in case
                             try:
-                                s_obj = datetime.strptime(sd_raw, "%Y-%m-%d")
-                                start_date = s_obj.strftime("%Y-%m-%d")
-                                end_date = (s_obj + timedelta(days=2)).strftime("%Y-%m-%d")
+                                s_obj = datetime.strptime(start_date_raw, "%Y-%m-%d")
+                                start_date = start_obj.strftime("%Y-%m-%d")
                             except:
                                 pass
+                        
+                        if start_date:
+                            end_date = (s_obj + timedelta(days=2)).strftime("%Y-%m-%d")
 
-                    if not form_link and grok_result.get('form_link'):
+                    if grok_result.get('form_link'):
                         form_link = grok_result['form_link']
-                    if not reason and grok_result.get('reason'):
+                    
+                    if grok_result.get('reason'):
                         reason = grok_result['reason']
             except Exception as e:
-                print(f"Grok fallback failed: {e}")
+                print(f"Groq API extraction failed: {e}")
+        
+        # 2. Fallback to Regex if Groq missed anything
+        if not form_link and email_data.get('form_links'):
+            print("DEBUG: Groq missed link, falling back to regex...", flush=True)
+            form_link = email_data['form_links'][0]
+
+        if not start_date:
+            print("DEBUG: Groq missed date, falling back to regex...", flush=True)
+            combined_text = f"{email_data.get('subject', '')} {email_data.get('body', '')}"
+            import re
+            date_pattern = re.compile(r'\b(\d{2}[./-]\d{2}[./-]\d{4})\b')
+            match = date_pattern.search(combined_text)
+            if match:
+                raw_d = match.group(1)
+                clean_date = raw_d.replace('/', '.').replace('-', '.')
+                try:
+                    s_obj = datetime.strptime(clean_date, "%d.%m.%Y")
+                    start_date = s_obj.strftime("%Y-%m-%d")
+                    end_obj = s_obj + timedelta(days=2)
+                    end_date = end_obj.strftime("%Y-%m-%d")
+                except:
+                    pass
 
         # Defaults if still missing
         if not reason: reason = "Home Visit"

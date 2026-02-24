@@ -129,13 +129,11 @@ def get_latest_email_content(query_or_sender):
     links = []
     if body:
         # 1. Capture hrefs (HTML)
-        href_pattern = re.compile(r'href\s*=\s*[\"\'"]((?:https?://)[^\"\'"]+)')
+        href_pattern = re.compile(r'href\s*=\s*["\']((?:https?://)[^"\']+)')
         links.extend(href_pattern.findall(body))
         
         # 2. Capture raw URLs (Plain text)
-        # Matches http/https URLs that are NOT inside an href (simple approximation or just grab all)
-        # We can just grab all and deduplicate
-        raw_url_pattern = re.compile(r'(https?://[^\s\"\'<>]+)')
+        raw_url_pattern = re.compile(r'(https?://[^\s"\'<>]+)')
         links.extend(raw_url_pattern.findall(body))
         
         # Deduplicate

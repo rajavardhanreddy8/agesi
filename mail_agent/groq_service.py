@@ -22,7 +22,7 @@ def process_content_with_groq(email_content):
 
     Email Subject: {email_content.get('subject')}
     Email Body Snippet:
-    {email_content.get('body')[:2000]}
+    {email_content.get('body')[:5000]}
 
     Output PURE JSON ONLY:
     {{
