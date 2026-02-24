@@ -386,28 +386,40 @@ const SubscriptionPlans = () => {
                                 </div>
 
                                 {/* Features */}
-                                <ul style={S.featureList}>
-                                    {Object.entries(plan.features).map(([feature, enabled]) => (
-                                        <li key={feature} style={S.featureItem}>
-                                            {enabled ? (
-                                                <div style={S.checkIcon}>
-                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#818cf8" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                                                        <path d="M5 13l4 4L19 7" />
-                                                    </svg>
-                                                </div>
-                                            ) : (
-                                                <div style={S.disabledIcon}>
-                                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#475569" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                                        <path d="M6 18L18 6M6 6l12 12" />
-                                                    </svg>
-                                                </div>
-                                            )}
-                                            <span style={enabled ? S.featureText : S.featureTextDisabled}>
-                                                {feature.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
-                                            </span>
-                                        </li>
-                                    ))}
-                                </ul>
+                                {(() => {
+                                    const features = [
+                                        { label: 'Unlimited Outing Form Submissions', enabled: true },
+                                        { label: 'Automated Form Filling via Email', enabled: true },
+                                        { label: 'AI-Powered PDF Data Extraction', enabled: true },
+                                        { label: 'Auto-Generated Outing Permission PDFs', enabled: true },
+                                        { label: 'Parent Notification via Email', enabled: true },
+                                        { label: 'Real-Time Submission Status Tracking', enabled: true },
+                                        { label: 'Secure Outlook Credential Storage', enabled: true },
+                                        { label: 'Priority Support', enabled: true },
+                                    ];
+                                    return (
+                                        <ul style={S.featureList}>
+                                            {features.map(({ label, enabled }) => (
+                                                <li key={label} style={S.featureItem}>
+                                                    {enabled ? (
+                                                        <div style={S.checkIcon}>
+                                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#818cf8" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                                                <path d="M5 13l4 4L19 7" />
+                                                            </svg>
+                                                        </div>
+                                                    ) : (
+                                                        <div style={S.disabledIcon}>
+                                                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#475569" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                                <path d="M6 18L18 6M6 6l12 12" />
+                                                            </svg>
+                                                        </div>
+                                                    )}
+                                                    <span style={enabled ? S.featureText : S.featureTextDisabled}>{label}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    );
+                                })()}
 
                                 {/* CTA Button */}
                                 <button
