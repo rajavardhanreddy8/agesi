@@ -71,7 +71,7 @@ export const ProfileSettings = () => {
                     motherEmail: p.parent2_email || '',
                     motherPhone: p.parent2_phone || '',
 
-                    sendParentEmail: p.send_parent_email === true,
+                    sendParentEmail: p.send_parent_email === false,
 
                     signatureData: p.signature_data || '',
                     signaturePreview: p.signature_data || null

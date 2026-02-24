@@ -37,9 +37,16 @@ def get_gmail_service():
     token_path = os.path.join(SCRIPT_DIR, token_filename)
     credentials_path = os.path.join(SCRIPT_DIR, 'credentials.json')
     
-    # First, try environment variable (for Railway deployment)
-    # TODO: Update Railway to support dual tokens (maybe GMAIL_TOKEN_FETCH_JSON, GMAIL_TOKEN_SEND_JSON)
-    # For now, we prioritize local file for this specific request
+    # First, try environment variable (for Azure/Docker deployment)
+    gmail_token_json = os.getenv('GMAIL_TOKEN_JSON')
+    if not creds and gmail_token_json:
+        try:
+            import json as _json
+            token_data = _json.loads(gmail_token_json)
+            creds = Credentials.from_authorized_user_info(token_data, SCOPES)
+            print("✓ Loaded Gmail credentials from GMAIL_TOKEN_JSON env var")
+        except Exception as e:
+            print(f"Warning: Failed to load GMAIL_TOKEN_JSON env var: {e}")
     
     # Fallback to file-based token (local development)
     if not creds and os.path.exists(token_path):
