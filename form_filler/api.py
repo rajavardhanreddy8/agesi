@@ -1589,8 +1589,8 @@ def sync_config_from_mail():
         return jsonify({'success': False, 'error': 'Gmail service not available'}), 503
 
     try:
-        # Search for emails from the university, the dev, or self
-        SENDER_QUERY = "from:student.outing@woxsen.edu.in OR from:rajavreddy.g@gmail.com OR from:campusouting.go@gmail.com OR from:me"
+        # Search for actual form emails from allowed senders
+        SENDER_QUERY = '(from:student.outing@woxsen.edu.in OR from:rajavreddy.g@gmail.com OR from:campusouting.go@gmail.com OR from:me) ("forms.office.com" OR "Microsoft Forms")'
         print(f"DEBUG: Fetching email matching '{SENDER_QUERY}' for config sync...", flush=True)
         email_data = get_latest_email_content(SENDER_QUERY)
         
@@ -1655,6 +1655,13 @@ def sync_config_from_mail():
 
         # Defaults if still missing
         if not reason: reason = "Home Visit"
+
+        # Validation Check to prevent false success
+        if not form_link or not start_date:
+            return jsonify({
+                'success': False, 
+                'error': f'Could not extract data from latest email: "{email_data.get("subject", "Unknown")}"'
+            }), 400
 
         # Update Database
         conn = get_db_connection()
