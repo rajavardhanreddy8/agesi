@@ -913,7 +913,13 @@ def api_update_form_settings():
         
         for key in ['form_link', 'start_date', 'end_date', 'default_reason']:
             if key in data:
-                cur.execute("UPDATE system_config SET value = %s, updated_at = NOW() WHERE key = %s", (data[key], key))
+                # Use Upsert (INSERT ON CONFLICT DO UPDATE) to ensure it saves even if missing
+                cur.execute("""
+                    INSERT INTO system_config (key, value, updated_at) 
+                    VALUES (%s, %s, NOW()) 
+                    ON CONFLICT (key) 
+                    DO UPDATE SET value = EXCLUDED.value, updated_at = EXCLUDED.updated_at
+                """, (key, data[key]))
         
         conn.commit()
         conn.close()
@@ -1591,7 +1597,7 @@ def sync_config_from_mail():
     try:
         # Expanded query to catch forwarded emails and original emails from trusted sources
         # We rely on extraction validation (if not form_link) below to skip irrelevant emails
-        SENDER_QUERY = '(from:student.outing@woxsen.edu.in OR from:rajavreddy.g@gmail.com OR from:campusouting.go@gmail.com OR from:me)'
+        SENDER_QUERY = '(subject:outing OR subject:pass OR from:student.outing@woxsen.edu.in)'
         print(f"DEBUG: Fetching email matching '{SENDER_QUERY}' for config sync...", flush=True)
         email_data = get_latest_email_content(SENDER_QUERY)
         

@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-SENDER_EMAIL = "campusouting.go@gmail.com"
+SENDER_EMAIL = "(subject:outing OR subject:pass)"
 
 # Endpoint to trigger automation
 # Uses BACKEND_URL env var for Railway internal networking

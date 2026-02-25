@@ -81,70 +81,84 @@ def get_latest_email_content(query_or_sender):
     else:
         q = f"from:{query_or_sender}"
     
-    # List search results, getting only the latest one (maxResults=1)
-    results = service.users().messages().list(userId='me', q=q, maxResults=1).execute()
+    # Fetch up to 10 recent messages to find one with a form link
+    results = service.users().messages().list(userId='me', q=q, maxResults=10).execute()
     messages = results.get('messages', [])
 
     if not messages:
         print(f"No messages found matching: {query_or_sender}")
         return None
 
-    message = messages[0]
-    msg = service.users().messages().get(userId='me', id=message['id']).execute()
+    first_parsed_email = None
 
-    payload = msg['payload']
-    headers = payload['headers']
-    subject = ""
-    for h in headers:
-        if h['name'] == 'Subject':
-            subject = h['value']
+    for message in messages:
+        msg = service.users().messages().get(userId='me', id=message['id']).execute()
 
-    def get_body_from_payload(payload):
-        body = ""
-        if 'parts' in payload:
-            for part in payload['parts']:
-                if part['mimeType'] == 'text/plain':
-                     data = part['body'].get('data')
-                     if data:
-                         body += base64.urlsafe_b64decode(data).decode('utf-8')
-                elif part['mimeType'] == 'text/html':
-                     data = part['body'].get('data')
-                     if data:
-                         body += base64.urlsafe_b64decode(data).decode('utf-8')
-                elif part['mimeType'].startswith('multipart/'):
-                     body += get_body_from_payload(part)
-        elif 'body' in payload and payload['body'].get('data'):
-            data = payload['body']['data']
-            body += base64.urlsafe_b64decode(data).decode('utf-8')
-        return body
+        payload = msg['payload']
+        headers = payload.get('headers', [])
+        subject = ""
+        for h in headers:
+            if h['name'] == 'Subject':
+                subject = h['value']
 
-    body = get_body_from_payload(payload)
-    
-    # Regex link extraction
-    links = []
-    if body:
-        # 1. Capture hrefs (HTML)
-        href_pattern = re.compile(r'href\s*=\s*["\']((?:https?://)[^"\']+)')
-        links.extend(href_pattern.findall(body))
+        def get_body_from_payload(payload):
+            body = ""
+            if 'parts' in payload:
+                for part in payload['parts']:
+                    if part['mimeType'] == 'text/plain':
+                         data = part['body'].get('data')
+                         if data:
+                             body += base64.urlsafe_b64decode(data).decode('utf-8')
+                    elif part['mimeType'] == 'text/html':
+                         data = part['body'].get('data')
+                         if data:
+                             body += base64.urlsafe_b64decode(data).decode('utf-8')
+                    elif part['mimeType'].startswith('multipart/'):
+                         body += get_body_from_payload(part)
+            elif 'body' in payload and payload['body'].get('data'):
+                data = payload['body']['data']
+                body += base64.urlsafe_b64decode(data).decode('utf-8')
+            return body
+
+        body = get_body_from_payload(payload)
         
-        # 2. Capture raw URLs (Plain text)
-        raw_url_pattern = re.compile(r'(https?://[^\s"\'<>]+)')
-        links.extend(raw_url_pattern.findall(body))
+        # Regex link extraction
+        links = []
+        if body:
+            # 1. Capture hrefs (HTML)
+            href_pattern = re.compile(r'href\s*=\s*["\']((?:https?://)[^"\']+)')
+            links.extend(href_pattern.findall(body))
+            
+            # 2. Capture raw URLs (Plain text)
+            raw_url_pattern = re.compile(r'(https?://[^\s"\'<>]+)')
+            links.extend(raw_url_pattern.findall(body))
+            
+            # Deduplicate
+            links = list(set(links))
         
-        # Deduplicate
-        links = list(set(links))
-    
-    # Simple HTML stripping
-    soup = BeautifulSoup(body, "html.parser")
-    text_body = soup.get_text()
+        # Simple HTML stripping
+        soup = BeautifulSoup(body, "html.parser")
+        text_body = soup.get_text()
 
-    return {
-        "subject": subject,
-        "body": text_body,
-        "raw_body": body,
-        "links": links,
-        "form_links": [l for l in links if "forms.office.com" in l or "docs.google.com" in l or "forms.gle" in l]
-    }
+        form_links = [l for l in links if "forms.office.com" in l or "docs.google.com" in l or "forms.gle" in l]
+
+        email_data = {
+            "subject": subject,
+            "body": text_body,
+            "raw_body": body,
+            "links": links,
+            "form_links": form_links
+        }
+
+        if not first_parsed_email:
+            first_parsed_email = email_data
+
+        if form_links:
+            print(f"Found valid email with form link: {subject}")
+            return email_data
+            
+    print("No email with form link found in top 10. Returning absolute latest email.")
+    return first_parsed_email
 
 def send_email(to, subject, body, html_body=None, attachments=None):
     """Send an email using Gmail API"""
