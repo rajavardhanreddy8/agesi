@@ -1516,60 +1516,121 @@ class MSFormAutomation:
             # Click Submit
             submit_btn = self.page.locator('button:has-text("Submit")')
             if submit_btn.count() > 0:
+                # Remember the URL before submitting
+                pre_submit_url = self.page.url
                 submit_btn.first.click()
             else:
                 raise Exception("Submit button not found!")
             
-            # VERIFICATION
+            # ============================================================
+            # ROBUST POST-SUBMIT VERIFICATION (Multi-Strategy)
+            # ============================================================
             print("⏳ Waiting for confirmation...")
-            time.sleep(2)
             
-            # Check for Success Message
-            # Standard MS Forms success text: "Thanks!", "Your response was submitted"
-            success_indicator = self.page.locator(':text("Thanks!"), :text("Your response was submitted"), :text("Save my response")')
+            # Wait for page to react to the submit click
+            time.sleep(5)
             
-            try:
-                success_indicator.first.wait_for(state='visible', timeout=10000)
-                print("✅ SUBMISSION CONFIRMED: Success message visible.")
+            # --- STRATEGY 1: Check if Submit button disappeared ---
+            # This is the STRONGEST signal: MS Forms removes the submit button on success
+            submit_btn_after = self.page.locator('button:has-text("Submit")')
+            submit_gone = submit_btn_after.count() == 0 or not submit_btn_after.first.is_visible()
+            if submit_gone:
+                print("✅ Submit button disappeared — strong success signal.")
+            
+            # --- STRATEGY 2: Check for Success Message (broad selectors) ---
+            success_indicator = self.page.locator(
+                ':text-matches("(?i)thanks"), '
+                ':text-matches("(?i)thank you"), '
+                ':text-matches("(?i)response was submitted"), '
+                ':text-matches("(?i)your response"), '
+                ':text-matches("(?i)Save my response"), '
+                ':text-matches("(?i)successfully"), '
+                ':text-matches("(?i)submitted"), '
+                ':text-matches("(?i)recorded"), '
+                '[data-automation-id="submit-another-response-button"], '
+                '[data-automation-id="print-response-button"], '
+                '[class*="thank-you"], '
+                '[class*="thankYou"], '
+                '[class*="confirmation"]'
+            )
+            
+            # Try waiting for success with retries
+            success_found = False
+            MAX_CHECKS = 3
+            for attempt in range(MAX_CHECKS):
+                try:
+                    success_indicator.first.wait_for(state='visible', timeout=15000)
+                    success_found = True
+                    print(f"✅ SUBMISSION CONFIRMED: Success message visible (attempt {attempt+1}).")
+                    break
+                except Exception:
+                    print(f"⚠️ Success message not found yet (attempt {attempt+1}/{MAX_CHECKS})...")
+                    if attempt < MAX_CHECKS - 1:
+                        time.sleep(5)  # Wait before retry
+            
+            if success_found:
                 return True
-            except Exception:
-                # If timeout, checks for errors
-                print("⚠️ Success message NOT found. Checking for validation errors...")
-                
-                # Look for validation errors (usually red text)
-                errors = self.page.locator('.office-form-question-error-message, .flower-field-validation-error, :text("This question is required"), :text("Please enter a valid date")')
-                if errors.count() > 0:
-                    detailed_errors = []
-                    count = errors.count()
-                    for i in range(count):
-                        err_el = errors.nth(i)
-                        if not err_el.is_visible():
-                            continue
-                        
-                        err_msg = err_el.inner_text()
-                        # Try to find parent question
-                        try:
-                            parent = err_el.locator('xpath=./ancestor::div[@data-automation-id="questionItem"]').first
-                            if parent.count() > 0:
-                                # Try to find question title
-                                title = parent.locator('.text-format-content, span[class*="question-title"]').first
-                                if title.count() > 0:
-                                    q_text = title.inner_text()
-                                    detailed_errors.append(f"'{q_text}': {err_msg}")
-                                else:
-                                    detailed_errors.append(f"Unknown Question: {err_msg}")
-                            else:
-                                detailed_errors.append(f"Global/Unknown: {err_msg}")
-                        except:
-                            detailed_errors.append(f"Error {i}: {err_msg}")
+            
+            # --- STRATEGY 3: Check URL change ---
+            post_submit_url = self.page.url
+            url_changed = post_submit_url != pre_submit_url
+            if url_changed:
+                print(f"✅ URL changed after submit: {pre_submit_url[:60]} → {post_submit_url[:60]}")
+            
+            # --- STRATEGY 4: Check for validation errors ---
+            print("⚠️ No success text found. Checking for validation errors...")
+            errors = self.page.locator(
+                '.office-form-question-error-message, '
+                '.flower-field-validation-error, '
+                ':text("This question is required"), '
+                ':text("Please enter a valid date"), '
+                ':text("Please answer this question"), '
+                '[role="alert"]'
+            )
+            
+            has_visible_errors = False
+            detailed_errors = []
+            if errors.count() > 0:
+                count = errors.count()
+                for i in range(min(count, 15)):
+                    err_el = errors.nth(i)
+                    if not err_el.is_visible():
+                        continue
                     
-                    if detailed_errors:
-                        raise Exception(f"Form Validation Errors Found: {detailed_errors}")
-                
-                # If no errors but no success...
-                # Maybe it's still loading?
-                self.page.screenshot(path=f'error_unknown_{datetime.now().strftime("%H%M%S")}.jpg')
-                raise Exception("Submission timed out. No success message and no validation errors found. Check screenshot.")
+                    has_visible_errors = True
+                    err_msg = err_el.inner_text()
+                    try:
+                        parent = err_el.locator('xpath=./ancestor::div[@data-automation-id="questionItem"]').first
+                        if parent.count() > 0:
+                            title = parent.locator('.text-format-content, span[class*="question-title"]').first
+                            if title.count() > 0:
+                                q_text = title.inner_text()
+                                detailed_errors.append(f"'{q_text}': {err_msg}")
+                            else:
+                                detailed_errors.append(f"Unknown Question: {err_msg}")
+                        else:
+                            detailed_errors.append(f"Global/Unknown: {err_msg}")
+                    except:
+                        detailed_errors.append(f"Error {i}: {err_msg}")
+            
+            if has_visible_errors and detailed_errors:
+                raise Exception(f"Form Validation Errors Found: {detailed_errors}")
+            
+            # --- FINAL DECISION ---
+            # If submit button is gone OR URL changed, and NO validation errors → assume SUCCESS
+            if (submit_gone or url_changed) and not has_visible_errors:
+                print("✅ SUBMISSION ASSUMED SUCCESSFUL: Submit button gone/URL changed, no validation errors.")
+                self.page.screenshot(path=f'submit_assumed_ok_{datetime.now().strftime("%H%M%S")}.jpg')
+                return True
+            
+            # If we get here, something truly unexpected happened
+            self.page.screenshot(path=f'error_unknown_{datetime.now().strftime("%H%M%S")}.jpg')
+            page_text = self.page.inner_text('body')[:500] if self.page.locator('body').count() > 0 else 'N/A'
+            raise Exception(
+                f"Submission verification inconclusive. "
+                f"Submit button present: {not submit_gone}, URL changed: {url_changed}, "
+                f"Validation errors: {has_visible_errors}. Page text: {page_text[:200]}"
+            )
 
         except Exception as e:
             print(f"❌ Submit failed: {e}")
