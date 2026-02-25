@@ -215,7 +215,13 @@ def run_worker(task_id, form_url, email, password, form_data, pdf_path, blob_nam
         else:
              update_db_status(task_id, 'failed', 'Automation Failed via implementation')
 
-        # Cleanup temp file
+    except Exception as e:
+        print(f"Worker specific error: {e}")
+        traceback.print_exc()
+        update_db_status(task_id, 'failed', str(e))
+
+    finally:
+        # Cleanup temp file (always runs, even on failure)
         if temp_pdf_created and os.path.exists(local_pdf_path):
             try:
                 os.remove(local_pdf_path)
@@ -223,10 +229,17 @@ def run_worker(task_id, form_url, email, password, form_data, pdf_path, blob_nam
             except:
                 pass
 
-    except Exception as e:
-        print(f"Worker specific error: {e}")
-        traceback.print_exc()
-        update_db_status(task_id, 'failed', str(e))
+        # Delete PDF from Azure Blob Storage (always runs)
+        if blob_name:
+            try:
+                from azure_storage_helper import delete_from_azure_blob
+                deletion_success = delete_from_azure_blob(blob_name)
+                if deletion_success:
+                    print(f"Successfully deleted PDF from Azure: {blob_name}")
+                else:
+                    print(f"PDF deletion returned false: {blob_name}")
+            except Exception as e:
+                print(f"Failed to delete PDF from Azure (non-critical): {e}")
 
 if __name__ == "__main__":
     # Expect JSON args from stdin or simple argparse
