@@ -541,19 +541,82 @@ def run_automation_async(task_id, form_url, email, password, form_data, pdf_path
                     (task.user_id,)
                 )
                 conn.commit()
+
+            # Send Confirmation Emails (Only on Success)
+            try:
+                if send_email:
+                    student_addr = form_data.get('student_email')
+                    parent_addr = form_data.get('parent_email')
+                    student_name = form_data.get('student_name', 'Student')
+                    start_date = form_data.get('leave_start_date')
+                    end_date = form_data.get('leave_end_date')
+                    
+                    subject = f"OUTING SUCCESS: {student_name} ({start_date} to {end_date})"
+                    body = (
+                        f"Hello {student_name},\n\n"
+                        f"Your outing form for {start_date} to {end_date} has been successfully submitted automatically.\n\n"
+                        f"Status: COMPLETED\n"
+                        f"See the attached PDF and confirmation screenshot.\n\n"
+                        f"Regards,\nCampus Outing Team"
+                    )
+                    html_body = f"""
+                    <div style="font-family: sans-serif; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+                        <h2 style="color: #10b981;">✅ Outing Form Submitted!</h2>
+                        <p>Hello <b>{student_name}</b>,</p>
+                        <p>Good news! Your outing permission for <b>{start_date}</b> to <b>{end_date}</b> has been submitted successfully to the Microsoft Form.</p>
+                        <div style="background: #f9fafb; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                            <b>Submission Details:</b><br/>
+                            Status: <span style="color: #10b981; font-weight: bold;">SUCCESS</span><br/>
+                            Start Date: {start_date}<br/>
+                            End Date: {end_date}<br/>
+                        </div>
+                        <p>Please find the generated PDF pass and the final MS Forms submission screenshot attached to this email.</p>
+                        <p style="color: #6b7280; font-size: 0.9em; border-top: 1px solid #eee; padding-top: 20px;">
+                            This is an automated notification. Please ensure you carry your ID card when leaving the campus.
+                        </p>
+                    </div>
+                    """
+                    
+                    attachments = []
+                    local_pdf_path = None
+                    if pdf_path.startswith(('http://', 'https://')):
+                        import requests
+                        try:
+                            # Download PDF from Azure temporarily to attach it
+                            r = requests.get(pdf_path)
+                            if r.status_code == 200:
+                                local_pdf_path = f"temp_email_attach_{task_id}.pdf"
+                                with open(local_pdf_path, 'wb') as f:
+                                    f.write(r.content)
+                                attachments.append(local_pdf_path)
+                        except Exception as e:
+                            logging.error(f"Failed to download PDF for email: {e}")
+                    elif os.path.exists(pdf_path):
+                        attachments.append(pdf_path)
+                        
+                    if hasattr(task, 'screenshot_path') and task.screenshot_path and os.path.exists(task.screenshot_path):
+                        attachments.append(task.screenshot_path)
+                    
+                    # Send to student (blocking is fine since this is already an async background thread)
+                    if student_addr:
+                        send_email(student_addr, subject, body, html_body, attachments=attachments)
+                    
+                    # Send to parent
+                    if parent_addr and form_data.get('send_parent_email'):
+                        parent_body = body.replace(f"Hello {student_name}", "Hello Parent")
+                        parent_html = html_body.replace(f"Hello <b>{student_name}</b>", "Hello Parent")
+                        send_email(parent_addr, subject, parent_body, parent_html, attachments=attachments)
+                        
+                    # Clean up temp email pdf after sending
+                    if local_pdf_path and os.path.exists(local_pdf_path):
+                        try:
+                            os.remove(local_pdf_path)
+                        except Exception as clean_e:
+                            logging.error(f"Failed to cleanup temp email pdf: {clean_e}")
+                            
+            except Exception as mail_err:
+                logging.error(f"Failed to send confirmation emails: {mail_err}")
             
-            # Delete PDF from Azure Blob Storage after successful submission
-            if blob_name:
-                try:
-                    from azure_storage_helper import delete_from_azure_blob
-                    deletion_success = delete_from_azure_blob(blob_name)
-                    if deletion_success:
-                        logging.info(f"Successfully deleted PDF from Azure: {blob_name}")
-                    else:
-                        logging.warning(f"PDF deletion returned false: {blob_name}")
-                except Exception as e:
-                    # Don't fail the task if deletion fails
-                    logging.error(f"Failed to delete PDF from Azure (non-critical): {e}")
         # run_automation now raises an exception with the actual error on failure,
         # so if we reach here, it was successful.
         if not success:
@@ -580,7 +643,20 @@ def run_automation_async(task_id, form_url, email, password, form_data, pdf_path
     finally:
         if conn:
             conn.close()
-        # Clean up PDF file
+            
+        # Delete PDF from Azure Blob Storage to prevent cloud overflow
+        if blob_name:
+            try:
+                from azure_storage_helper import delete_from_azure_blob
+                deletion_success = delete_from_azure_blob(blob_name)
+                if deletion_success:
+                    logging.info(f"Successfully deleted PDF from Azure: {blob_name}")
+                else:
+                    logging.warning(f"PDF deletion returned false: {blob_name}")
+            except Exception as e:
+                logging.error(f"Failed to delete PDF from Azure (non-critical): {e}")
+
+        # Clean up local PDF file
         try:
             if pdf_path and os.path.exists(pdf_path) and "standard_outing" not in pdf_path:
                 os.remove(pdf_path)
@@ -1828,6 +1904,13 @@ def submit_form():
         # Uses module-level normalize_programme() defined at top of file
         
 
+        # Ensure the student email is a @woxsen.edu.in address; fallback to authenticated email if not
+        student_email_candidate = profile.get('student_email')
+        if student_email_candidate and student_email_candidate.lower().endswith('@woxsen.edu.in'):
+            student_email = student_email_candidate
+        else:
+            student_email = user_auth['email']
+
         form_data = {
             'student_name': profile['full_name'],
             'roll_number': profile['roll_number'],
@@ -1836,8 +1919,7 @@ def submit_form():
             'programme': normalize_programme(profile['programme']),
             'specialization': profile['specialization'],
             'student_phone': profile['student_phone'],
-            # Fall back to auth email (user_auth['email'] = woxsen email) if student_email not set
-            'student_email': profile.get('student_email') or user_auth['email'],
+            'student_email': student_email,
             'parent_name': profile['parent1_name'],
             'parent_phone': profile['parent1_phone'],
             'parent_email': profile['parent1_email'],
