@@ -26,13 +26,18 @@ from dotenv import load_dotenv
 import os
 from pathlib import Path
 import sys
+send_email = None
 try:
     # Add mail_agent to path to access gmail_service
-    sys.path.append(os.path.join(os.path.dirname(__file__), '../mail_agent'))
+    _mail_agent_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'mail_agent')
+    if _mail_agent_path not in sys.path:
+        sys.path.insert(0, _mail_agent_path)
     from gmail_service import send_email
-except ImportError:
-    logging.warning("Could not import send_email from gmail_service. Email notifications disabled.")
+    logging.info("send_email imported successfully from gmail_service")
+except Exception as e:
+    logging.warning(f"Could not import send_email from gmail_service: {e}. Email notifications disabled.")
     send_email = None
+
 
 # ===== TIMEZONE CONFIGURATION FOR INDIA (IST) =====
 IST = pytz.timezone('Asia/Kolkata')
@@ -545,6 +550,7 @@ def run_automation_async(task_id, form_url, email, password, form_data, pdf_path
             # Send Confirmation Emails (Only on Success)
             try:
                 if send_email:
+                    logging.info(f"Preparing to send confirmation emails for task {task_id}")
                     student_addr = form_data.get('student_email')
                     parent_addr = form_data.get('parent_email')
                     student_name = form_data.get('student_name', 'Student')
@@ -613,6 +619,8 @@ def run_automation_async(task_id, form_url, email, password, form_data, pdf_path
                             os.remove(local_pdf_path)
                         except Exception as clean_e:
                             logging.error(f"Failed to cleanup temp email pdf: {clean_e}")
+                else:
+                    logging.warning(f"send_email is None — email notifications disabled for task {task_id}")
                             
             except Exception as mail_err:
                 logging.error(f"Failed to send confirmation emails: {mail_err}")
