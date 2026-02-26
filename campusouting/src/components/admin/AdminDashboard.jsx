@@ -172,10 +172,13 @@ export default function AdminDashboard() {
     const [loadingStats, setLoadingStats] = useState(true);
     const [loadingUsers, setLoadingUsers] = useState(true);
     const [loadingActivity, setLoadingActivity] = useState(true);
+    const [loadingSubmissions, setLoadingSubmissions] = useState(false);
     const [searchUser, setSearchUser] = useState("");
     const [filterPlan, setFilterPlan] = useState("all");
     const [filterAuto, setFilterAuto] = useState("all");
     const [selectedUser, setSelectedUser] = useState(null);
+    const [logSearch, setLogSearch] = useState("");
+    const [logStatusFilter, setLogStatusFilter] = useState("all");
 
     const [userModal, setUserModal] = useState(null); // 'editPlan', 'viewPass', 'createUser'
     const [savingUser, setSavingUser] = useState(false);
@@ -230,6 +233,18 @@ export default function AdminDashboard() {
         } catch (e) { }
     }, []);
 
+    const loadSubmissions = useCallback(async () => {
+        setLoadingSubmissions(true);
+        try {
+            const res = await api.get('/admin/submissions');
+            setSubmissions(res.data.submissions || []);
+        } catch (e) {
+            toast("Failed to load submission logs", "error");
+        } finally {
+            setLoadingSubmissions(false);
+        }
+    }, []);
+
     useEffect(() => {
         loadDashboard();
         loadUsers();
@@ -237,6 +252,11 @@ export default function AdminDashboard() {
         intervalRef.current = setInterval(loadDashboard, 30000);
         return () => clearInterval(intervalRef.current);
     }, [loadDashboard, loadUsers, loadConfig]);
+
+    // Load submissions when switching to the activity tab
+    useEffect(() => {
+        if (activeTab === 'activity') loadSubmissions();
+    }, [activeTab, loadSubmissions]);
 
     // ── User Mng ──
     const openEdit = (u) => {
@@ -594,39 +614,80 @@ export default function AdminDashboard() {
                         </div>
                     )}
 
-                    {activeTab === "activity" && (
-                        <div style={{ animation: "slideUp 0.3s ease" }}>
-                            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
-                                <h2 style={{ ...S.sectionTitle, margin: 0, flex: 1 }}>Activity Logs</h2>
-                                {["all", "COMPLETED", "FAILED"].map((f) => (
-                                    <button key={f} style={S.btn(activityFilter === f ? "primary" : "ghost")} onClick={() => setActivityFilter(f)}>
-                                        {f === "all" ? "All" : f}
-                                    </button>
-                                ))}
+                    {activeTab === "activity" && (() => {
+                        const statusColor = (s) => {
+                            if (s === 'completed') return S.badge({ background: 'rgba(16,185,129,0.12)', color: '#6ee7b7', border: '1px solid rgba(16,185,129,0.25)' });
+                            if (s === 'failed') return S.badge({ background: 'rgba(239,68,68,0.12)', color: '#fca5a5', border: '1px solid rgba(239,68,68,0.25)' });
+                            if (s === 'running') return S.badge({ background: 'rgba(245,158,11,0.12)', color: '#fcd34d', border: '1px solid rgba(245,158,11,0.25)' });
+                            if (s === 'queued' || s === 'pending') return S.badge({ background: 'rgba(99,102,241,0.12)', color: '#a5b4fc', border: '1px solid rgba(99,102,241,0.25)' });
+                            return S.badge({ background: 'rgba(148,163,184,0.1)', color: '#94a3b8', border: '1px solid rgba(148,163,184,0.2)' });
+                        };
+                        const filteredSubs = submissions.filter(s => {
+                            const emailMatch = !logSearch || (s.users?.email || '').toLowerCase().includes(logSearch.toLowerCase()) || (s.student_profiles?.[0]?.full_name || s.student_profiles?.full_name || '').toLowerCase().includes(logSearch.toLowerCase());
+                            const statusMatch = logStatusFilter === 'all' || s.status === logStatusFilter;
+                            return emailMatch && statusMatch;
+                        });
+                        return (
+                            <div style={{ animation: "slideUp 0.3s ease" }}>
+                                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20, flexWrap: 'wrap' }}>
+                                    <h2 style={{ ...S.sectionTitle, margin: 0, flex: 1 }}>📋 Full Submission History</h2>
+                                    <input placeholder="Search user / name..." value={logSearch} onChange={e => setLogSearch(e.target.value)} style={{ ...S.input, width: 220 }} />
+                                    <select value={logStatusFilter} onChange={e => setLogStatusFilter(e.target.value)} style={S.select}>
+                                        <option value="all">All Status</option>
+                                        <option value="completed">Completed</option>
+                                        <option value="failed">Failed</option>
+                                        <option value="running">Running</option>
+                                        <option value="queued">Queued</option>
+                                    </select>
+                                    <button style={S.btn('ghost')} onClick={loadSubmissions}>↻ Refresh</button>
+                                    <span style={{ fontSize: 12, color: '#475569', fontFamily: "'DM Mono', monospace" }}>{filteredSubs.length} / {submissions.length} entries</span>
+                                </div>
+                                <div style={S.card}>
+                                    {loadingSubmissions ? (
+                                        <div style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 12 }}>
+                                            {[...Array(6)].map((_, i) => <Skeleton key={i} style={{ height: 48, background: 'rgba(255,255,255,0.04)', borderRadius: 8 }} />)}
+                                        </div>
+                                    ) : filteredSubs.length === 0 ? (
+                                        <div style={{ padding: 60, textAlign: 'center', color: '#475569', fontFamily: "'DM Mono', monospace" }}>No submissions found</div>
+                                    ) : (
+                                        <div style={{ overflowX: 'auto' }}>
+                                            <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 900 }}>
+                                                <thead>
+                                                    <tr>{['#', 'User', 'Student', 'Dates', 'Status', 'Message', 'Submitted', 'Screenshot'].map(h => <th key={h} style={S.th}>{h}</th>)}</tr>
+                                                </thead>
+                                                <tbody>
+                                                    {filteredSubs.map((s, i) => {
+                                                        const profile = s.student_profiles?.[0] || s.student_profiles;
+                                                        const email = s.users?.email || s.user_email || '—';
+                                                        const name = profile?.full_name || profile?.roll_number || '—';
+                                                        const error = s.error_details || s.message || '—';
+                                                        return (
+                                                            <tr key={s.task_id || i}>
+                                                                <td style={{ ...S.td, fontFamily: "'DM Mono', monospace", fontSize: 11, color: '#475569', whiteSpace: 'nowrap' }}>{i + 1}</td>
+                                                                <td style={{ ...S.td, fontFamily: "'DM Mono', monospace", fontSize: 12, color: '#94a3b8', maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={email}>{email}</td>
+                                                                <td style={{ ...S.td, fontSize: 13, maxWidth: 140, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</td>
+                                                                <td style={{ ...S.td, fontFamily: "'DM Mono', monospace", fontSize: 11, color: '#64748b', whiteSpace: 'nowrap' }}>
+                                                                    {s.leave_start_date ? `${s.leave_start_date} → ${s.leave_end_date || '?'}` : '—'}
+                                                                </td>
+                                                                <td style={S.td}><span style={statusColor(s.status)}>{s.status?.toUpperCase() || '?'}</span></td>
+                                                                <td style={{ ...S.td, color: '#64748b', fontSize: 12, maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={error}>{error}</td>
+                                                                <td style={{ ...S.td, fontFamily: "'DM Mono', monospace", fontSize: 11, color: '#475569', whiteSpace: 'nowrap' }}>{fmt(s.submitted_at || s.created_at)}</td>
+                                                                <td style={S.td}>
+                                                                    {s.screenshot_path ? (
+                                                                        <a href={`/api/admin/screenshot/${s.task_id}`} target="_blank" rel="noreferrer" style={{ color: '#818cf8', textDecoration: 'none', fontSize: 12, fontFamily: "'DM Mono', monospace" }}>View 📷</a>
+                                                                    ) : <span style={{ color: '#334155', fontSize: 12 }}>—</span>}
+                                                                </td>
+                                                            </tr>
+                                                        );
+                                                    })}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
-                            <div style={S.card}>
-                                <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                                    <thead>
-                                        <tr>{["User", "Status", "Description", "Time"].map((h) => <th key={h} style={S.th}>{h}</th>)}</tr>
-                                    </thead>
-                                    <tbody>
-                                        {filteredActivity.map((a, i) => (
-                                            <tr key={i}>
-                                                <td style={{ ...S.td, fontFamily: "'DM Mono', monospace", fontSize: 12 }}>{a.email}</td>
-                                                <td style={S.td}>
-                                                    <span style={a.action === "COMPLETED" ? S.badge({ background: "rgba(16,185,129,0.1)", color: "#6ee7b7", border: "1px solid rgba(16,185,129,0.25)" }) : S.badge({ background: "rgba(239,68,68,0.1)", color: "#fca5a5", border: "1px solid rgba(239,68,68,0.25)" })}>
-                                                        {a.action}
-                                                    </span>
-                                                </td>
-                                                <td style={{ ...S.td, color: "#64748b" }}>{a.description}</td>
-                                                <td style={{ ...S.td, fontFamily: "'DM Mono', monospace", fontSize: 11, color: "#475569" }}>{fmt(a.created_at)}</td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    )}
+                        );
+                    })()}
 
                     {activeTab === "settings" && (
                         <div style={{ animation: "slideUp 0.3s ease", maxWidth: 600 }}>

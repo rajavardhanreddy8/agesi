@@ -678,6 +678,7 @@ def auto_submit_from_email():
     Endpoint triggered by Mail Agent to auto-submit forms for all subscribed users.
     Scalable: Adds tasks to a queue instead of running them immediately.
     """
+    conn = None
     try:
         data = request.json
         form_url = data.get('form_url')
@@ -1022,6 +1023,16 @@ def admin_dashboard():
         # Calculate revenue (sum payments)
         res_payments = supabase.table('payments').select('amount').eq('status', 'completed').execute()
         total_revenue = sum(p['amount'] for p in res_payments.data) if res_payments.data else 0
+
+        # Count tasks that are actively queued or running in the DB (accurate across restarts)
+        try:
+            db_conn = get_db_connection()
+            db_cur = db_conn.cursor()
+            db_cur.execute("SELECT COUNT(*) FROM submission_history WHERE status IN ('queued', 'running')")
+            db_queue_size = db_cur.fetchone()[0]
+            db_conn.close()
+        except Exception:
+            db_queue_size = 0
         
         # Get recent activity (submission history + some logs)
         res_activity = supabase.table('submission_history').select('*').order('submitted_at', desc=True).limit(10).execute()
@@ -1045,7 +1056,7 @@ def admin_dashboard():
                 'total_users': res_users.count,
                 'total_revenue': float(total_revenue),
                 'total_submissions': res_subs.count,
-                'queue_size': automation_queue.qsize() if 'automation_queue' in globals() else 0
+                'queue_size': db_queue_size
             },
             'recent_activity': formatted_activity
         })
@@ -1263,11 +1274,11 @@ def admin_delete_user(user_id):
 def admin_submissions():
     """Get full submission history for admins"""
     try:
-        # Get last 100 submissions
+        # Get last 500 submissions with all relevant fields
         res = supabase.table('submission_history')\
-            .select('*, users(email), student_profiles(full_name, roll_number)')\
+            .select('task_id, status, message, error_details, leave_start_date, leave_end_date, screenshot_path, submitted_at, created_at, users(email), student_profiles(full_name, roll_number)')\
             .order('submitted_at', desc=True)\
-            .limit(100)\
+            .limit(500)\
             .execute()
             
         return jsonify({
