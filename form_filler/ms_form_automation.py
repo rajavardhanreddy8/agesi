@@ -1297,8 +1297,8 @@ class MSFormAutomation:
                 
                 for i, container in enumerate(containers):
                     try:
-                        # Read question text
-                        question_text = container.inner_text().lower()
+                        # Read question text and normalize variations
+                        question_text = container.inner_text().lower().replace('e-mail', 'email').replace('e mail', 'email')
                         question_short = question_text[:100].replace('\n', ' ')
                         
                         # Find inputs in this container
