@@ -1275,8 +1275,9 @@ def admin_submissions():
     """Get full submission history for admins"""
     try:
         # Get last 500 submissions with all relevant fields
+        # Note: student_profiles is joined through users because submission_history only has user_id FK
         res = supabase.table('submission_history')\
-            .select('task_id, status, message, error_details, leave_start_date, leave_end_date, screenshot_path, submitted_at, created_at, users(email), student_profiles(full_name, roll_number)')\
+            .select('task_id, status, message, error_details, leave_start_date, leave_end_date, screenshot_path, submitted_at, created_at, users(email, student_profiles(full_name, roll_number))')\
             .order('submitted_at', desc=True)\
             .limit(500)\
             .execute()

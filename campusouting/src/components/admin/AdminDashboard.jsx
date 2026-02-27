@@ -623,9 +623,14 @@ export default function AdminDashboard() {
                             return S.badge({ background: 'rgba(148,163,184,0.1)', color: '#94a3b8', border: '1px solid rgba(148,163,184,0.2)' });
                         };
                         const filteredSubs = submissions.filter(s => {
-                            const emailMatch = !logSearch || (s.users?.email || '').toLowerCase().includes(logSearch.toLowerCase()) || (s.student_profiles?.[0]?.full_name || s.student_profiles?.full_name || '').toLowerCase().includes(logSearch.toLowerCase());
+                            const emailStr = s.users?.email || '';
+                            const profile = s.users?.student_profiles?.[0] || s.users?.student_profiles;
+                            const nameStr = profile?.full_name || '';
+                            const searchLower = logSearch.toLowerCase();
+
+                            const textMatch = !logSearch || emailStr.toLowerCase().includes(searchLower) || nameStr.toLowerCase().includes(searchLower);
                             const statusMatch = logStatusFilter === 'all' || s.status === logStatusFilter;
-                            return emailMatch && statusMatch;
+                            return textMatch && statusMatch;
                         });
                         return (
                             <div style={{ animation: "slideUp 0.3s ease" }}>
@@ -657,8 +662,8 @@ export default function AdminDashboard() {
                                                 </thead>
                                                 <tbody>
                                                     {filteredSubs.map((s, i) => {
-                                                        const profile = s.student_profiles?.[0] || s.student_profiles;
                                                         const email = s.users?.email || s.user_email || '—';
+                                                        const profile = s.users?.student_profiles?.[0] || s.users?.student_profiles;
                                                         const name = profile?.full_name || profile?.roll_number || '—';
                                                         const error = s.error_details || s.message || '—';
                                                         return (
