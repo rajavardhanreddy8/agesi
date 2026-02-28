@@ -56,7 +56,7 @@ const Dashboard = () => {
                     const subRes = await api.get('/subscription/current');
                     if (subRes.data.success) {
                         const plan = subRes.data.subscription;
-                        if (!plan || plan.plan_type === 'free') {
+                        if (!plan || plan.plan_type === 'free' || plan.subscription_status === 'expired') {
                             // No valid plan, redirect to payment
                             console.log("No active plan found, redirecting to plans...");
                             navigate('/plans');
@@ -328,7 +328,7 @@ const Dashboard = () => {
     return (
         <div style={s.container}>
             <header style={s.header}>
-                <div style={s.logo}>Outing Agent</div>
+                <div style={s.logo}>campusouting</div>
                 <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                     <span style={{ color: theme.textMuted, fontSize: '0.9rem' }}>Welcome, {profile?.full_name?.split(' ')[0]}</span>
                     <button onClick={() => { auth.logout(); navigate('/login'); }} style={{ background: 'none', border: 'none', color: theme.textMuted, cursor: 'pointer' }}>
