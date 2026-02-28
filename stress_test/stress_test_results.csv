@@ -1,0 +1,16 @@
+worker_id,email,status,error
+1,adithya.test@example.com,False,Authentication method not supported - password field not found
+2,venkatalakshmi.rathikindi_2028@woxsen.edu.in,True,
+3,chinnu.test@example.com,False,Authentication method not supported - password field not found
+4,devana.swathi_2028@woxsen.edu.in,True,
+5,kavya.praktur_2028@woxsen.edu.in,True,
+6,bhuvanachandra.k_2028@woxsen.edu.in,True,
+7,sunhith.kande_2028@woxsen.edu.in,True,
+8,newtest9876@woxsen.edu.in,False,MFA approval timeout (120s) - approve the notification on your phone
+9,adithya7.test@example.com,False,Authentication method not supported - password field not found
+10,vaishnavi.gandikota_2028@woxsen.edu.in,True,
+11,rajavardhanerddy@gmail.com,False,MFA approval timeout (120s) - approve the notification on your phone
+12,adithya.test@woxsen.edu.in,False,MFA approval timeout (120s) - approve the notification on your phone
+13,testuser9999@woxsen.edu.in,False,MFA approval timeout (120s) - approve the notification on your phone
+14,guntaka.reddy_2028@woxsen.edu.in,True,
+15,navatej.yedavelli_2028@woxsen.edu.in,True,

@@ -32,7 +32,7 @@ export const LoginForm = () => {
                 <div className="login-header flex flex-col items-center">
                     <Logo className="scale-125 mb-6" />
                     <h1>Welcome Back</h1>
-                    <p>Sign in to your CampusAgent account</p>
+                    <p>Sign in to your campusouting account</p>
                 </div>
 
                 {error && (

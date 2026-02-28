@@ -167,7 +167,7 @@ export const RegisterForm = () => {
             <div className="text-center mb-10 flex flex-col items-center">
                 <Logo className="scale-125 mb-4" />
                 <h2 style={{ marginBottom: 0 }}>Create your account</h2>
-                <p className="text-slate-400 mt-2 text-sm">Join CampusAgent for intelligent outing automation.</p>
+                <p className="text-slate-400 mt-2 text-sm">Join campusouting for intelligent outing automation.</p>
             </div>
 
 

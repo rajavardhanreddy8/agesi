@@ -223,7 +223,13 @@ def register_user(data: dict) -> dict:
         # Insert Subscription
         supabase.table('subscriptions').insert({
             'user_id': user_id,
-            'plan_type': 'free'
+            'plan_type': 'basic',
+            'is_auto_submit': True,
+            'is_email_notifications': True,
+            'is_sms_notifications': True,
+            'monthly_submissions_limit': 1,
+            'subscription_start': datetime.now().strftime('%Y-%m-%d'),
+            'subscription_end': (datetime.now() + timedelta(days=7)).strftime('%Y-%m-%d')
         }).execute()
         
         print(f"DEBUG: Email Verification Link: {os.getenv('FRONTEND_URL')}/verify-email?token={token}")

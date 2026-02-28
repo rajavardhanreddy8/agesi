@@ -322,16 +322,18 @@ class MSFormAutomation:
                     self.page.wait_for_url('**/login.microsoftonline.com/**', timeout=15000)
                     on_login_page = True
                 except PlaywrightTimeout:
-                    # Maybe we ARE on the form after all, re-check
-                    if form_questions.count() > 0:
+                    # Maybe we ARE on the form after all, re-check by waiting briefly
+                    try:
+                        self.page.wait_for_selector('div[data-automation-id="questionItem"], button:has-text("Submit"), div:has-text("Hi,")', timeout=5000)
                         logging.info("Form questions appeared during wait! Already logged in.")
                         return True
-                    else:
-                        # Take screenshot and raise
+                    except PlaywrightTimeout:
                         try:
                             self.page.screenshot(path=f'debug_login_unknown_{datetime.now().strftime("%H%M%S")}.png')
-                        except:
-                            pass
+                            page_text = self.page.inner_text('body')
+                            logging.error(f"PAGE TEXT: {page_text[:1000]}")
+                        except Exception as e:
+                            logging.error(f"Failed to extract page text: {e}")
                         raise Exception(f"Unknown page state. URL: {self.page.url}")
             
             logging.info("On login page. Proceeding with authentication...")
@@ -453,15 +455,18 @@ class MSFormAutomation:
             
             # Strategy 2: Find [role="radio"] whose aria-label exactly matches
             # NOTE: Do NOT use :text() here — it can click hyperlinks and navigate away!
-            all_radios_s2 = self.page.locator('[role="radio"]').all()
-            for r in all_radios_s2:
+            all_radios_s2 = self.page.locator('[role="radio"]')
+            radio_count = all_radios_s2.count()
+            for i in range(radio_count):
+                r = all_radios_s2.nth(i)
                 if normalize_text(r.get_attribute('aria-label')) == target_normalized:
                     r.click()
                     logging.info(f"   ✅ Selected radio (aria-label normalized): {option_text}")
                     return True
                 
             # Strategy 3: Find [role="radio"] whose aria-label contains the target
-            for r in all_radios_s2:
+            for i in range(radio_count):
+                r = all_radios_s2.nth(i)
                 aria = normalize_text(r.get_attribute('aria-label'))
                 if target_normalized in aria and r.is_visible():
                     r.click()
@@ -473,10 +478,12 @@ class MSFormAutomation:
             if label_locator.count() > 0:
                 container = label_locator.locator('xpath=./ancestor::div[@data-automation-id="questionItem"]').first
                 if container.count() > 0:
-                    radios = container.locator('[role="radio"]').all()
+                    radios_loc = container.locator('[role="radio"]')
+                    r_count = radios_loc.count()
                     
                     # Sub-strategy 4a: Check aria-labels of radios in this container
-                    for radio in radios:
+                    for i in range(r_count):
+                        radio = radios_loc.nth(i)
                         radio_aria = normalize_text(radio.get_attribute('aria-label'))
                         if target_normalized in radio_aria:
                             radio.click()
@@ -740,10 +747,10 @@ class MSFormAutomation:
             print("Strategy 4: Index-based selection...")
             programme_index = self.get_programme_index(programme)
             if programme_index is not None:
-                radios = self.page.locator('div[role="radio"]').all()
-                if len(radios) > programme_index:
+                radios_loc = self.page.locator('div[role="radio"]')
+                if radios_loc.count() > programme_index:
                     print(f"   Clicking radio at index {programme_index}")
-                    radios[programme_index].click()
+                    radios_loc.nth(programme_index).click()
                     time.sleep(0.5)
                     if self.verify_selection(programme):
                         print("✅ Strategy 4 succeeded")
@@ -768,8 +775,10 @@ class MSFormAutomation:
         # Strategy 6: Find ALL radios, loop and match text
         try:
             print("Strategy 6: Brute force text matching...")
-            radios = self.page.locator('div[role="radio"]').all()
-            for i, radio in enumerate(radios):
+            radios_loc = self.page.locator('div[role="radio"]')
+            radio_count = radios_loc.count()
+            for i in range(radio_count):
+                radio = radios_loc.nth(i)
                 text = radio.inner_text().strip()
                 # print(f"  Radio {i}: '{text}'")
                 if programme.lower() in text.lower():
@@ -994,8 +1003,21 @@ class MSFormAutomation:
                                     # Find input within this container
                                     inp = container.locator('input[type="text"], input:not([type])').first
                                     if inp.count() > 0 and inp.is_visible():
-                                        inp.fill(value)
-                                        print(f"   ✅ Filled by container context: {label_text} = {value}")
+                                        # Check if this is a Date Picker — needs keyboard input, not .fill()
+                                        aria = inp.get_attribute('aria-label') or ''
+                                        if 'date' in aria.lower() or 'date' in (inp.get_attribute('placeholder') or '').lower():
+                                            inp.click()
+                                            time.sleep(0.5)  # Slightly longer wait for Date Picker UI to open under load
+                                            inp.press('Control+a')
+                                            inp.type(value, delay=100) # Slower typing under load
+                                            inp.press('Enter') # Press Enter to confirm selection in the calendar popup
+                                            time.sleep(0.3)
+                                            inp.press('Tab')  # Trigger MS Forms validation
+                                            time.sleep(0.5)
+                                            print(f"   ✅ Filled DATE by keyboard: {label_text} = {value}")
+                                        else:
+                                            inp.fill(value)
+                                            print(f"   ✅ Filled by container context: {label_text} = {value}")
                                         return True
                                 
                                 # Fallback: find any input after the text in DOM order
@@ -1162,6 +1184,10 @@ class MSFormAutomation:
                 success = self.select_programme_robust(programme_normalized)
             
             if not success:
+                 print(f"⚠️ select_programme_robust failed, trying select_radio fallback...")
+                 success = self.select_radio("Programme Name", programme_normalized)
+            
+            if not success:
                  print(f"❌ CRITICAL WARNING: Could not verify Programme Name selection for '{programme_normalized}'")
                  self.page.screenshot(path='programme_selection_failed.png')
             else:
@@ -1187,6 +1213,9 @@ class MSFormAutomation:
                             return f"{int(parts[1])}/{int(parts[2])}/{parts[0]}"
                         elif int(parts[0]) > 12:  # DD/MM/YYYY
                             return f"{int(parts[1])}/{int(parts[0])}/{parts[2]}"
+                        else:  # MM-DD-YYYY or DD-MM-YYYY
+                            # Assume US format MM/DD/YYYY since forms generally expect it
+                            return f"{int(parts[0])}/{int(parts[1])}/{parts[2]}"
                 return d_str
 
             start_date_val = format_date_mdy(form_data.get('leave_start_date', ''))
@@ -1303,6 +1332,9 @@ class MSFormAutomation:
                         
                         # Find inputs in this container
                         inputs = container.locator('input[type="text"]:visible, input:not([type]):visible, textarea:visible').all()
+                        
+                        # Filter out Date pickers which shouldn't be overridden by simple text fills
+                        inputs = [inp for inp in inputs if inp.get_attribute('aria-label') != 'Date picker']
                         
                         for inp in inputs:
                             try:
