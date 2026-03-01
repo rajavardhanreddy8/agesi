@@ -1856,6 +1856,33 @@ def submit_form():
         if not user_auth or not profile:
             return jsonify({'success': False, 'error': 'User profile incomplete or missing'}), 404
             
+        # Check subscription limits
+        cur.execute(
+            "SELECT plan_type, submissions_used, monthly_submissions_limit FROM subscriptions WHERE user_id = %s",
+            (request.user_id,)
+        )
+        sub_info = cur.fetchone()
+        
+        if not sub_info:
+            return jsonify({'success': False, 'error': 'No active subscription found. Please select a plan.'}), 402
+            
+        # Include pending/queued tasks in limit calculation to prevent spam bypass
+        cur.execute(
+            "SELECT COUNT(*) as active_count FROM submission_history WHERE user_id = %s AND status IN ('pending', 'queued', 'processing')",
+            (request.user_id,)
+        )
+        active_tasks = cur.fetchone().get('active_count', 0)
+        
+        limit = sub_info.get('monthly_submissions_limit')
+        if limit is not None:
+            total_attempted = sub_info.get('submissions_used', 0) + active_tasks
+            if total_attempted >= limit:
+                plan_name = str(sub_info.get('plan_type', 'current')).capitalize()
+                return jsonify({
+                    'success': False,
+                    'error': f"Submission limit reached. Your {plan_name} plan allows a maximum of {limit} submission(s)."
+                }), 403
+            
         # Decrypt password
         try:
             outlook_password = decrypt_outlook_password(user_auth['outlook_password_encrypted'])

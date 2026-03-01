@@ -56,9 +56,14 @@ const Dashboard = () => {
                     const subRes = await api.get('/subscription/current');
                     if (subRes.data.success) {
                         const plan = subRes.data.subscription;
-                        if (!plan || plan.plan_type === 'free' || plan.subscription_status === 'expired') {
-                            // No valid plan, redirect to payment
-                            console.log("No active plan found, redirecting to plans...");
+
+                        // Check if the user is on the basic trial and has used up all their submissions
+                        const isTrialExhausted = plan?.plan_type === 'basic' &&
+                            plan?.submissions_used >= plan?.monthly_submissions_limit;
+
+                        if (!plan || plan.plan_type === 'free' || plan.subscription_status === 'expired' || isTrialExhausted) {
+                            // No valid plan or exhausted trial, redirect to payment
+                            console.log("No active plan or trial exhausted, redirecting to plans...");
                             navigate('/plans');
                             return;
                         }
