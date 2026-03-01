@@ -45,6 +45,13 @@ const SubscriptionPlans = () => {
                 gateway: gateway
             });
 
+            if (response.data.gateway === 'free') {
+                alert('Plan Changed Successfully!');
+                fetchCurrentSubscription();
+                window.location.href = '/dashboard';
+                return;
+            }
+
             if (response.data.gateway === 'razorpay') {
                 const options = {
                     key: response.data.key,
@@ -359,7 +366,7 @@ const SubscriptionPlans = () => {
             </div>
 
             {/* Plan Card */}
-            <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: '440px' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '30px', position: 'relative', zIndex: 1, width: '100%', maxWidth: '1000px' }}>
                 {Object.entries(plans).map(([key, plan]) => {
                     const isCurrentPlan = (currentPlan?.plan_type === key || (currentPlan && currentPlan?.plan_type !== 'free')) && currentPlan?.subscription_status !== 'expired';
 
@@ -390,14 +397,14 @@ const SubscriptionPlans = () => {
                                 {/* Features */}
                                 {(() => {
                                     const features = [
-                                        { label: 'Unlimited Outing Form Submissions', enabled: true },
-                                        { label: 'Automated Form Filling via Email', enabled: true },
-                                        { label: 'AI-Powered PDF Data Extraction', enabled: true },
+                                        { label: 'Unlimited Outing Form Submissions', enabled: plan.features?.monthly_submissions > 10 },
+                                        { label: 'Automated Form Filling via Email', enabled: plan.features?.auto_submit },
+                                        { label: 'AI-Powered PDF Data Extraction', enabled: plan.features?.auto_submit },
                                         { label: 'Auto-Generated Outing Permission PDFs', enabled: true },
-                                        { label: 'Parent Notification via Email', enabled: true },
+                                        { label: 'Parent Notifications', enabled: plan.features?.email_notifications || plan.features?.sms_notifications },
                                         { label: 'Real-Time Submission Status Tracking', enabled: true },
                                         { label: 'Secure Outlook Credential Storage', enabled: true },
-                                        { label: 'Priority Support', enabled: true },
+                                        { label: 'Priority Support', enabled: plan.features?.priority_support },
                                     ];
                                     return (
                                         <ul style={S.featureList}>

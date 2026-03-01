@@ -22,11 +22,13 @@ const Navigation = () => {
     const containerStyle = {
         maxWidth: '1280px',
         margin: '0 auto',
-        padding: '0 1.5rem',
+        padding: '0.5rem 1.5rem',
         display: 'flex',
+        flexWrap: 'wrap',
         justifyContent: 'space-between',
         alignItems: 'center',
-        height: '64px',
+        minHeight: '64px',
+        gap: '1rem'
     };
 
     const logoStyle = {
@@ -71,7 +73,7 @@ const Navigation = () => {
             <div style={containerStyle}>
                 <Logo />
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'center' }}>
                     {auth.isAuthenticated() ? (
                         <>
                             <Link to="/dashboard" style={linkStyle}>Dashboard</Link>

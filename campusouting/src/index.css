@@ -714,3 +714,32 @@ button {
     grid-column: span 2;
   }
 }
+
+@media (max-width: 640px) {
+
+  .login-card,
+  .register-container section {
+    padding: 1.5rem;
+  }
+
+  .login-container,
+  .register-container {
+    padding: 1rem;
+  }
+
+  .login-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .register-container h2 {
+    font-size: 1.5rem;
+  }
+
+  .p-6 {
+    padding: 1rem;
+  }
+
+  .p-8 {
+    padding: 1.25rem;
+  }
+}

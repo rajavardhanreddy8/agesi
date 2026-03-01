@@ -257,22 +257,22 @@ const Dashboard = () => {
     const s = {
         container: { minHeight: '100vh', background: theme.bg, color: theme.text, fontFamily: 'sans-serif' },
         header: {
-            padding: '1rem 2rem', background: 'rgba(15, 23, 42, 0.8)', backdropFilter: 'blur(10px)',
+            padding: '1rem clamp(1rem, 4vw, 2rem)', background: 'rgba(15, 23, 42, 0.8)', backdropFilter: 'blur(10px)',
             borderBottom: theme.cardBorder, position: 'sticky', top: 0, zIndex: 50,
             display: 'flex', justifyContent: 'space-between', alignItems: 'center'
         },
-        logo: { fontSize: '1.5rem', fontWeight: 'bold', background: theme.primary, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' },
-        main: { maxWidth: '1200px', margin: '0 auto', padding: '2rem' },
+        logo: { fontSize: 'clamp(1.2rem, 4vw, 1.5rem)', fontWeight: 'bold', background: theme.primary, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' },
+        main: { maxWidth: '1200px', margin: '0 auto', padding: 'clamp(1rem, 4vw, 2rem)' },
 
         // Hero Section
         hero: {
-            background: theme.card, borderRadius: '24px', border: theme.cardBorder, padding: '2.5rem',
-            marginBottom: '2rem', display: 'flex', flexDirection: 'row', gap: '2rem', flexWrap: 'wrap',
+            background: theme.card, borderRadius: '24px', border: theme.cardBorder, padding: 'clamp(1.5rem, 4vw, 2.5rem)',
+            marginBottom: '2rem', display: 'flex', flexDirection: 'row', gap: '1.5rem', flexWrap: 'wrap',
             alignItems: 'center', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
         },
         avatar: {
-            width: '100px', height: '100px', borderRadius: '20px', background: theme.primary,
-            display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.5rem', fontWeight: 'bold', color: 'white'
+            width: 'clamp(70px, 15vw, 100px)', height: 'clamp(70px, 15vw, 100px)', borderRadius: '20px', background: theme.primary,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 'clamp(1.8rem, 5vw, 2.5rem)', fontWeight: 'bold', color: 'white'
         },
         heroContent: { flex: 1 },
         heroTitle: { fontSize: '2.5rem', fontWeight: 'bold', marginBottom: '0.5rem', color: 'white' },
@@ -294,7 +294,7 @@ const Dashboard = () => {
         genCard: {
             background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.9))',
             borderRadius: '24px', padding: '1.5rem', border: '1px solid rgba(99, 102, 241, 0.3)',
-            display: 'flex', flexDirection: 'column', gap: '1rem', minWidth: '300px'
+            display: 'flex', flexDirection: 'column', gap: '1rem', minWidth: 'min(100%, 250px)'
         },
         input: {
             width: '100%', padding: '10px', borderRadius: '8px', border: theme.cardBorder,
@@ -302,7 +302,7 @@ const Dashboard = () => {
         },
 
         // Grid
-        grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' },
+        grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.5rem' },
         card: { background: theme.card, borderRadius: '16px', border: theme.cardBorder, padding: '1.5rem' },
         cardHeader: { display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1rem' },
         cardIcon: { background: 'rgba(99, 102, 241, 0.1)', padding: '8px', borderRadius: '8px', color: '#818cf8' },
