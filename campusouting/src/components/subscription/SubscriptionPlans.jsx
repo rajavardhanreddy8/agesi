@@ -396,12 +396,24 @@ const SubscriptionPlans = () => {
 
                                 {/* Features */}
                                 {(() => {
-                                    const features = [
-                                        { label: 'Automated Form Filling via Email', enabled: plan.features?.auto_submit },
-                                        { label: 'AI-Powered PDF Data Extraction', enabled: plan.features?.auto_submit },
-                                        { label: 'Auto-Generated Outing Permission PDFs', enabled: true },
-                                        { label: 'Priority Support', enabled: plan.features?.priority_support },
-                                    ];
+                                    let features = [];
+                                    if (key === 'free') {
+                                        features = [
+                                            { label: '1 Outing Form Submission Included', enabled: true },
+                                            { label: 'Automated Form Filling via Email', enabled: false },
+                                            { label: 'AI-Powered PDF Data Extraction', enabled: false },
+                                            { label: 'Auto-Generated Outing Permission PDFs', enabled: false },
+                                            { label: 'Priority Support', enabled: false },
+                                        ];
+                                    } else {
+                                        features = [
+                                            { label: 'Automated Form Filling via Email', enabled: plan.features?.auto_submit },
+                                            { label: 'AI-Powered PDF Data Extraction', enabled: plan.features?.auto_submit },
+                                            { label: 'Auto-Generated Outing Permission PDFs', enabled: true },
+                                            { label: 'Priority Support', enabled: plan.features?.priority_support },
+                                        ];
+                                    }
+
                                     return (
                                         <ul style={S.featureList}>
                                             {features.map(({ label, enabled }) => (
