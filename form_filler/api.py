@@ -2110,8 +2110,22 @@ razorpay_client = razorpay.Client(
 ADMIN_EMAIL = os.getenv('ADMIN_EMAIL', 'campusouting.go@gmail.com')
 ADMIN_PASSWORD_HASH = os.getenv('ADMIN_PASSWORD_HASH', '$2b$12$W0VJrQxqHdmO.oSjbUky/e.YuinwnSi4JovaTbTskk.ohVqNvUVv82')
 
-# Subscription Plans (NO FREE PLAN)
+# Subscription Plans
 SUBSCRIPTION_PLANS = {
+    'free': {
+        'name': 'Free',
+        'price': 0,
+        'currency': 'INR',
+        'duration_days': 30, # Monthly
+        'features': {
+            'monthly_submissions': 1,
+            'auto_submit': False,
+            'email_notifications': False,
+            'sms_notifications': False,
+            'priority_support': False,
+            'data_backup': False
+        }
+    },
     'basic': {
         'name': 'Basic',
         'price': 50,
@@ -2206,6 +2220,32 @@ def upgrade_subscription():
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         print("DEBUG: DB Connection established", flush=True)
+        
+        if amount == 0:
+            # Handle free plan upgrade automatically
+            print(f"DEBUG: Processing free plan upgrade for {plan_type}", flush=True)
+            cur.execute("""
+                UPDATE subscriptions
+                SET plan_type = %s,
+                    is_auto_submit = %s,
+                    is_email_notifications = %s,
+                    is_sms_notifications = %s,
+                    monthly_submissions_limit = %s,
+                    subscription_start = CURRENT_DATE,
+                    subscription_end = CURRENT_DATE + INTERVAL '%s days'
+                WHERE user_id = %s
+            """, (plan_type, plan['features']['auto_submit'], plan['features']['email_notifications'], 
+                  plan['features']['sms_notifications'], plan['features']['monthly_submissions'], 
+                  plan['duration_days'], request.user_id))
+            conn.commit()
+            cur.close()
+            conn.close()
+            return jsonify({
+                'success': True,
+                'message': f"Plan upgraded to {plan['name']} successfully",
+                'gateway': 'free',
+                'plan_type': plan_type
+            })
         
         # Razorpay only
         order_data = {

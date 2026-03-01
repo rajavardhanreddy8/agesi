@@ -397,13 +397,9 @@ const SubscriptionPlans = () => {
                                 {/* Features */}
                                 {(() => {
                                     const features = [
-                                        { label: 'Unlimited Outing Form Submissions', enabled: plan.features?.monthly_submissions > 10 },
                                         { label: 'Automated Form Filling via Email', enabled: plan.features?.auto_submit },
                                         { label: 'AI-Powered PDF Data Extraction', enabled: plan.features?.auto_submit },
                                         { label: 'Auto-Generated Outing Permission PDFs', enabled: true },
-                                        { label: 'Parent Notifications', enabled: plan.features?.email_notifications || plan.features?.sms_notifications },
-                                        { label: 'Real-Time Submission Status Tracking', enabled: true },
-                                        { label: 'Secure Outlook Credential Storage', enabled: true },
                                         { label: 'Priority Support', enabled: plan.features?.priority_support },
                                     ];
                                     return (
