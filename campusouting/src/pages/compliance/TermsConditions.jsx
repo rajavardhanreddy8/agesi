@@ -11,11 +11,11 @@ const TermsConditions = () => {
                 <p>Last updated: February 02, 2026</p>
                 <section style={{ marginBottom: '2rem' }}>
                     <h2 style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '1rem' }}>1. Acceptance of Terms</h2>
-                    <p>By using Outing Automation, you agree to these terms. If you do not agree, please do not use the service.</p>
+                    <p>By using Campus Outing, you agree to these terms. If you do not agree, please do not use the service.</p>
                 </section>
                 <section style={{ marginBottom: '2rem' }}>
                     <h2 style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '1rem' }}>2. Service Description</h2>
-                    <p>Outing Automation provides AI-assisted form filling and automated submission to campus portals. Accuracy depends on the data provided by the user.</p>
+                    <p>Campus Outing provides AI-assisted form filling and automated submission to campus portals. Accuracy depends on the data provided by the user.</p>
                 </section>
                 <section style={{ marginBottom: '2rem' }}>
                     <h2 style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '1rem' }}>3. User Responsibility</h2>

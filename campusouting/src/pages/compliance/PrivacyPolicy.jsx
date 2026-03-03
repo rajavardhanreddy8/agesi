@@ -11,7 +11,7 @@ const PrivacyPolicy = () => {
                 <p>Last updated: February 02, 2026</p>
                 <section style={{ marginBottom: '2rem' }}>
                     <h2 style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '1rem' }}>1. Introduction</h2>
-                    <p>Welcome to Outing Automation. We respect your privacy and are committed to protecting your personal data.</p>
+                    <p>Welcome to Campus Outing. We respect your privacy and are committed to protecting your personal data.</p>
                 </section>
                 <section style={{ marginBottom: '2rem' }}>
                     <h2 style={{ fontSize: '1.5rem', fontWeight: '600', marginBottom: '1rem' }}>2. Data We Collect</h2>
