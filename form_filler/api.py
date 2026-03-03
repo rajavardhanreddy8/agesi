@@ -816,8 +816,266 @@ def _trigger_auto_queue(form_url, start_date, end_date, reason=None):
         if conn:
             conn.close()
 
+
     logging.info(f"Auto-queue: Done — {tasks_created} tasks queued for {start_date}")
     return tasks_created
+
+
+# ============================================================================
+# GMAIL PUB/SUB WEBHOOK — real-time email trigger (no polling)
+# ============================================================================
+
+def _get_gmail_service():
+    """Build and return an authenticated Gmail API service client."""
+    import json
+    from google.oauth2 import service_account
+    from googleapiclient.discovery import build
+
+    creds_json = os.environ.get('GMAIL_SERVICE_ACCOUNT_JSON')
+    if not creds_json:
+        raise RuntimeError("GMAIL_SERVICE_ACCOUNT_JSON env var not set")
+
+    info = json.loads(creds_json)
+    creds = service_account.Credentials.from_service_account_info(
+        info,
+        scopes=['https://www.googleapis.com/auth/gmail.readonly'],
+    ).with_subject(os.environ.get('ADMIN_GMAIL_USER', info.get('client_email', '')))
+
+    return build('gmail', 'v1', credentials=creds)
+
+
+def parse_outing_email(subject, body):
+    """
+    Parse an outing notification email and extract:
+    - form_link (Microsoft Forms URL)
+    - start_date (YYYY-MM-DD)
+    - end_date (YYYY-MM-DD)
+    - reason
+
+    Returns dict or None if email doesn't look like an outing notification.
+    """
+    import re
+    from datetime import datetime, timedelta
+
+    combined = f"{subject}\n{body}"
+
+    # Must look like an outing email — check keywords
+    outing_keywords = ['outing', 'out-pass', 'outpass', 'leave', 'gate pass', 'gatepass',
+                       'forms.office.com', 'microsoft form']
+    if not any(kw in combined.lower() for kw in outing_keywords):
+        logging.info("Gmail webhook: email doesn't match outing keywords, skipping")
+        return None
+
+    # --- Extract form link ---
+    form_link = None
+    link_match = re.search(r'https://forms\.office\.com/\S+', combined)
+    if link_match:
+        form_link = link_match.group(0).rstrip('.,;)"\'>')
+    if not form_link:
+        logging.info("Gmail webhook: no forms.office.com link found in email")
+        return None
+
+    # --- Extract dates ---
+    # Try ISO format first: 2026-03-05
+    iso_dates = re.findall(r'\b(\d{4}-\d{2}-\d{2})\b', combined)
+    # Then DD/MM/YYYY or DD-MM-YYYY
+    dmy_dates = re.findall(r'\b(\d{2}[\/\-]\d{2}[\/\-]\d{4})\b', combined)
+    dmy_parsed = []
+    for d in dmy_dates:
+        try:
+            dt = datetime.strptime(d.replace('-', '/'), '%d/%m/%Y')
+            dmy_parsed.append(dt.strftime('%Y-%m-%d'))
+        except:
+            pass
+
+    all_dates = iso_dates + dmy_parsed
+    all_dates = sorted(set(all_dates))
+
+    today = datetime.now().strftime('%Y-%m-%d')
+    future_dates = [d for d in all_dates if d >= today]
+
+    start_date = future_dates[0] if future_dates else today
+    end_date   = future_dates[1] if len(future_dates) > 1 else (
+        (datetime.strptime(start_date, '%Y-%m-%d') + timedelta(days=1)).strftime('%Y-%m-%d')
+    )
+
+    # --- Extract reason ---
+    reason = 'Home Visit'  # default
+    reason_patterns = [
+        (r'reason[:\s]+([^\n\r.]+)', 1),
+        (r'purpose[:\s]+([^\n\r.]+)', 1),
+    ]
+    for pattern, grp in reason_patterns:
+        m = re.search(pattern, combined, re.IGNORECASE)
+        if m:
+            reason = m.group(grp).strip()[:100]
+            break
+    # Check common reason keywords in body
+    for kw in ['home visit', 'personal work', 'family function', 'medical', 'emergency']:
+        if kw in combined.lower():
+            reason = kw.title()
+            break
+
+    logging.info(f"Gmail webhook: parsed — link={form_link} start={start_date} end={end_date} reason={reason}")
+    return {
+        'form_link':   form_link,
+        'start_date':  start_date,
+        'end_date':    end_date,
+        'reason':      reason,
+    }
+
+
+def setup_gmail_watch():
+    """
+    Subscribe to Gmail Pub/Sub push notifications for the admin inbox.
+    Watch expires every 7 days — this is called on startup and re-called every 6 days.
+    Requires GMAIL_SERVICE_ACCOUNT_JSON, ADMIN_GMAIL_USER, GMAIL_PUBSUB_TOPIC env vars.
+    """
+    topic = os.environ.get('GMAIL_PUBSUB_TOPIC')
+    if not topic:
+        logging.warning("GMAIL_PUBSUB_TOPIC not set — Gmail push notifications disabled")
+        return
+
+    try:
+        service = _get_gmail_service()
+        result = service.users().watch(
+            userId='me',
+            body={
+                'topicName': topic,
+                'labelIds': ['INBOX'],
+                'labelFilterAction': 'include',
+            }
+        ).execute()
+        logging.info(f"Gmail watch set up: historyId={result.get('historyId')} expiry={result.get('expiration')}")
+    except Exception as e:
+        logging.error(f"Failed to set up Gmail watch: {e}")
+
+
+@app.route('/api/gmail/webhook', methods=['POST'])
+def gmail_push_webhook():
+    """
+    Receives Gmail Pub/Sub push notifications.
+    Decodes the message, fetches the email, parses it for outing details,
+    updates system_config, and triggers auto-queue for all auto-mode users.
+
+    This is the AUTOMATIC trigger (no-polling, real-time).
+    The MANUAL trigger via /api/admin/update-form-settings is also preserved.
+    """
+    # --- Security: verify token ---
+    expected_token = os.environ.get('PUBSUB_VERIFICATION_TOKEN')
+    if expected_token:
+        token = request.args.get('token') or request.headers.get('X-Pubsub-Token', '')
+        if token != expected_token:
+            logging.warning("Gmail webhook: invalid verification token")
+            return jsonify({'error': 'Unauthorized'}), 403
+
+    try:
+        envelope = request.get_json(silent=True)
+        if not envelope or 'message' not in envelope:
+            return jsonify({'status': 'ok (no message)'}), 200
+
+        import base64, json as _json
+        msg_data = envelope['message'].get('data', '')
+        if msg_data:
+            decoded = base64.b64decode(msg_data).decode('utf-8')
+            notification = _json.loads(decoded)
+            email_address = notification.get('emailAddress', '')
+            history_id    = notification.get('historyId')
+            logging.info(f"Gmail webhook: push for {email_address} historyId={history_id}")
+        else:
+            return jsonify({'status': 'ok (empty data)'}), 200
+
+        # Fetch emails since this historyId via Gmail API
+        try:
+            service = _get_gmail_service()
+            history = service.users().history().list(
+                userId='me',
+                startHistoryId=history_id,
+                historyTypes=['messageAdded'],
+                labelId='INBOX',
+            ).execute()
+
+            messages_to_check = []
+            for record in history.get('history', []):
+                for added in record.get('messagesAdded', []):
+                    messages_to_check.append(added['message']['id'])
+
+            if not messages_to_check:
+                return jsonify({'status': 'ok (no new messages)'}), 200
+
+            for msg_id in messages_to_check[:5]:  # cap at 5 to be safe
+                msg = service.users().messages().get(
+                    userId='me', id=msg_id, format='full'
+                ).execute()
+
+                # Extract subject and body
+                headers = {h['name']: h['value'] for h in msg['payload'].get('headers', [])}
+                subject = headers.get('Subject', '')
+                body    = ''
+
+                def _extract_body(payload):
+                    if payload.get('body', {}).get('data'):
+                        import base64
+                        return base64.urlsafe_b64decode(payload['body']['data']).decode('utf-8', errors='ignore')
+                    for part in payload.get('parts', []):
+                        result = _extract_body(part)
+                        if result:
+                            return result
+                    return ''
+
+                body = _extract_body(msg['payload'])
+                parsed = parse_outing_email(subject, body)
+
+                if parsed:
+                    # Update system_config
+                    try:
+                        conn = get_db_connection()
+                        cur  = conn.cursor()
+                        for key, val in [('form_link', parsed['form_link']),
+                                         ('start_date', parsed['start_date']),
+                                         ('end_date',   parsed['end_date']),
+                                         ('default_reason', parsed['reason'])]:
+                            cur.execute("""
+                                INSERT INTO system_config (key, value, updated_at)
+                                VALUES (%s, %s, NOW())
+                                ON CONFLICT (key)
+                                DO UPDATE SET value = EXCLUDED.value, updated_at = EXCLUDED.updated_at
+                            """, (key, val))
+                        conn.commit()
+                        conn.close()
+                        logging.info("Gmail webhook: system_config updated from email")
+                    except Exception as db_e:
+                        logging.error(f"Gmail webhook: DB update failed: {db_e}")
+
+                    # Fire auto-queue in background — don't block the Pub/Sub ack
+                    threading.Thread(
+                        target=_trigger_auto_queue,
+                        args=(parsed['form_link'], parsed['start_date'],
+                              parsed['end_date'],   parsed['reason']),
+                        daemon=True
+                    ).start()
+
+                    logging.info(f"Gmail webhook: auto-queue triggered for {parsed['start_date']}")
+                    break  # only process first matching outing email per push
+
+        except Exception as gmail_e:
+            logging.error(f"Gmail webhook: Gmail API error: {gmail_e}", exc_info=True)
+
+    except Exception as e:
+        logging.error(f"Gmail webhook: unexpected error: {e}", exc_info=True)
+
+    # Always return 200 immediately — Pub/Sub will retry otherwise
+    return jsonify({'status': 'ok'}), 200
+
+
+# Schedule Gmail watch renewal every 6 days (watch expires at 7 days)
+def _schedule_gmail_watch_renewal():
+    import time
+    while True:
+        time.sleep(6 * 24 * 60 * 60)  # 6 days
+        setup_gmail_watch()
+
+threading.Thread(target=_schedule_gmail_watch_renewal, daemon=True).start()
 
 
 @app.route('/api/auto-submit-from-email', methods=['POST'])
