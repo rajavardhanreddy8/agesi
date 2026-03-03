@@ -41,96 +41,56 @@ class MSFormAutomation:
         """
         Normalize database programme value to match Microsoft Form radio options exactly.
         
-        Database may store: "B.B.A", "B.Tech", "B.Com" etc.
-        MS Form expects: "BBA", "B.Tech", "BCom" etc.
+        Uses aggressive normalization: strips ALL non-alphanumeric characters and lowercases
+        before matching, so any format (B.Tech, B Tech, b.tech, BTECH, etc.) maps correctly.
         
-        Args:
-            programme_value (str): Programme value from database
-            
-        Returns:
-            str: Normalized programme value matching MS Form options
+        MS Form expects (as of March 2026): BBA, MBBA, BCOM, BARCH, BDES, BA LLB, BBA LLB, BA, BSC, BTECH, BCA
         """
         if not programme_value:
             return ''
         
-        # Programme mapping dictionary - maps database values to MS Form options
-        programme_map = {
-            # Remove periods from BBA variations
-            'B.B.A': 'BBA',
-            'B.B.A.': 'BBA',
-            'BBA': 'BBA',
-            
-            # MBBA variations
-            'M.B.B.A': 'MBBA',
-            'M.B.B.A.': 'MBBA',
-            'MBBA': 'MBBA',
-            
-            # BCom variations
-            'B.Com': 'BCom',
-            'B.COM': 'BCom',
-            'BCOM': 'BCom',
-            'B Com': 'BCom',
-            
-            # B.Tech (keep as-is if already correct)
-            'B.Tech': 'B.Tech',
-            'B.TECH': 'B.Tech',
-            'BTECH': 'B.Tech',
-            'B Tech': 'B.Tech',
-            
-            # B.Sc variations
-            'B.Sc': 'B.Sc.',
-            'B.Sc.': 'B.Sc.',
-            'B.SC': 'B.Sc.',
-            'BSC': 'B.Sc.',
-            'B Sc': 'B.Sc.',
-            
-            # B Arch
-            'B.Arch': 'B. Arch',
-            'B. Arch': 'B. Arch',
-            'B.ARCH': 'B. Arch',
-            'BARCH': 'B. Arch',
-            
-            # B.Des
-            'B.Des': 'B.Des',
-            'B.DES': 'B.Des',
-            'BDES': 'B.Des',
-            'B Des': 'B.Des',
-            
-            # BA LLB
-            'BA LLB': 'BA LLB',
-            'B.A. LLB': 'BA LLB',
-            'B.A LLB': 'BA LLB',
-            'BA.LLB': 'BA LLB',
-            
-            # BBA LLB
-            'BBA LLB': 'BBA LLB',
-            'B.B.A. LLB': 'BBA LLB',
-            'B.B.A LLB': 'BBA LLB',
-            'BBA.LLB': 'BBA LLB',
-            
-            # B.A
-            'B.A': 'B.A.',
-            'B.A.': 'B.A.',
-            'BA': 'B.A.',
-            'B A': 'B.A.',
-            
-            # BCA
-            'BCA': 'BCA',
-            'B.C.A': 'BCA',
-            'B.C.A.': 'BCA',
-        }
+        # Strip everything except letters and digits, then lowercase
+        norm = ''.join(c for c in programme_value if c.isalnum()).lower()
         
-        # Try exact match first
-        if programme_value in programme_map:
-            return programme_map[programme_value]
+        # Map normalized keys to exact MS Form radio button text
+        # Order matters: check longer/more specific keys first to avoid false matches
+        PROGRAMME_MAP = [
+            ('bballb',      'BBA LLB'),
+            ('ballb',       'BA LLB'),
+            ('mbba',        'MBBA'),
+            ('btech',       'BTECH'),
+            ('barch',       'BARCH'),
+            ('bdes',        'BDES'),
+            ('bcom',        'BCOM'),
+            ('bsc',         'BSC'),
+            ('bca',         'BCA'),
+            ('bba',         'BBA'),
+            ('ba',          'BA'),
+        ]
         
-        # Try case-insensitive match
-        for key, value in programme_map.items():
-            if key.lower() == programme_value.lower():
-                return value
+        # Exact normalized match
+        for key, label in PROGRAMME_MAP:
+            if norm == key:
+                logging.info(f"Programme '{programme_value}' -> '{label}' (exact)")
+                return label
         
-        # If no match found, return original value
-        logging.warning(f"⚠️ Programme '{programme_value}' not in mapping, using as-is")
+        # Keyword/substring fallback for verbose inputs like "Bachelor of Technology"
+        KEYWORD_MAP = [
+            (['technology', 'engineering'],  'BTECH'),
+            (['architecture'],               'BARCH'),
+            (['design'],                     'BDES'),
+            (['commerce'],                   'BCOM'),
+            (['science'],                    'BSC'),
+            (['computerapplication'],         'BCA'),
+            (['businessadmin'],              'BBA'),
+        ]
+        for keywords, label in KEYWORD_MAP:
+            if any(kw in norm for kw in keywords):
+                logging.info(f"Programme '{programme_value}' -> '{label}' (keyword)")
+                return label
+        
+        # Last resort: return original and warn
+        logging.warning(f"Programme '{programme_value}' (norm='{norm}') not in mapping, using as-is")
         return programme_value
     
     def __init__(self, headless=False, min_delay=5, max_delay=15):
@@ -436,14 +396,15 @@ class MSFormAutomation:
                 logging.warning("   ⚠️ No option text provided, skipping radio selection")
                 return False
 
-            # Helper to normalize text for comparison (remove \\xa0, \\n, extra spaces)
+            # Normalize text for comparison: strip ALL non-alphanumeric chars and lowercase
+            # This makes B.Tech == BTECH == B Tech regardless of how the form formats its options
             def normalize_text(text):
                 if not text: return ""
-                return text.replace('\xa0', ' ').replace('\n', ' ').strip().lower()
+                return ''.join(c for c in text if c.isalnum()).lower()
 
             target_normalized = normalize_text(option_text)
-            # Regex pattern for text matching (escaped)
-            pattern = option_text.replace('(', '\(').replace(')', '\)').replace('.', '\.')
+            # Regex pattern for locator strategies (escaped)
+            pattern = option_text.replace('(', r'\(').replace(')', r'\)').replace('.', r'\.')
                 
             # Strategy 1: Find by role="radio" with aria-label
             # We check startsWith because sometimes aria-label has extra info
@@ -611,21 +572,21 @@ class MSFormAutomation:
         programme_order = {
             'BBA': 0,
             'MBBA': 1,
-            'BCom': 2,
-            'B.Arch': 3,
-            'B.Des': 4,
+            'BCOM': 2,
+            'BARCH': 3,
+            'BDES': 4,
             'BA LLB': 5,
             'BBA LLB': 6,
-            'B.A.': 7,
-            'B.Sc': 8,
-            'B.Tech': 9,  # Target
+            'BA': 7,
+            'BSC': 8,
+            'BTECH': 9,
             'BCA': 10
         }
-        # Normalize keys slightly just in case
+        # Normalize input and match
+        norm = ''.join(c for c in programme if c.isalnum()).upper()
         for k, v in programme_order.items():
-            if k.lower() == programme.lower().replace('.', ''):
-                 return v
-            if k.lower() == programme.lower():
+            k_norm = ''.join(c for c in k if c.isalnum()).upper()
+            if k_norm == norm:
                  return v
         return programme_order.get(programme)
 
@@ -695,29 +656,36 @@ class MSFormAutomation:
         
         print(f"Attempting to select programme: {programme}")
         
-        # Strategy 1: Standard aria-label
+        programme_norm = ''.join(c for c in programme if c.isalnum()).lower()
+
+        # Strategy 1: Standard aria-label — normalized match
         try:
-            print("Strategy 1: aria-label exact match...")
-            radio = self.page.locator(f'div[role="radio"][aria-label="{programme}"]').first
-            if radio.is_visible(timeout=2000):
-                radio.click()
-                time.sleep(0.5)
-                if self.verify_selection(programme):
-                    print("✅ Strategy 1 succeeded")
-                    return True
+            print("Strategy 1: aria-label normalized match...")
+            all_radios = self.page.locator('div[role="radio"]').all()
+            for radio in all_radios:
+                aria = radio.get_attribute('aria-label') or ''
+                aria_norm = ''.join(c for c in aria if c.isalnum()).lower()
+                if aria_norm == programme_norm:
+                    radio.click()
+                    time.sleep(0.5)
+                    if self.verify_selection(programme):
+                        print("✅ Strategy 1 succeeded (normalized aria-label)")
+                        return True
         except:
             pass
         
-        # Strategy 2: Contains text (case-insensitive)
+        # Strategy 2: Text content search — normalized
         try:
-            print("Strategy 2: Text content search...")
-            radio = self.page.locator(f'div[role="radio"]:has-text("{programme}")').first
-            if radio.is_visible(timeout=2000):
-                radio.click()
-                time.sleep(0.5)
-                if self.verify_selection(programme):
-                    print("✅ Strategy 2 succeeded")
-                    return True
+            print("Strategy 2: Text content normalized match...")
+            all_radios = self.page.locator('div[role="radio"]').all()
+            for radio in all_radios:
+                text = ''.join(c for c in radio.inner_text() if c.isalnum()).lower()
+                if text == programme_norm or programme_norm in text:
+                    radio.click()
+                    time.sleep(0.5)
+                    if self.verify_selection(programme):
+                        print("✅ Strategy 2 succeeded (normalized text)")
+                        return True
         except:
             pass
         
@@ -944,12 +912,30 @@ class MSFormAutomation:
             for vi in visible_inputs:
                 print(f"  [{vi['index']}] aria='{vi['ariaLabel']}' ph='{vi['placeholder']}'")
             
+            def _type_date_safe(inp, value):
+                """Fill a date picker using keyboard simulation (click, select all, type, enter, tab)."""
+                inp.click()
+                time.sleep(0.5)
+                inp.press('Control+a')
+                inp.type(value, delay=100)
+                inp.press('Enter')
+                time.sleep(0.3)
+                inp.press('Tab')
+                time.sleep(0.5)
+
+            def _fill_input(inp, value, is_date=False):
+                """Fill an input, using keyboard simulation for dates."""
+                if is_date:
+                    _type_date_safe(inp, value)
+                else:
+                    inp.fill(value)
+
             def fill_by_label(label_text_or_list, value, is_date=False):
                 try:
                     labels = label_text_or_list if isinstance(label_text_or_list, list) else [label_text_or_list]
                     
                     for label_text in labels:
-                        print(f"🔍 Looking for field: '{label_text}'...")
+                        print(f"🔍 Looking for field: '{label_text}' (is_date={is_date})...")
                         
                         # Strategy 1: aria-label (case-insensitive partial match)
                         # Microsoft Forms often uses aria-label for accessibility
@@ -968,7 +954,7 @@ class MSFormAutomation:
                                 aria_label = self.page.evaluate('(el) => el.getAttribute("aria-label")', input_el)
                                 inp = self.page.locator(f'input[aria-label="{aria_label}"]').first
                                 if inp.is_visible():
-                                    inp.fill(value)
+                                    _fill_input(inp, value, is_date)
                                     print(f"   ✅ Filled by aria-label: {label_text} = {value}")
                                     return True
                         except Exception as e:
@@ -981,7 +967,7 @@ class MSFormAutomation:
                                 placeholder = inp.get_attribute('placeholder') or ''
                                 if label_text.lower() in placeholder.lower():
                                     if inp.is_visible():
-                                        inp.fill(value)
+                                        _fill_input(inp, value, is_date)
                                         print(f"   ✅ Filled by placeholder: {label_text} = {value}")
                                         return True
                         except Exception as e:
@@ -1003,27 +989,17 @@ class MSFormAutomation:
                                     # Find input within this container
                                     inp = container.locator('input[type="text"], input:not([type])').first
                                     if inp.count() > 0 and inp.is_visible():
-                                        # Check if this is a Date Picker — needs keyboard input, not .fill()
+                                        # Detect date picker via aria-label or is_date flag
                                         aria = inp.get_attribute('aria-label') or ''
-                                        if 'date' in aria.lower() or 'date' in (inp.get_attribute('placeholder') or '').lower():
-                                            inp.click()
-                                            time.sleep(0.5)  # Slightly longer wait for Date Picker UI to open under load
-                                            inp.press('Control+a')
-                                            inp.type(value, delay=100) # Slower typing under load
-                                            inp.press('Enter') # Press Enter to confirm selection in the calendar popup
-                                            time.sleep(0.3)
-                                            inp.press('Tab')  # Trigger MS Forms validation
-                                            time.sleep(0.5)
-                                            print(f"   ✅ Filled DATE by keyboard: {label_text} = {value}")
-                                        else:
-                                            inp.fill(value)
-                                            print(f"   ✅ Filled by container context: {label_text} = {value}")
+                                        detected_date = is_date or 'date' in aria.lower() or 'date' in (inp.get_attribute('placeholder') or '').lower()
+                                        _fill_input(inp, value, detected_date)
+                                        print(f"   ✅ Filled by container context (date={detected_date}): {label_text} = {value}")
                                         return True
                                 
                                 # Fallback: find any input after the text in DOM order
                                 inp = self.page.locator(f'text=/{pattern}/i ~ input, text=/{pattern}/i + input').first
                                 if inp.count() > 0 and inp.is_visible():
-                                    inp.fill(value)
+                                    _fill_input(inp, value, is_date)
                                     print(f"   ✅ Filled by DOM proximity: {label_text} = {value}")
                                     return True
                         except Exception as e:
@@ -1039,7 +1015,7 @@ class MSFormAutomation:
                                 # Get the parent container
                                 parent_text = inp.evaluate('el => el.closest("div[data-automation-id=\\"questionItem\\"]")?.innerText || ""')
                                 if label_text.lower() in parent_text.lower():
-                                    inp.fill(value)
+                                    _fill_input(inp, value, is_date)
                                     print(f"   ✅ Filled by parent text match: {label_text} = {value}")
                                     return True
                         except Exception as e:
@@ -1386,8 +1362,10 @@ class MSFormAutomation:
                                     fill_value = form_data.get('student_phone', '')
                                     
                                 if fill_value:
-                                    inp.fill(fill_value)
-                                    print(f"   SMART FILL Q[{i}]: '{question_short}' -> {fill_value}")
+                                    # Detect if this is a date field and use keyboard simulation
+                                    is_date_field = any(kw in question_text for kw in ['date', 'start date', 'end date', 'leaving date', 'return date'])
+                                    _fill_input(inp, fill_value, is_date_field)
+                                    print(f"   SMART FILL Q[{i}]: '{question_short}' -> {fill_value} (date={is_date_field})")
                                 else:
                                     print(f"   SKIP Q[{i}]: '{question_short}' (no matching data)")
                             except Exception as e:

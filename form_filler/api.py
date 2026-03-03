@@ -56,29 +56,29 @@ def format_ist_timestamp(dt=None):
 # ===== PROGRAMME NORMALIZATION =====
 # Maps any DB programme value to the EXACT MS Form radio button text
 def normalize_programme(prog):
-    """Normalize programme value to match exact MS Form dropdown options."""
+    """Normalize programme value to match exact MS Form dropdown options (updated: all uppercase, no periods)."""
     if not prog: return ''
     norm = ''.join(c for c in prog if c.isalnum()).lower()
-    # B.Tech variations (check first to avoid false BBA matches)
-    if 'btech' in norm or 'technology' in norm or 'engineering' in norm:
-        return 'B.Tech'
-    # Map to exact MS Form options
+    # Map to exact MS Form options (updated March 2026 - all uppercase)
     STANDARD = [
+        ("BTECH",   "btech"),
         ("BBA",     "bba"),
         ("MBBA",    "mbba"),
-        ("BCom",    "bcom"),
-        ("B. Arch", "barch"),
-        ("B.Des",   "bdes"),
+        ("BCOM",    "bcom"),
+        ("BARCH",   "barch"),
+        ("BDES",    "bdes"),
         ("BA LLB",  "ballb"),
-        ("BBA LLB", "bbllb"),  # note: bballb normalized
-        ("B.A.",    "ba"),
-        ("B.Sc.",   "bsc"),
-        ("B.Tech",  "btech"),
+        ("BBA LLB", "bballb"),
+        ("BA",      "ba"),
+        ("BSC",     "bsc"),
         ("BCA",     "bca"),
     ]
     for label, key in STANDARD:
         if norm == key:
             return label
+    # Fallback for keywords
+    if 'btech' in norm or 'technology' in norm or 'engineering' in norm:
+        return 'BTECH'
     logging.warning(f"Programme '{prog}' not in standard list, using as-is")
     return prog
 # ===== END PROGRAMME NORMALIZATION =====
@@ -1277,7 +1277,7 @@ def admin_submissions():
         # Get last 500 submissions with all relevant fields
         # Note: student_profiles is joined through users because submission_history only has user_id FK
         res = supabase.table('submission_history')\
-            .select('task_id, status, message, error_details, leave_start_date, leave_end_date, screenshot_path, submitted_at, created_at, users(email, student_profiles(full_name, roll_number))')\
+            .select('task_id, status, message, error_details, leave_start_date, leave_end_date, screenshot_path, submitted_at, users(email, student_profiles(full_name, roll_number))')\
             .order('submitted_at', desc=True)\
             .limit(500)\
             .execute()
