@@ -672,7 +672,156 @@ def run_automation_async(task_id, form_url, email, password, form_data, pdf_path
         except Exception as e:
             logging.error(f"Failed to delete PDF {pdf_path}: {e}")
 
+def _trigger_auto_queue(form_url, start_date, end_date, reason=None):
+    """
+    Queue automated form submissions for all eligible paid auto-mode users.
+    
+    Called by:
+    - auto_submit_from_email (email-triggered)
+    - api_update_form_settings (admin dashboard save)
+    
+    Returns: number of tasks queued
+    """
+    conn = None
+    tasks_created = 0
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+        cur.execute("""
+            SELECT u.id as user_id, u.email, u.outlook_password_encrypted,
+                   sp.full_name, sp.roll_number, sp.school, sp.programme,
+                   sp.specialization, sp.academic_year, sp.student_phone, sp.student_email,
+                   sp.parent1_name, sp.parent1_email, sp.parent1_phone,
+                   sp.parent2_name, sp.parent2_email, sp.parent2_phone,
+                   sp.signature_data, sp.default_reason
+            FROM users u
+            JOIN subscriptions s ON u.id = s.user_id
+            JOIN student_profiles sp ON u.id = sp.user_id
+            WHERE s.is_auto_submit IS TRUE
+              AND s.subscription_end >= CURRENT_DATE
+              AND u.is_active IS TRUE
+        """)
+        eligible_users = cur.fetchall()
+        logging.info(f"Auto-queue: Found {len(eligible_users)} eligible users for {start_date}")
+
+        for user in eligible_users:
+            try:
+                user_id = user['user_id']
+
+                # Skip if missing required profile fields
+                required_fields = ['full_name', 'roll_number', 'school', 'programme',
+                                   'academic_year', 'student_phone', 'parent1_name',
+                                   'parent1_phone', 'parent1_email']
+                missing_fields = [f for f in required_fields if not user.get(f)]
+                if missing_fields:
+                    logging.warning(f"Auto-queue: Skipping {user['email']} — missing: {missing_fields}")
+                    if send_email:
+                        subject = "Action Required: Incomplete Profile Prevents Outing Request"
+                        body = (f"Hello {user.get('full_name', 'Student')},\n\n"
+                                f"Your outing could not be auto-submitted because your profile is incomplete.\n"
+                                f"Missing fields: {', '.join(missing_fields)}.\n\n"
+                                f"Please update your profile at campusouting.app to enable auto-submission.")
+                        try:
+                            threading.Thread(target=send_email, args=(user['email'], subject, body)).start()
+                        except Exception as mail_e:
+                            logging.error(f"Failed to send warning email to {user['email']}: {mail_e}")
+                    continue
+
+                # Skip duplicate (already queued/running/completed for this date)
+                cur.execute("""
+                    SELECT 1 FROM submission_history
+                    WHERE user_id = %s AND leave_start_date = %s
+                      AND status IN ('queued', 'running', 'completed')
+                """, (user_id, start_date))
+                if cur.fetchone():
+                    logging.info(f"Auto-queue: Skipping duplicate for user {user_id} on {start_date}")
+                    continue
+
+                # Decrypt password
+                try:
+                    outlook_password = decrypt_outlook_password(user['outlook_password_encrypted'])
+                except Exception as dec_e:
+                    logging.error(f"Auto-queue: Could not decrypt password for {user['email']}: {dec_e}")
+                    continue
+
+                out_reason = reason if reason else user.get('default_reason', 'Home Visit')
+
+                # Generate PDF
+                temp_dir = os.path.join(os.getcwd(), 'temp_uploads')
+                os.makedirs(temp_dir, exist_ok=True)
+                pdf_path = os.path.join(temp_dir, f"auto_{user_id}_{get_ist_now().strftime('%Y%m%d%H%M%S')}.pdf")
+
+                pdf_buffer = generate_outing_pdf_buffer(user, start_date, end_date, out_reason)
+                if pdf_buffer:
+                    with open(pdf_path, 'wb') as pf:
+                        pf.write(pdf_buffer.getvalue() if hasattr(pdf_buffer, 'getvalue') else pdf_buffer)
+                else:
+                    logging.error(f"Auto-queue: PDF generation failed for user {user_id}, skipping.")
+                    continue
+
+                # Build form data
+                form_data = {
+                    'student_name': user['full_name'],
+                    'roll_number': user['roll_number'],
+                    'school': user['school'],
+                    'academic_session': user['academic_year'],
+                    'programme': normalize_programme(user['programme']),
+                    'specialization': user.get('specialization', ''),
+                    'student_phone': user['student_phone'],
+                    'student_email': (
+                        user['email'] if (user['email'] and 'woxsen.edu.in' in user['email'].lower())
+                        else (user.get('student_email') or user['email'])
+                    ),
+                    'parent_name': user['parent1_name'],
+                    'parent_phone': user['parent1_phone'],
+                    'parent_email': user['parent1_email'],
+                    'parent2_name': user.get('parent2_name'),
+                    'parent2_phone': user.get('parent2_phone'),
+                    'reason': out_reason,
+                    'leave_start_date': start_date,
+                    'leave_end_date': end_date,
+                }
+
+                task_id = f"auto_{user_id}_{get_ist_now().strftime('%Y%m%d%H%M%S')}"
+                task = AutomationTask(task_id, user_id)
+                automation_tasks[task_id] = task
+
+                cur.execute("""
+                    INSERT INTO submission_history
+                    (user_id, task_id, form_url, leave_start_date, leave_end_date, status, pdf_path, ip_address)
+                    VALUES (%s, %s, %s, %s, %s, 'queued', %s, '127.0.0.1')
+                """, (user_id, task_id, form_url, start_date, end_date, pdf_path))
+                conn.commit()
+
+                automation_queue.put({
+                    'task_id': task_id,
+                    'user_id': user_id,
+                    'form_url': form_url,
+                    'email': user['email'],
+                    'password': outlook_password,
+                    'form_data': form_data,
+                    'pdf_path': pdf_path,
+                })
+
+                tasks_created += 1
+                logging.info(f"Auto-queue: Queued task {task_id} for {user['email']}")
+
+            except Exception as u_e:
+                logging.error(f"Auto-queue: Error preparing task for user {user.get('email')}: {u_e}", exc_info=True)
+
+    except Exception as e:
+        logging.error(f"Auto-queue: Fatal error: {e}", exc_info=True)
+    finally:
+        if conn:
+            conn.close()
+
+    logging.info(f"Auto-queue: Done — {tasks_created} tasks queued for {start_date}")
+    return tasks_created
+
+
 @app.route('/api/auto-submit-from-email', methods=['POST'])
+
 def auto_submit_from_email():
     """
     Endpoint triggered by Mail Agent to auto-submit forms for all subscribed users.
@@ -998,7 +1147,6 @@ def api_update_form_settings():
         
         for key in ['form_link', 'start_date', 'end_date', 'default_reason']:
             if key in data:
-                # Use Upsert (INSERT ON CONFLICT DO UPDATE) to ensure it saves even if missing
                 cur.execute("""
                     INSERT INTO system_config (key, value, updated_at) 
                     VALUES (%s, %s, NOW()) 
@@ -1008,9 +1156,32 @@ def api_update_form_settings():
         
         conn.commit()
         conn.close()
-        return jsonify({'success': True, 'message': 'Settings updated'})
+
+        # Auto-submit trigger: if form link + start date provided, queue all auto-mode users
+        form_url   = data.get('form_link')
+        start_date = data.get('start_date')
+        end_date   = data.get('end_date')
+        reason     = data.get('default_reason')
+
+        auto_triggered = False
+        if form_url and start_date:
+            threading.Thread(
+                target=_trigger_auto_queue,
+                args=(form_url, start_date, end_date, reason),
+                daemon=True
+            ).start()
+            auto_triggered = True
+            logging.info(f"Auto-queue triggered by admin form settings save: {form_url} on {start_date}")
+
+        return jsonify({
+            'success': True,
+            'message': 'Settings updated' + (' and auto-submit queued for eligible users' if auto_triggered else ''),
+            'auto_triggered': auto_triggered,
+        })
     except Exception as e:
+        logging.error(f"api_update_form_settings error: {e}", exc_info=True)
         return jsonify({'success': False, 'error': str(e)}), 500
+
 
 @app.route('/api/admin/dashboard', methods=['GET'])
 @admin_required
@@ -2229,7 +2400,54 @@ def get_current_subscription():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
+@app.route('/api/subscription/auto-submit', methods=['PUT'])
+@login_required
+def toggle_auto_submit():
+    """Allow paid users to toggle their own auto-submit (auto-mode) setting."""
+    try:
+        data = request.json
+        enabled = data.get('enabled')
+        if enabled is None:
+            return jsonify({'success': False, 'error': "'enabled' field required"}), 400
+
+        user_id = request.user_id
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+        # Verify user has an active paid subscription
+        cur.execute("""
+            SELECT plan_type, subscription_end, is_auto_submit
+            FROM subscriptions
+            WHERE user_id = %s AND subscription_end >= CURRENT_DATE
+        """, (user_id,))
+        sub = cur.fetchone()
+
+        if not sub:
+            conn.close()
+            return jsonify({'success': False, 'error': 'No active subscription found'}), 403
+
+        if sub['plan_type'] == 'free' or sub['plan_type'] == 'basic':
+            conn.close()
+            return jsonify({'success': False, 'error': 'Auto-submit requires a paid plan'}), 403
+
+        cur.execute("""
+            UPDATE subscriptions SET is_auto_submit = %s WHERE user_id = %s
+        """, (bool(enabled), user_id))
+        conn.commit()
+        conn.close()
+
+        logging.info(f"User {user_id} set auto_submit={'ON' if enabled else 'OFF'}")
+        return jsonify({
+            'success': True,
+            'auto_submit': bool(enabled),
+            'message': f"Auto-submit {'enabled' if enabled else 'disabled'}"
+        })
+    except Exception as e:
+        logging.error(f"toggle_auto_submit error for user {getattr(request, 'user_id', '?')}: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 @app.route('/api/subscription/upgrade', methods=['POST'])
+
 @login_required
 def upgrade_subscription():
     try:

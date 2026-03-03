@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { User, BookOpen, Users, PenTool, Download, LogOut, Calendar, Edit3, Send, Loader, CheckCircle, AlertCircle } from 'lucide-react';
+import { User, BookOpen, Users, PenTool, Download, LogOut, Calendar, Edit3, Send, Loader, CheckCircle, AlertCircle, Zap } from 'lucide-react';
 import { auth } from '../utils/auth';
 import api from '../utils/api';
 import { generateOutingPDF } from '../utils/pdfGenerator';
@@ -28,6 +28,11 @@ const Dashboard = () => {
         loading: false,
         password: '',
         error: ''
+    });
+    const [autoMode, setAutoMode] = useState({
+        enabled: false,
+        loading: false,
+        planType: null,
     });
 
     // Helper to get pure base URL (no /api suffix)
@@ -67,6 +72,13 @@ const Dashboard = () => {
                             navigate('/plans');
                             return;
                         }
+
+                        // Populate auto-mode state from subscription data
+                        setAutoMode(prev => ({
+                            ...prev,
+                            enabled: !!plan?.is_auto_submit,
+                            planType: plan?.plan_type,
+                        }));
                     } else {
                         navigate('/plans');
                         return;
@@ -248,7 +260,24 @@ const Dashboard = () => {
         }
     };
 
-    // Inline Styles System (Removing s object)
+    // Toggle auto-submit mode for paid users
+    const handleToggleAutoMode = async () => {
+        const newVal = !autoMode.enabled;
+        setAutoMode(prev => ({ ...prev, loading: true }));
+        try {
+            const res = await api.put('/subscription/auto-submit', { enabled: newVal });
+            if (res.data.success) {
+                setAutoMode(prev => ({ ...prev, enabled: newVal, loading: false }));
+            } else {
+                alert(res.data.error || 'Failed to update auto-submit');
+                setAutoMode(prev => ({ ...prev, loading: false }));
+            }
+        } catch (e) {
+            alert(e.response?.data?.error || 'Failed to update auto-submit');
+            setAutoMode(prev => ({ ...prev, loading: false }));
+        }
+    };
+
     const theme = {
         bg: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
         card: 'rgba(30, 41, 59, 0.7)',
@@ -548,6 +577,71 @@ const Dashboard = () => {
                     </div>
                 </div>
             )}
+            {/* ======= AUTO-SUBMIT TOGGLE CARD (paid users only) ======= */}
+            {autoMode.planType && autoMode.planType !== 'free' && autoMode.planType !== 'basic' && (
+                <div className="dash-card" style={{
+                    background: autoMode.enabled
+                        ? 'linear-gradient(135deg, rgba(99,102,241,0.18), rgba(168,85,247,0.12))'
+                        : 'rgba(30,41,59,0.7)',
+                    border: autoMode.enabled
+                        ? '1px solid rgba(99,102,241,0.5)'
+                        : '1px solid rgba(255,255,255,0.08)',
+                    borderRadius: '16px',
+                    padding: '1.5rem',
+                    marginBottom: '1.5rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: '1rem',
+                    flexWrap: 'wrap',
+                    transition: 'all 0.3s',
+                }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                        <div style={{
+                            width: 44, height: 44, borderRadius: '12px',
+                            background: autoMode.enabled ? 'linear-gradient(135deg,#6366f1,#a855f7)' : 'rgba(255,255,255,0.06)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            transition: 'background 0.3s',
+                        }}>
+                            <Zap size={22} color={autoMode.enabled ? '#fff' : '#94a3b8'} />
+                        </div>
+                        <div>
+                            <div style={{ color: '#f8fafc', fontWeight: 700, fontSize: '1rem', marginBottom: 2 }}>
+                                Auto Submit
+                            </div>
+                            <div style={{ color: '#94a3b8', fontSize: '0.82rem', maxWidth: 340, lineHeight: 1.4 }}>
+                                {autoMode.enabled
+                                    ? '🟢 Active — your form will be submitted automatically when the next outing opens.'
+                                    : 'Enable to submit your outing form automatically when admin updates the form link — zero clicks needed.'}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Toggle Switch */}
+                    <button
+                        id="auto-submit-toggle"
+                        onClick={handleToggleAutoMode}
+                        disabled={autoMode.loading}
+                        title={autoMode.enabled ? 'Disable auto-submit' : 'Enable auto-submit'}
+                        style={{
+                            width: 56, height: 30, borderRadius: 15, border: 'none', cursor: autoMode.loading ? 'not-allowed' : 'pointer',
+                            background: autoMode.enabled ? '#6366f1' : 'rgba(255,255,255,0.1)',
+                            position: 'relative', flexShrink: 0, transition: 'background 0.3s',
+                            opacity: autoMode.loading ? 0.6 : 1,
+                        }}
+                    >
+                        <span style={{
+                            position: 'absolute', top: 3, left: autoMode.enabled ? 28 : 3,
+                            width: 24, height: 24, borderRadius: '50%', background: '#fff',
+                            transition: 'left 0.25s', boxShadow: '0 1px 4px rgba(0,0,0,0.3)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        }}>
+                            {autoMode.loading ? <Loader size={12} color="#6366f1" style={{ animation: 'spin 1s linear infinite' }} /> : null}
+                        </span>
+                    </button>
+                </div>
+            )}
+
         </div>
     );
 };
