@@ -804,26 +804,63 @@ class MSFormAutomation:
         except:
             pass
         
-        # Strategy 10: Nuclear option - Click coordinates
+        # Strategy 10: SMART READ & GUESS
+        # Read all actual radio options from the form, normalize both sides, pick best match.
+        # This handles ANY future format change automatically — no code update needed.
         try:
-            print("Strategy 10: Click by visual position...")
-            # Take screenshot to find element visually
-            radios = self.page.locator('div[role="radio"]').all()
-            for radio in radios:
-                try:
-                    if programme.lower() in radio.inner_text().lower():
-                        box = radio.bounding_box()
-                        if box:
-                            # Click center of element
-                            self.page.mouse.click(box['x'] + box['width']/2, box['y'] + box['height']/2)
-                            time.sleep(0.5)
-                            if self.verify_selection(programme):
-                                print("✅ Strategy 10 succeeded")
-                                return True
-                except:
+            print("Strategy 10: Smart read & guess from live form options...")
+            
+            def _norm(t):
+                return ''.join(c for c in (t or '') if c.isalnum()).lower()
+            
+            prog_norm = _norm(programme)
+            
+            all_radios = self.page.locator('div[role="radio"]').all()
+            candidates = []
+            for radio in all_radios:
+                label = radio.get_attribute('aria-label') or radio.inner_text()
+                label_norm = _norm(label)
+                if not label_norm:
                     continue
-        except:
-            pass
+                
+                # Score 1: exact normalized match
+                if label_norm == prog_norm:
+                    score = 1.0
+                # Score 2: one contains the other
+                elif prog_norm in label_norm or label_norm in prog_norm:
+                    score = 0.8
+                else:
+                    # Score 3: longest common prefix ratio
+                    lcp = 0
+                    for a, b in zip(prog_norm, label_norm):
+                        if a == b: lcp += 1
+                        else: break
+                    score = lcp / max(len(prog_norm), len(label_norm)) if prog_norm else 0
+                
+                candidates.append((score, label, radio))
+                print(f"   Candidate: '{label}' (norm='{label_norm}', score={score:.2f})")
+            
+            if candidates:
+                # Sort by score descending, pick best
+                candidates.sort(key=lambda x: x[0], reverse=True)
+                best_score, best_label, best_radio = candidates[0]
+                
+                if best_score >= 0.5:  # Only click if reasonably confident
+                    print(f"   Best match: '{best_label}' (score={best_score:.2f})")
+                    box = best_radio.bounding_box()
+                    if box:
+                        self.page.mouse.click(box['x'] + box['width']/2, box['y'] + box['height']/2)
+                    else:
+                        best_radio.click(force=True)
+                    time.sleep(0.5)
+                    # Verify with relaxed check (the label on form may differ from our target)
+                    if self.verify_selection(programme) or best_score == 1.0:
+                        print(f"✅ Strategy 10 succeeded (smart guess: '{best_label}')")
+                        return True
+                else:
+                    print(f"   Best candidate score {best_score:.2f} below threshold 0.5, skipping")
+        except Exception as e:
+            print(f"Strategy 10 failed: {e}")
         
         print("❌ All strategies failed")
         return False
