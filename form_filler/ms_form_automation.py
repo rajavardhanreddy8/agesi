@@ -553,8 +553,63 @@ class MSFormAutomation:
                         # But let's continue just in case.
                         continue
 
-            logging.warning(f"   ⚠️ Could not find option '{option_text}'")
-            # Take screenshot
+            # === SMART FALLBACK: Read live form options, pick best match ===
+            # When all explicit strategies fail, read what's actually on the form and guess
+            logging.warning(f"   ⚠️ All strategies failed for '{option_text}', trying smart read & guess...")
+            try:
+                def _norm_alnum(t):
+                    return ''.join(c for c in (t or '') if c.isalnum()).lower()
+
+                target_norm = _norm_alnum(option_text)
+                candidates = []
+
+                # Scope search to question container if we can find it, else search whole page
+                search_scope = self.page
+                try:
+                    label_loc = self.page.locator(f'text=/{label_text}/i').first
+                    if label_loc.count() > 0:
+                        container = label_loc.locator('xpath=./ancestor::div[@data-automation-id="questionItem"]').first
+                        if container.count() > 0:
+                            search_scope = container
+                except:
+                    pass
+
+                all_radios = search_scope.locator('[role="radio"]').all()
+                for radio in all_radios:
+                    label = radio.get_attribute('aria-label') or ''
+                    if not label:
+                        try: label = radio.inner_text()
+                        except: pass
+                    label_norm = _norm_alnum(label)
+                    if not label_norm:
+                        continue
+
+                    if label_norm == target_norm:
+                        score = 1.0
+                    elif target_norm in label_norm or label_norm in target_norm:
+                        score = 0.8
+                    else:
+                        lcp = sum(1 for a, b in zip(target_norm, label_norm) if a == b)
+                        score = lcp / max(len(target_norm), len(label_norm)) if target_norm else 0
+
+                    candidates.append((score, label, radio))
+                    logging.info(f"   Smart candidate: '{label}' score={score:.2f}")
+
+                if candidates:
+                    candidates.sort(key=lambda x: x[0], reverse=True)
+                    best_score, best_label, best_radio = candidates[0]
+                    if best_score >= 0.5:
+                        logging.info(f"   Smart guess: clicking '{best_label}' (score={best_score:.2f})")
+                        best_radio.click(force=True)
+                        time.sleep(0.4)
+                        logging.info(f"   ✅ Smart guess selected: '{best_label}' for target '{option_text}'")
+                        return True
+                    else:
+                        logging.warning(f"   Smart guess best score {best_score:.2f} < 0.5, giving up")
+            except Exception as e:
+                logging.warning(f"   Smart guess failed: {e}")
+
+            logging.warning(f"   ❌ Could not find option '{option_text}'")
             try:
                 self.page.screenshot(path=f'debug_radio_fail_{datetime.now().strftime("%H%M%S")}.png')
             except:
