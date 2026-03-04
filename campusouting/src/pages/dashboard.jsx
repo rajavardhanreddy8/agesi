@@ -328,6 +328,73 @@ const Dashboard = () => {
                         </div>
                     </div>
 
+                    {/* Premium Fast-Track Auto Submit Card */}
+                    {autoMode.planType && autoMode.planType !== 'free' && autoMode.planType !== 'basic' && outingData.formLink && (
+                        <div className="dashboard-gen-card" style={{
+                            background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(168, 85, 247, 0.15))',
+                            border: '1px solid rgba(168, 85, 247, 0.5)',
+                            marginBottom: '1.5rem',
+                            position: 'relative',
+                            overflow: 'hidden'
+                        }}>
+                            <div style={{ position: 'absolute', top: 0, right: 0, padding: '4px 12px', background: 'linear-gradient(135deg, #6366f1, #a855f7)', color: 'white', fontSize: '0.7rem', fontWeight: 'bold', borderBottomLeftRadius: '12px' }}>
+                                PREMIUM FEATURE
+                            </div>
+                            <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '1rem', marginTop: '0.2rem' }}>
+                                <div style={{ background: 'rgba(168, 85, 247, 0.2)', padding: '8px', borderRadius: '12px' }}>
+                                    <Zap size={24} color="#a855f7" />
+                                </div>
+                                <div>
+                                    <h3 style={{ margin: 0, color: 'white', fontSize: '1.1rem', fontWeight: 'bold' }}>One-Click Admin Submit</h3>
+                                    <p style={{ margin: 0, color: '#94a3b8', fontSize: '0.85rem' }}>Instantly apply using the University's official active outing details.</p>
+                                </div>
+                            </div>
+
+                            <div style={{ background: 'rgba(0,0,0,0.2)', padding: '12px', borderRadius: '8px', marginBottom: '1rem', fontSize: '0.85rem' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                                    <span style={{ color: '#94a3b8' }}>Reason:</span>
+                                    <span style={{ color: '#e2e8f0', fontWeight: 'bold' }}>{outingData.reason || 'Not set'}</span>
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                    <span style={{ color: '#94a3b8' }}>Duration:</span>
+                                    <span style={{ color: '#e2e8f0', fontWeight: 'bold' }}>{outingData.startDate} to {outingData.endDate}</span>
+                                </div>
+                            </div>
+
+                            <button
+                                onClick={handleSubmitForm}
+                                disabled={submission.loading}
+                                style={{
+                                    width: '100%',
+                                    padding: '12px',
+                                    borderRadius: '12px',
+                                    border: 'none',
+                                    background: submission.loading ? 'rgba(168, 85, 247, 0.5)' :
+                                        submission.status === 'completed' ? 'linear-gradient(135deg, #22c55e, #16a34a)' :
+                                            'linear-gradient(135deg, #a855f7, #6366f1)',
+                                    color: 'white',
+                                    fontWeight: 'bold',
+                                    fontSize: '1rem',
+                                    cursor: submission.loading ? 'wait' : 'pointer',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: '8px',
+                                    boxShadow: submission.loading ? 'none' : '0 4px 14px rgba(168, 85, 247, 0.4)',
+                                    transition: 'all 0.2s'
+                                }}
+                            >
+                                {submission.loading ? (
+                                    <><Loader size={18} className="spin" /> Submitting...</>
+                                ) : submission.status === 'completed' ? (
+                                    <><CheckCircle size={18} /> Submission Queued Successfully!</>
+                                ) : (
+                                    <><Zap size={18} /> Auto-Submit Now</>
+                                )}
+                            </button>
+                        </div>
+                    )}
+
                     {/* Generator Panel */}
                     <div className="dashboard-gen-card">
                         <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '0.25rem' }}>
