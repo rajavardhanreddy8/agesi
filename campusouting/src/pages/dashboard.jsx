@@ -328,70 +328,70 @@ const Dashboard = () => {
                         </div>
                     </div>
 
-                    {/* Premium Fast-Track Auto Submit Card */}
-                    {autoMode.planType && autoMode.planType !== 'free' && autoMode.planType !== 'basic' && outingData.formLink && (
+                    {/* Premium Weekly Auto-Submit Toggle */}
+                    {autoMode.planType && autoMode.planType !== 'free' && autoMode.planType !== 'basic' && (
                         <div className="dashboard-gen-card" style={{
-                            background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(168, 85, 247, 0.15))',
-                            border: '1px solid rgba(168, 85, 247, 0.5)',
+                            background: autoMode.enabled ? 'linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(168, 85, 247, 0.15))' : 'rgba(30,41,59,0.7)',
+                            border: autoMode.enabled ? '1px solid rgba(168, 85, 247, 0.5)' : '1px solid rgba(255,255,255,0.08)',
                             marginBottom: '1.5rem',
                             position: 'relative',
-                            overflow: 'hidden'
+                            overflow: 'hidden',
+                            transition: 'all 0.3s'
                         }}>
                             <div style={{ position: 'absolute', top: 0, right: 0, padding: '4px 12px', background: 'linear-gradient(135deg, #6366f1, #a855f7)', color: 'white', fontSize: '0.7rem', fontWeight: 'bold', borderBottomLeftRadius: '12px' }}>
                                 PREMIUM FEATURE
                             </div>
-                            <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '1rem', marginTop: '0.2rem' }}>
-                                <div style={{ background: 'rgba(168, 85, 247, 0.2)', padding: '8px', borderRadius: '12px' }}>
-                                    <Zap size={24} color="#a855f7" />
+
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
+                                <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginTop: '0.2rem' }}>
+                                    <div style={{ background: autoMode.enabled ? 'linear-gradient(135deg,#6366f1,#a855f7)' : 'rgba(255,255,255,0.06)', padding: '10px', borderRadius: '12px', transition: 'background 0.3s' }}>
+                                        <Zap size={24} color={autoMode.enabled ? '#fff' : '#94a3b8'} />
+                                    </div>
+                                    <div>
+                                        <h3 style={{ margin: 0, color: 'white', fontSize: '1.1rem', fontWeight: 'bold' }}>Weekly Auto-Submit</h3>
+                                        <p style={{ margin: 0, color: '#94a3b8', fontSize: '0.85rem' }}>
+                                            {autoMode.enabled ? '🟢 Active — zero clicks needed every week.' : 'Enable to apply automatically for every outing.'}
+                                        </p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <h3 style={{ margin: 0, color: 'white', fontSize: '1.1rem', fontWeight: 'bold' }}>One-Click Admin Submit</h3>
-                                    <p style={{ margin: 0, color: '#94a3b8', fontSize: '0.85rem' }}>Instantly apply using the University's official active outing details.</p>
-                                </div>
+
+                                {/* Toggle Switch */}
+                                <button
+                                    id="auto-submit-toggle"
+                                    onClick={handleToggleAutoMode}
+                                    disabled={autoMode.loading}
+                                    style={{
+                                        width: 56, height: 30, borderRadius: 15, border: 'none', cursor: autoMode.loading ? 'wait' : 'pointer',
+                                        background: autoMode.enabled ? '#a855f7' : 'rgba(255,255,255,0.1)',
+                                        position: 'relative', flexShrink: 0, transition: 'background 0.3s',
+                                        opacity: autoMode.loading ? 0.6 : 1,
+                                    }}
+                                >
+                                    <span style={{
+                                        position: 'absolute', top: 3, left: autoMode.enabled ? 28 : 3,
+                                        width: 24, height: 24, borderRadius: '50%', background: '#fff',
+                                        transition: 'left 0.25s', boxShadow: '0 1px 4px rgba(0,0,0,0.3)',
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    }}>
+                                        {autoMode.loading ? <Loader size={12} color="#a855f7" style={{ animation: 'spin 1s linear infinite' }} /> : null}
+                                    </span>
+                                </button>
                             </div>
 
-                            <div style={{ background: 'rgba(0,0,0,0.2)', padding: '12px', borderRadius: '8px', marginBottom: '1rem', fontSize: '0.85rem' }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                                    <span style={{ color: '#94a3b8' }}>Reason:</span>
-                                    <span style={{ color: '#e2e8f0', fontWeight: 'bold' }}>{outingData.reason || 'Not set'}</span>
+                            {/* Active Config Preview (Only show if enabled and outing data exists) */}
+                            {autoMode.enabled && outingData.formLink && (
+                                <div style={{ background: 'rgba(0,0,0,0.2)', padding: '10px 12px', borderRadius: '8px', marginTop: '1rem', fontSize: '0.85rem' }}>
+                                    <div style={{ color: '#818cf8', fontWeight: 'bold', marginBottom: '8px', fontSize: '0.75rem' }}>CURRENT ADMIN CONFIGURATION</div>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                                        <span style={{ color: '#94a3b8' }}>Reason:</span>
+                                        <span style={{ color: '#e2e8f0', fontWeight: 'bold' }}>{outingData.reason || 'Not set'}</span>
+                                    </div>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                        <span style={{ color: '#94a3b8' }}>Duration:</span>
+                                        <span style={{ color: '#e2e8f0', fontWeight: 'bold' }}>{outingData.startDate} to {outingData.endDate}</span>
+                                    </div>
                                 </div>
-                                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                    <span style={{ color: '#94a3b8' }}>Duration:</span>
-                                    <span style={{ color: '#e2e8f0', fontWeight: 'bold' }}>{outingData.startDate} to {outingData.endDate}</span>
-                                </div>
-                            </div>
-
-                            <button
-                                onClick={handleSubmitForm}
-                                disabled={submission.loading}
-                                style={{
-                                    width: '100%',
-                                    padding: '12px',
-                                    borderRadius: '12px',
-                                    border: 'none',
-                                    background: submission.loading ? 'rgba(168, 85, 247, 0.5)' :
-                                        submission.status === 'completed' ? 'linear-gradient(135deg, #22c55e, #16a34a)' :
-                                            'linear-gradient(135deg, #a855f7, #6366f1)',
-                                    color: 'white',
-                                    fontWeight: 'bold',
-                                    fontSize: '1rem',
-                                    cursor: submission.loading ? 'wait' : 'pointer',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    gap: '8px',
-                                    boxShadow: submission.loading ? 'none' : '0 4px 14px rgba(168, 85, 247, 0.4)',
-                                    transition: 'all 0.2s'
-                                }}
-                            >
-                                {submission.loading ? (
-                                    <><Loader size={18} className="spin" /> Submitting...</>
-                                ) : submission.status === 'completed' ? (
-                                    <><CheckCircle size={18} /> Submission Queued Successfully!</>
-                                ) : (
-                                    <><Zap size={18} /> Auto-Submit Now</>
-                                )}
-                            </button>
+                            )}
                         </div>
                     )}
 
@@ -644,70 +644,7 @@ const Dashboard = () => {
                     </div>
                 </div>
             )}
-            {/* ======= AUTO-SUBMIT TOGGLE CARD (paid users only) ======= */}
-            {autoMode.planType && autoMode.planType !== 'free' && autoMode.planType !== 'basic' && (
-                <div className="dash-card" style={{
-                    background: autoMode.enabled
-                        ? 'linear-gradient(135deg, rgba(99,102,241,0.18), rgba(168,85,247,0.12))'
-                        : 'rgba(30,41,59,0.7)',
-                    border: autoMode.enabled
-                        ? '1px solid rgba(99,102,241,0.5)'
-                        : '1px solid rgba(255,255,255,0.08)',
-                    borderRadius: '16px',
-                    padding: '1.5rem',
-                    marginBottom: '1.5rem',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    gap: '1rem',
-                    flexWrap: 'wrap',
-                    transition: 'all 0.3s',
-                }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                        <div style={{
-                            width: 44, height: 44, borderRadius: '12px',
-                            background: autoMode.enabled ? 'linear-gradient(135deg,#6366f1,#a855f7)' : 'rgba(255,255,255,0.06)',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            transition: 'background 0.3s',
-                        }}>
-                            <Zap size={22} color={autoMode.enabled ? '#fff' : '#94a3b8'} />
-                        </div>
-                        <div>
-                            <div style={{ color: '#f8fafc', fontWeight: 700, fontSize: '1rem', marginBottom: 2 }}>
-                                Auto Submit
-                            </div>
-                            <div style={{ color: '#94a3b8', fontSize: '0.82rem', maxWidth: 340, lineHeight: 1.4 }}>
-                                {autoMode.enabled
-                                    ? '🟢 Active — your form will be submitted automatically when the next outing opens.'
-                                    : 'Enable to submit your outing form automatically when admin updates the form link — zero clicks needed.'}
-                            </div>
-                        </div>
-                    </div>
 
-                    {/* Toggle Switch */}
-                    <button
-                        id="auto-submit-toggle"
-                        onClick={handleToggleAutoMode}
-                        disabled={autoMode.loading}
-                        title={autoMode.enabled ? 'Disable auto-submit' : 'Enable auto-submit'}
-                        style={{
-                            width: 56, height: 30, borderRadius: 15, border: 'none', cursor: autoMode.loading ? 'not-allowed' : 'pointer',
-                            background: autoMode.enabled ? '#6366f1' : 'rgba(255,255,255,0.1)',
-                            position: 'relative', flexShrink: 0, transition: 'background 0.3s',
-                            opacity: autoMode.loading ? 0.6 : 1,
-                        }}
-                    >
-                        <span style={{
-                            position: 'absolute', top: 3, left: autoMode.enabled ? 28 : 3,
-                            width: 24, height: 24, borderRadius: '50%', background: '#fff',
-                            transition: 'left 0.25s', boxShadow: '0 1px 4px rgba(0,0,0,0.3)',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        }}>
-                            {autoMode.loading ? <Loader size={12} color="#6366f1" style={{ animation: 'spin 1s linear infinite' }} /> : null}
-                        </span>
-                    </button>
-                </div>
-            )}
 
         </div>
     );
