@@ -1357,16 +1357,16 @@ class MSFormAutomation:
                         aria = all_text_inputs[2].get_attribute('aria-label') or ''
                         place = all_text_inputs[2].get_attribute('placeholder') or ''
                         if 'date' in aria.lower() or 'date' in place.lower() or 'start' in aria.lower():
-                            all_text_inputs[2].fill(form_data['leave_start_date'])
-                            print(f"   POSITIONAL: Filled input[2] with start date: {form_data['leave_start_date']}")
+                            _type_date_safe(all_text_inputs[2], start_date_val)
+                            print(f"   POSITIONAL: Filled input[2] with start date: {start_date_val}")
                             start_date_filled = True
                         
                     if not end_date_filled and len(all_text_inputs) >= 4:
                         aria = all_text_inputs[3].get_attribute('aria-label') or ''
                         place = all_text_inputs[3].get_attribute('placeholder') or ''
                         if 'date' in aria.lower() or 'date' in place.lower() or 'end' in aria.lower():
-                            all_text_inputs[3].fill(form_data['leave_end_date'])
-                            print(f"   POSITIONAL: Filled input[3] with end date: {form_data['leave_end_date']}")
+                            _type_date_safe(all_text_inputs[3], end_date_val)
+                            print(f"   POSITIONAL: Filled input[3] with end date: {end_date_val}")
                             end_date_filled = True
                             
                     # Method B: Search for ANY input containing "date" in label/placeholder
@@ -1387,11 +1387,11 @@ class MSFormAutomation:
                             is_generic = 'date' in aria or 'date' in place
                             
                             if not start_date_filled and (is_start or (is_generic and not end_date_filled)):
-                                inp.fill(form_data['leave_start_date'])
+                                _type_date_safe(inp, start_date_val)
                                 print(f"   GENERIC: Found potential START date field: {aria}")
                                 start_date_filled = True
                             elif not end_date_filled and (is_end or (is_generic and start_date_filled)):
-                                inp.fill(form_data['leave_end_date'])
+                                _type_date_safe(inp, end_date_val)
                                 print(f"   GENERIC: Found potential END date field: {aria}")
                                 end_date_filled = True
                                 
@@ -1461,11 +1461,8 @@ class MSFormAutomation:
                         question_text = container.inner_text().lower().replace('e-mail', 'email').replace('e mail', 'email')
                         question_short = question_text[:100].replace('\n', ' ')
                         
-                        # Find inputs in this container
+                        # Find inputs in this container (INCLUDING date pickers for smart filling)
                         inputs = container.locator('input[type="text"]:visible, input:not([type]):visible, textarea:visible').all()
-                        
-                        # Filter out Date pickers which shouldn't be overridden by simple text fills
-                        inputs = [inp for inp in inputs if inp.get_attribute('aria-label') != 'Date picker']
                         
                         for inp in inputs:
                             try:
