@@ -1205,31 +1205,33 @@ class MSFormAutomation:
                     
                     if not name_filled:
                         # Last resort: try filling via JavaScript directly
+                        student_name_safe = form_data.get("student_name", "")
                         self.page.evaluate(f"""() => {{
                             const inputs = Array.from(document.querySelectorAll('input'))
                                 .filter(i => i.offsetParent !== null && i.type !== 'hidden' && i.type !== 'submit' && i.type !== 'button' && i.type !== 'radio' && i.type !== 'checkbox' && i.type !== 'file');
                             if (inputs.length > 0) {{
                                 const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
-                                nativeInputValueSetter.call(inputs[0], '{form_data["student_name"]}');
+                                nativeInputValueSetter.call(inputs[0], '{student_name_safe}');
                                 inputs[0].dispatchEvent(new Event('input', {{ bubbles: true }}));
                                 inputs[0].dispatchEvent(new Event('change', {{ bubbles: true }}));
                             }}
                         }}""")
-                        print(f"   JS FALLBACK: Set input[0] value via JS to: {form_data['student_name']}")
+                        print(f"   JS FALLBACK: Set input[0] value via JS to: {student_name_safe}")
                         name_filled = True
                     
                     if not roll_filled:
+                        roll_number_safe = form_data.get("roll_number", form_data.get("roll_no", ""))
                         self.page.evaluate(f"""() => {{
                             const inputs = Array.from(document.querySelectorAll('input'))
                                 .filter(i => i.offsetParent !== null && i.type !== 'hidden' && i.type !== 'submit' && i.type !== 'button' && i.type !== 'radio' && i.type !== 'checkbox' && i.type !== 'file');
                             if (inputs.length > 1) {{
                                 const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
-                                nativeInputValueSetter.call(inputs[1], '{form_data["roll_number"]}');
+                                nativeInputValueSetter.call(inputs[1], '{roll_number_safe}');
                                 inputs[1].dispatchEvent(new Event('input', {{ bubbles: true }}));
                                 inputs[1].dispatchEvent(new Event('change', {{ bubbles: true }}));
                             }}
                         }}""")
-                        print(f"   JS FALLBACK: Set input[1] value via JS to: {form_data['roll_number']}")
+                        print(f"   JS FALLBACK: Set input[1] value via JS to: {roll_number_safe}")
                         roll_filled = True
                         
                 except Exception as e:
