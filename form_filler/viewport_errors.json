@@ -1,0 +1,52 @@
+[
+  {
+    "status": "failed",
+    "error_details": null,
+    "message": "Form did not load. Current URL: https://forms.office.com/pages/responsepage.aspx?id=LSD36rPvekOhA1Bbufv3X62J9sRC8oxAu69or0JA3nxUNzUxN0ZFUUZIR0hLMU9XR1RaMVVHUkpQWS4u&route=shorturl, Title: Microsoft Forms"
+  },
+  {
+    "status": "failed",
+    "error_details": null,
+    "message": "Form Validation Errors Found: [\"'Leave End date': This question is required.\", 'Global/Unknown: 1 question(s) need to be completed before submitting: Question 9.']"
+  },
+  {
+    "status": "failed",
+    "error_details": null,
+    "message": "Form Validation Errors Found: [\"'Leave End date': This question is required.\", 'Global/Unknown: 1 question(s) need to be completed before submitting: Question 9.']"
+  },
+  {
+    "status": "failed",
+    "error_details": null,
+    "message": "Form Validation Errors Found: [\"'Leave Start Date': This question is required.\", 'Global/Unknown: 1 question(s) need to be completed before submitting: Question 8.']"
+  },
+  {
+    "status": "failed",
+    "error_details": null,
+    "message": "Form Validation Errors Found: [\"'Leave Start Date': This question is required.\", \"'Leave End date': This question is required.\", 'Global/Unknown: 2 question(s) need to be completed before submitting: Question 8,Question 9.']"
+  },
+  {
+    "status": "failed",
+    "error_details": null,
+    "message": "Form Validation Errors Found: [\"'Leave End date': This question is required.\", 'Global/Unknown: 1 question(s) need to be completed before submitting: Question 9.']"
+  },
+  {
+    "status": "failed",
+    "error_details": null,
+    "message": "Element is outside of the viewport"
+  },
+  {
+    "status": "failed",
+    "error_details": null,
+    "message": "Form Validation Errors Found: [\"'Leave Start Date': This question is required.\", 'Global/Unknown: 1 question(s) need to be completed before submitting: Question 8.']"
+  },
+  {
+    "status": "failed",
+    "error_details": null,
+    "message": "Unknown page state. URL: https://forms.office.com/pages/responsepage.aspx?id=LSD36rPvekOhA1Bbufv3X62J9sRC8oxAu69or0JA3nxURjRYSE5PMjE2Mzc4UFY2N1k4SjJNNFc5Vy4u&route=shorturl"
+  },
+  {
+    "status": "failed",
+    "error_details": null,
+    "message": "Unknown page state. URL: https://forms.office.com/pages/responsepage.aspx?id=LSD36rPvekOhA1Bbufv3X62J9sRC8oxAu69or0JA3nxURjRYSE5PMjE2Mzc4UFY2N1k4SjJNNFc5Vy4u&route=shorturl"
+  }
+]

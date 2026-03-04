@@ -155,10 +155,10 @@ class MSFormAutomation:
         storage_state = None
         if os.path.exists(self.current_state_file):
             try:
-                # Check if the state file is recent (less than 12 hours old)
+                # Check if the state file is recent (less than 7 days old)
                 import stat
                 file_age = time.time() - os.path.getmtime(self.current_state_file)
-                if file_age < 43200:  # 12 hours in seconds
+                if file_age < 604800:  # 7 days in seconds
                     storage_state = self.current_state_file
                     logging.info(f"Loading saved browser state (age: {file_age/3600:.1f}h)")
                 else:
@@ -377,7 +377,6 @@ class MSFormAutomation:
                 self.page.screenshot(path=f'debug_login_fail_{datetime.now().strftime("%H%M%S")}.png')
             except:
                 pass
-            raise
             raise
     
     def select_radio(self, label_text, option_text):
@@ -1006,6 +1005,10 @@ class MSFormAutomation:
             
             def _type_date_safe(inp, value):
                 """Fill a date picker using keyboard simulation (click, select all, type, enter, tab)."""
+                try:
+                    inp.scroll_into_view_if_needed(timeout=2000)
+                except:
+                    pass
                 inp.click()
                 time.sleep(0.5)
                 # clear existing value first just in case
@@ -1023,6 +1026,10 @@ class MSFormAutomation:
                 if is_date:
                     _type_date_safe(inp, value)
                 else:
+                    try:
+                        inp.scroll_into_view_if_needed(timeout=2000)
+                    except:
+                        pass
                     inp.fill(value)
 
             def fill_by_label(label_text_or_list, value, is_date=False):
@@ -1313,7 +1320,7 @@ class MSFormAutomation:
             if (not start_date_filled or not end_date_filled) and form_data.get('leave_start_date'):
                 print("FALLBACK: Trying positional date filling...")
                 try:
-                    all_text_inputs = self.page.locator('input[type="text"]:visible, input:not([type]):visible').all()
+                    all_text_inputs = self.page.locator('input[aria-label="Date picker"]:visible, input[type="text"]:visible, input:not([type]):visible').all()
                     
                     # Method A: Positional (3rd and 4th inputs)
                     # We expect Name(0) and Roll(1) to be first. Dates should be next.
@@ -1666,19 +1673,36 @@ class MSFormAutomation:
             
             # Try waiting for success with retries
             success_found = False
+            success_text_found = ""
             MAX_CHECKS = 3
             for attempt in range(MAX_CHECKS):
                 try:
                     success_indicator.first.wait_for(state='visible', timeout=15000)
                     success_found = True
-                    print(f"✅ SUBMISSION CONFIRMED: Success message visible (attempt {attempt+1}).")
+                    success_text_found = success_indicator.first.inner_text()
+                    print(f"✅ SUBMISSION CONFIRMED: Success message visible (attempt {attempt+1}). Text: {success_text_found}")
                     break
                 except Exception:
                     print(f"⚠️ Success message not found yet (attempt {attempt+1}/{MAX_CHECKS})...")
                     if attempt < MAX_CHECKS - 1:
                         time.sleep(5)  # Wait before retry
             
+            # SAVE EXPLICIT SCREENSHOT FOR USER VERIFICATION
             if success_found:
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                # Ensure the page is settled before screenshot
+                time.sleep(2) 
+                
+                screenshot_path = f'success_verification_{timestamp}.jpg'
+                self.page.screenshot(path=screenshot_path, full_page=True)
+                print(f"📸 SAVED RESPONSE SCREENSHOT: {screenshot_path} (User can view this to verify submission)")
+                
+                # Also save the HTML response snippet
+                html_path = f'success_response_{timestamp}.txt'
+                with open(html_path, "w", encoding="utf-8") as f:
+                    f.write(f"Submission Successful!\nTime: {datetime.now()}\nResponse Message: {success_text_found}\n")
+                print(f"📝 SAVED RESPONSE TEXT: {html_path}")
+                
                 return True
             
             # --- STRATEGY 3: Check URL change ---
