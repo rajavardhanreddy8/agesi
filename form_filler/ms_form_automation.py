@@ -1193,14 +1193,16 @@ class MSFormAutomation:
                     # Alternative: just get all visible inputs that accept text
                     all_text_inputs = self.page.locator('input[type="text"]:visible, input:not([type]):visible').all()
                     
+                    _name_val = form_data.get('student_name', '')
+                    _roll_val = form_data.get('roll_number', form_data.get('roll_no', ''))
                     if not name_filled and len(all_text_inputs) >= 1:
-                        all_text_inputs[0].fill(form_data['student_name'])
-                        print(f"   POSITIONAL: Filled input[0] with name: {form_data['student_name']}")
+                        all_text_inputs[0].fill(_name_val)
+                        print(f"   POSITIONAL: Filled input[0] with name: {_name_val}")
                         name_filled = True
                     
                     if not roll_filled and len(all_text_inputs) >= 2:
-                        all_text_inputs[1].fill(form_data['roll_number'])
-                        print(f"   POSITIONAL: Filled input[1] with roll: {form_data['roll_number']}")
+                        all_text_inputs[1].fill(_roll_val)
+                        print(f"   POSITIONAL: Filled input[1] with roll: {_roll_val}")
                         roll_filled = True
                     
                     if not name_filled:
@@ -1255,8 +1257,7 @@ class MSFormAutomation:
             print(f"📋 Programme: raw='{programme_raw}', normalized='{programme_normalized}'")
 
             if not programme_normalized:
-                 print("❌ CRITICAL: Programme value is EMPTY in form_data! Cannot select Programme Name.")
-                 raise Exception("Programme value is missing from form_data. Check student_profiles.programme in database.")
+                 print("⚠️ WARNING: Programme value is EMPTY in form_data. Will skip Programme selection and continue.")
 
             print("\\n5. Selecting Programme (Robust Method)...")
             self.debug_programme_field()
