@@ -328,8 +328,8 @@ const Dashboard = () => {
                         </div>
                     </div>
 
-                    {/* Premium Weekly Auto-Submit Toggle */}
-                    {autoMode.planType && autoMode.planType !== 'free' && autoMode.planType !== 'basic' && (
+                    {/* Weekly Auto-Submit Toggle — visible to all paying users */}
+                    {autoMode.planType && autoMode.planType !== 'free' && (
                         <div className="dashboard-gen-card" style={{
                             background: autoMode.enabled ? 'linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(168, 85, 247, 0.15))' : 'rgba(30,41,59,0.7)',
                             border: autoMode.enabled ? '1px solid rgba(168, 85, 247, 0.5)' : '1px solid rgba(255,255,255,0.08)',
