@@ -1008,8 +1008,11 @@ class MSFormAutomation:
                 """Fill a date picker using keyboard simulation (click, select all, type, enter, tab)."""
                 inp.click()
                 time.sleep(0.5)
+                # clear existing value first just in case
                 inp.press('Control+a')
+                inp.press('Backspace')
                 inp.type(value, delay=100)
+                time.sleep(0.2)
                 inp.press('Enter')
                 time.sleep(0.3)
                 inp.press('Tab')
@@ -1029,44 +1032,8 @@ class MSFormAutomation:
                     for label_text in labels:
                         print(f"🔍 Looking for field: '{label_text}' (is_date={is_date})...")
                         
-                        # Strategy 1: aria-label (case-insensitive partial match)
-                        # Microsoft Forms often uses aria-label for accessibility
-                        try:
-                            # Use JavaScript to find inputs with case-insensitive aria-label match
-                            input_el = self.page.evaluate(f'''() => {{
-                                const searchText = "{label_text}".toLowerCase();
-                                const inputs = Array.from(document.querySelectorAll('input[aria-label]'));
-                                return inputs.find(input => 
-                                    input.getAttribute('aria-label').toLowerCase().includes(searchText)
-                                );
-                            }}''')
-                            
-                            if input_el:
-                                # Re-locate the element using Playwright
-                                aria_label = self.page.evaluate('(el) => el.getAttribute("aria-label")', input_el)
-                                inp = self.page.locator(f'input[aria-label="{aria_label}"]').first
-                                if inp.is_visible():
-                                    _fill_input(inp, value, is_date)
-                                    print(f"   ✅ Filled by aria-label: {label_text} = {value}")
-                                    return True
-                        except Exception as e:
-                            print(f"   Strategy 1 failed: {e}")
-                        
-                        # Strategy 2: Find by placeholder (case-insensitive)
-                        try:
-                            placeholders = self.page.locator('input[placeholder]').all()
-                            for inp in placeholders:
-                                placeholder = inp.get_attribute('placeholder') or ''
-                                if label_text.lower() in placeholder.lower():
-                                    if inp.is_visible():
-                                        _fill_input(inp, value, is_date)
-                                        print(f"   ✅ Filled by placeholder: {label_text} = {value}")
-                                        return True
-                        except Exception as e:
-                            print(f"   Strategy 2 failed: {e}")
-                        
-                        # Strategy 3: Find text containing label, then find nearest input
-                        # This handles cases where the label is in a div/span near the input
+                        # Strategy 1: Find text containing label, then find nearest input
+                        # This works best for MS Forms which separates the label text from the input
                         try:
                             # Case-insensitive text search using regex
                             pattern = label_text.replace(' ', '\\s*')  # Allow flexible spacing
@@ -1079,7 +1046,11 @@ class MSFormAutomation:
                                 
                                 if container.count() > 0:
                                     # Find input within this container
-                                    inp = container.locator('input[type="text"], input:not([type])').first
+                                    if is_date:
+                                        inp = container.locator('input[aria-label="Date picker"], input[type="text"], input:not([type])').first
+                                    else:
+                                        inp = container.locator('input[type="text"], input:not([type])').first
+                                        
                                     if inp.count() > 0 and inp.is_visible():
                                         # Detect date picker via aria-label or is_date flag
                                         aria = inp.get_attribute('aria-label') or ''
@@ -1089,17 +1060,54 @@ class MSFormAutomation:
                                         return True
                                 
                                 # Fallback: find any input after the text in DOM order
-                                inp = self.page.locator(f'text=/{pattern}/i ~ input, text=/{pattern}/i + input').first
+                                if is_date:
+                                    inp = self.page.locator(f'text=/{pattern}/i ~ input[aria-label="Date picker"], text=/{pattern}/i ~ input, text=/{pattern}/i + input').first
+                                else:
+                                    inp = self.page.locator(f'text=/{pattern}/i ~ input, text=/{pattern}/i + input').first
+                                    
                                 if inp.count() > 0 and inp.is_visible():
                                     _fill_input(inp, value, is_date)
                                     print(f"   ✅ Filled by DOM proximity: {label_text} = {value}")
                                     return True
                         except Exception as e:
+                            print(f"   Strategy 1 failed: {e}")
+
+                        # Strategy 2: aria-label (case-insensitive partial match)
+                        try:
+                            input_el = self.page.evaluate(f'''() => {{
+                                const searchText = "{label_text}".toLowerCase();
+                                const inputs = Array.from(document.querySelectorAll('input[aria-label]'));
+                                return inputs.find(input => 
+                                    input.getAttribute('aria-label').toLowerCase().includes(searchText)
+                                );
+                            }}''')
+                            
+                            if input_el:
+                                aria_label = self.page.evaluate('(el) => el.getAttribute("aria-label")', input_el)
+                                inp = self.page.locator(f'input[aria-label="{aria_label}"]').first
+                                if inp.is_visible():
+                                    _fill_input(inp, value, is_date)
+                                    print(f"   ✅ Filled by aria-label: {label_text} = {value}")
+                                    return True
+                        except Exception as e:
+                            print(f"   Strategy 2 failed: {e}")
+                        
+                        # Strategy 3: Find by placeholder (case-insensitive)
+                        try:
+                            placeholders = self.page.locator('input[placeholder]').all()
+                            for inp in placeholders:
+                                placeholder = inp.get_attribute('placeholder') or ''
+                                if label_text.lower() in placeholder.lower():
+                                    if inp.is_visible():
+                                        _fill_input(inp, value, is_date)
+                                        print(f"   ✅ Filled by placeholder: {label_text} = {value}")
+                                        return True
+                        except Exception as e:
                             print(f"   Strategy 3 failed: {e}")
                         
                         # Strategy 4: Brute force - find all visible text inputs and match by nearby text
                         try:
-                            all_inputs = self.page.locator('input[type="text"], input:not([type])').all()
+                            all_inputs = self.page.locator('input[aria-label="Date picker"], input[type="text"], input:not([type])').all()
                             for inp in all_inputs:
                                 if not inp.is_visible():
                                     continue

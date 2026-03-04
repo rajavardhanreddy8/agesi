@@ -826,20 +826,36 @@ def _trigger_auto_queue(form_url, start_date, end_date, reason=None):
 # ============================================================================
 
 def _get_gmail_service():
-    """Build and return an authenticated Gmail API service client."""
-    import json
-    from google.oauth2 import service_account
+    """
+    Build and return an authenticated Gmail API service client.
+    Uses OAuth2 refresh token (works with personal @gmail.com accounts).
+    
+    Required env vars:
+    - GMAIL_CLIENT_ID       (from GCP OAuth2 credentials)
+    - GMAIL_CLIENT_SECRET   (from GCP OAuth2 credentials)
+    - GMAIL_REFRESH_TOKEN   (from one-time setup via gmail_setup.py)
+    """
+    from google.oauth2.credentials import Credentials
     from googleapiclient.discovery import build
 
-    creds_json = os.environ.get('GMAIL_SERVICE_ACCOUNT_JSON')
-    if not creds_json:
-        raise RuntimeError("GMAIL_SERVICE_ACCOUNT_JSON env var not set")
+    client_id     = os.environ.get('GMAIL_CLIENT_ID')
+    client_secret = os.environ.get('GMAIL_CLIENT_SECRET')
+    refresh_token = os.environ.get('GMAIL_REFRESH_TOKEN')
 
-    info = json.loads(creds_json)
-    creds = service_account.Credentials.from_service_account_info(
-        info,
+    if not all([client_id, client_secret, refresh_token]):
+        raise RuntimeError(
+            "Gmail OAuth2 not configured. Set GMAIL_CLIENT_ID, GMAIL_CLIENT_SECRET, "
+            "and GMAIL_REFRESH_TOKEN env vars. Run gmail_setup.py to get the refresh token."
+        )
+
+    creds = Credentials(
+        token=None,
+        refresh_token=refresh_token,
+        token_uri='https://oauth2.googleapis.com/token',
+        client_id=client_id,
+        client_secret=client_secret,
         scopes=['https://www.googleapis.com/auth/gmail.readonly'],
-    ).with_subject(os.environ.get('ADMIN_GMAIL_USER', info.get('client_email', '')))
+    )
 
     return build('gmail', 'v1', credentials=creds)
 
