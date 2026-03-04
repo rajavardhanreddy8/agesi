@@ -1,0 +1,92 @@
+[
+  {
+    "task_id": "auto_55_20260304110629",
+    "status": "queued",
+    "message": "None",
+    "leave_start_date": "2026-02-13",
+    "leave_end_date": "2026-02-14",
+    "submitted_at": "2026-03-04 05:36:28.911167",
+    "email": "avinash.kumar_2028@woxsen.edu.in"
+  },
+  {
+    "task_id": "auto_54_20260304110628",
+    "status": "queued",
+    "message": "None",
+    "leave_start_date": "2026-02-13",
+    "leave_end_date": "2026-02-14",
+    "submitted_at": "2026-03-04 05:36:25.320882",
+    "email": "ansh.dhingra_2028@woxsen.edu.in"
+  },
+  {
+    "task_id": "auto_49_20260304110625",
+    "status": "queued",
+    "message": "None",
+    "leave_start_date": "2026-02-13",
+    "leave_end_date": "2026-02-14",
+    "submitted_at": "2026-03-04 05:36:23.974276",
+    "email": "bhuvanachandra.k_2028@woxsen.edu.in"
+  },
+  {
+    "task_id": "auto_48_20260304110623",
+    "status": "queued",
+    "message": "None",
+    "leave_start_date": "2026-02-13",
+    "leave_end_date": "2026-02-14",
+    "submitted_at": "2026-03-04 05:36:22.334293",
+    "email": "kavya.praktur_2028@woxsen.edu.in"
+  },
+  {
+    "task_id": "auto_47_20260304110621",
+    "status": "queued",
+    "message": "None",
+    "leave_start_date": "2026-02-13",
+    "leave_end_date": "2026-02-14",
+    "submitted_at": "2026-03-04 05:36:19.853483",
+    "email": "devana.swathi_2028@woxsen.edu.in"
+  },
+  {
+    "task_id": "auto_35_20260304110618",
+    "status": "queued",
+    "message": "None",
+    "leave_start_date": "2026-02-13",
+    "leave_end_date": "2026-02-14",
+    "submitted_at": "2026-03-04 05:36:15.693789",
+    "email": "venkatalakshmi.rathikindi_2028@woxsen.edu.in"
+  },
+  {
+    "task_id": "auto_34_20260304110615",
+    "status": "queued",
+    "message": "None",
+    "leave_start_date": "2026-02-13",
+    "leave_end_date": "2026-02-14",
+    "submitted_at": "2026-03-04 05:36:12.722484",
+    "email": "vaishnavi.gandikota_2028@woxsen.edu.in"
+  },
+  {
+    "task_id": "auto_7_20260304110612",
+    "status": "completed",
+    "message": "Automation Success",
+    "leave_start_date": "2026-02-13",
+    "leave_end_date": "2026-02-14",
+    "submitted_at": "2026-03-04 05:36:01.633825",
+    "email": "guntaka.reddy_2028@woxsen.edu.in"
+  },
+  {
+    "task_id": "task_55_20260304_104903",
+    "status": "failed",
+    "message": "Form did not load. Current URL: https://forms.office.com/pages/responsepage.aspx?id=LSD36rPvekOhA1Bbufv3X62J9sRC8oxAu69or0JA3nxUNzUxN0ZFUUZIR0hLMU9XR1RaMVVHUkpQWS4u&route=shorturl, Title: Microsoft Forms",
+    "leave_start_date": "2026-03-06",
+    "leave_end_date": "2026-03-08",
+    "submitted_at": "2026-03-04 05:19:01.905916",
+    "email": "avinash.kumar_2028@woxsen.edu.in"
+  },
+  {
+    "task_id": "auto_54_20260304100154",
+    "status": "failed",
+    "message": "Form Validation Errors Found: [\"'Leave End date': This question is required.\", 'Global/Unknown: 1 question(s) need to be completed before submitting: Question 9.']",
+    "leave_start_date": "2026-03-06",
+    "leave_end_date": "2026-03-08",
+    "submitted_at": "2026-03-04 04:31:54.558336",
+    "email": "ansh.dhingra_2028@woxsen.edu.in"
+  }
+]

@@ -1,0 +1,79 @@
+[
+  {
+    "task_id": "auto_55_20260304115428",
+    "status": "queued",
+    "leave_start_date": "2026-03-06",
+    "leave_end_date": "2026-03-08",
+    "email": "avinash.kumar_2028@woxsen.edu.in"
+  },
+  {
+    "task_id": "auto_54_20260304115427",
+    "status": "queued",
+    "leave_start_date": "2026-03-06",
+    "leave_end_date": "2026-03-08",
+    "email": "ansh.dhingra_2028@woxsen.edu.in"
+  },
+  {
+    "task_id": "auto_48_20260304115426",
+    "status": "queued",
+    "leave_start_date": "2026-03-06",
+    "leave_end_date": "2026-03-08",
+    "email": "kavya.praktur_2028@woxsen.edu.in"
+  },
+  {
+    "task_id": "auto_47_20260304115425",
+    "status": "queued",
+    "leave_start_date": "2026-03-06",
+    "leave_end_date": "2026-03-08",
+    "email": "devana.swathi_2028@woxsen.edu.in"
+  },
+  {
+    "task_id": "auto_35_20260304115423",
+    "status": "queued",
+    "leave_start_date": "2026-03-06",
+    "leave_end_date": "2026-03-08",
+    "email": "venkatalakshmi.rathikindi_2028@woxsen.edu.in"
+  },
+  {
+    "task_id": "auto_34_20260304115422",
+    "status": "queued",
+    "leave_start_date": "2026-03-06",
+    "leave_end_date": "2026-03-08",
+    "email": "vaishnavi.gandikota_2028@woxsen.edu.in"
+  },
+  {
+    "task_id": "auto_33_20260304115420",
+    "status": "queued",
+    "leave_start_date": "2026-03-06",
+    "leave_end_date": "2026-03-08",
+    "email": "sunhith.kande_2028@woxsen.edu.in"
+  },
+  {
+    "task_id": "auto_32_20260304115420",
+    "status": "queued",
+    "leave_start_date": "2026-03-06",
+    "leave_end_date": "2026-03-08",
+    "email": "navatej.yedavelli_2028@woxsen.edu.in"
+  },
+  {
+    "task_id": "retry_49_20260303165822",
+    "status": "queued",
+    "leave_start_date": "2026-03-03",
+    "leave_end_date": "2026-03-04",
+    "email": "bhuvanachandra.k_2028@woxsen.edu.in"
+  },
+  {
+    "task_id": "retry_33_20260303165821",
+    "status": "queued",
+    "leave_start_date": "2026-03-03",
+    "leave_end_date": "2026-03-04",
+    "email": "sunhith.kande_2028@woxsen.edu.in"
+  },
+  {
+    "task_id": "retry_32_20260303165819",
+    "status": "queued",
+    "leave_start_date": "2026-03-03",
+    "leave_end_date": "2026-03-04",
+    "email": "navatej.yedavelli_2028@woxsen.edu.in"
+  }
+]

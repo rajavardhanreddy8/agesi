@@ -419,7 +419,7 @@ def recover_stuck_tasks():
             UPDATE submission_history 
             SET status = 'failed', error_details = 'Recovered: Task was stuck in running state'
             WHERE status = 'running' 
-              AND created_at < NOW() - INTERVAL '15 minutes'
+              AND submitted_at < NOW() - INTERVAL '15 minutes'
             RETURNING task_id
         """)
         recovered = [row[0] for row in cur.fetchall()]
@@ -431,6 +431,16 @@ def recover_stuck_tasks():
             'recovered_count': len(recovered),
             'recovered_task_ids': recovered
         })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/admin/reload-pending', methods=['POST'])
+def reload_pending_tasks():
+    """Reload tasks with 'pending' status from DB back into the live in-memory queue."""
+    try:
+        recover_pending_tasks()
+        queued_count = automation_queue.qsize()
+        return jsonify({'success': True, 'queue_size': queued_count})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 

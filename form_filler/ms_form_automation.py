@@ -1056,7 +1056,7 @@ class MSFormAutomation:
                                     if is_date:
                                         inp = container.locator('input[aria-label="Date picker"], input[type="text"], input:not([type])').first
                                     else:
-                                        inp = container.locator('input[type="text"], input:not([type])').first
+                                        inp = container.locator('input[type="text"], input:not([type]), textarea').first
                                         
                                     if inp.count() > 0 and inp.is_visible():
                                         # Detect date picker via aria-label or is_date flag
@@ -1381,6 +1381,26 @@ class MSFormAutomation:
             fill_by_label(["Student Contact No.", "Student Contact", "Mobile No.", "Contact No."], form_data.get('student_phone', '') or form_data.get('student_contact', ''))
             fill_by_label(["Student Woxsen Email ID", "Student Email ID", "Student Email"], form_data.get('student_email', ''))
             
+            # 6. Reason for Leave
+            reason_val = form_data.get('reason', '')
+            if reason_val:
+                reason_filled = fill_by_label(["Reasons for Leave", "Reason for Leave", "Reason", "Purpose of Visit", "Purpose"], reason_val)
+                if not reason_filled:
+                    # Fallback: find any textarea that's empty and fill it
+                    try:
+                        textareas = self.page.locator('textarea:visible').all()
+                        for ta in textareas:
+                            if not ta.input_value().strip():
+                                try:
+                                    ta.scroll_into_view_if_needed(timeout=2000)
+                                except:
+                                    pass
+                                ta.fill(reason_val)
+                                print(f"   ✅ Reason filled via textarea fallback: {reason_val}")
+                                reason_filled = True
+                                break
+                    except Exception as e:
+                        print(f"   Reason textarea fallback failed: {e}")
             
             # 6. SMART CLEANUP PASS: Fill remaining empty inputs using question context
             # Instead of blindly filling, read each question's text and match to correct data
@@ -1630,13 +1650,44 @@ class MSFormAutomation:
             
             print("🚀 Clicking Submit button...")
             
-            # Click Submit
-            submit_btn = self.page.locator('button:has-text("Submit")')
-            if submit_btn.count() > 0:
+            # Click Submit - multi-strategy to handle different MS Forms button structures
+            submit_btn = None
+            submit_selectors = [
+                'button:has-text("Submit")',
+                'button[aria-label="Submit"]',
+                'button[aria-label*="Submit"]',
+                '[role="button"]:has-text("Submit")',
+                'button.css-232',   # MS Forms submit button class seen in DOM
+                'button[type="submit"]',
+            ]
+            for sel in submit_selectors:
+                try:
+                    candidate = self.page.locator(sel)
+                    if candidate.count() > 0 and candidate.first.is_visible():
+                        submit_btn = candidate.first
+                        print(f"   Found submit button via: {sel}")
+                        break
+                except:
+                    pass
+
+            if submit_btn:
+                # Scroll into view before clicking
+                try:
+                    submit_btn.scroll_into_view_if_needed(timeout=3000)
+                    time.sleep(0.5)
+                except:
+                    pass
                 # Remember the URL before submitting
                 pre_submit_url = self.page.url
-                submit_btn.first.click()
+                submit_btn.click()
             else:
+                # Last resort: scroll to bottom and take screenshot before failing
+                try:
+                    self.page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
+                    time.sleep(1)
+                    self.page.screenshot(path=f'debug_no_submit_btn_{datetime.now().strftime("%H%M%S")}.png')
+                except:
+                    pass
                 raise Exception("Submit button not found!")
             
             # ============================================================
@@ -1936,10 +1987,10 @@ class MSFormAutomation:
                     # Step 4: Validate we are actually on the form
                     update_status("Verifying form access...", 50)
                     try:
-                        # Wait for specific MS Form elements
+                        # Wait for specific MS Form elements - expanded selector set for slow loading
                         self.page.wait_for_selector(
-                            'div[data-automation-id="questionItem"], button:has-text("Submit"), div:has-text("Hi,")', 
-                            timeout=20000
+                            'div[data-automation-id="questionItem"], button:has-text("Submit"), div:has-text("Hi,"), input[type="text"], [role="heading"]', 
+                            timeout=45000
                         )
                         
                         # Double check we are NOT on login page
@@ -1951,12 +2002,19 @@ class MSFormAutomation:
                         if "login.microsoftonline.com" in current_url:
                              raise Exception("Authentication Failed - Stuck on Login Page")
                         title = self.page.title()
-                        # Take a screenshot to help debug
-                        try:
-                            self.page.screenshot(path="debug_form_load_fail.png")
-                        except:
-                            pass
-                        raise Exception(f"Form did not load. Current URL: {current_url}, Title: {title}")
+                        
+                        # Extra wait and re-check — form might just be slow
+                        time.sleep(5)
+                        question_count = self.page.locator('div[data-automation-id="questionItem"]').count()
+                        if question_count > 0:
+                            print(f"✅ Form loaded after extra wait — {question_count} questions found")
+                        else:
+                            # Take a screenshot to help debug
+                            try:
+                                self.page.screenshot(path="debug_form_load_fail.png")
+                            except:
+                                pass
+                            raise Exception(f"Form did not load. Current URL: {current_url}, Title: {title}")
                     
                     # If we passed validation, break the retry loop
                     break
