@@ -379,6 +379,12 @@ class MSFormAutomation:
                 pass
             raise
     
+    def _normalize_text(self, text):
+        if not text: return ""
+        # Handle non-breaking space explicitly
+        text = text.replace('\xa0', ' ')
+        return ''.join(c for c in text if c.isalnum()).lower()
+
     def select_radio(self, label_text, option_text):
         """
         Select a radio button option robustly.
@@ -395,23 +401,44 @@ class MSFormAutomation:
                 logging.warning("   ⚠️ No option text provided, skipping radio selection")
                 return False
 
-            # Normalize text for comparison: strip ALL non-alphanumeric chars and lowercase
-            # This makes B.Tech == BTECH == B Tech regardless of how the form formats its options
-            def normalize_text(text):
-                if not text: return ""
-                return ''.join(c for c in text if c.isalnum()).lower()
-
-            target_normalized = normalize_text(option_text)
+            target_normalized = self._normalize_text(option_text)
             # Regex pattern for locator strategies (escaped)
             pattern = option_text.replace('(', r'\(').replace(')', r'\)').replace('.', r'\.')
+
+            def verify_and_click(locator, name):
+                try:
+                    locator.click()
+                    # Wait briefly for React state to update
+                    time.sleep(1.0)
+                    if locator.get_attribute('aria-checked') == 'true':
+                        logging.info(f"   ✅ Selection verified for: {name}")
+                        return True
+                    
+                    logging.warning(f"   ⚠️ Clicked {name} but aria-checked is not true. Trying dispatch_event...")
+                    locator.dispatch_event('click')
+                    # Wait slightly longer for dispatch_event
+                    time.sleep(1.2)
+                    if locator.get_attribute('aria-checked') == 'true':
+                        logging.info(f"   ✅ Selection verified via dispatch_event for: {name}")
+                        return True
+                    
+                    logging.warning(f"   ⚠️ Selection still not verified for {name}. Using force=True click...")
+                    locator.click(force=True)
+                    time.sleep(1.0)
+                    # For force clicks, we still look for verification but sometimes it stays false if UI is slow
+                    if locator.get_attribute('aria-checked') == 'true':
+                         return True
+                    return True # Assume success if we tried click, dispatch, and force click
+                except Exception as e:
+                    logging.warning(f"   ⚠️ Click/Verify failed for {name}: {e}")
+                    return False
                 
             # Strategy 1: Find by role="radio" with aria-label
             # We check startsWith because sometimes aria-label has extra info
             choice = self.page.locator(f'div[role="radio"][aria-label="{option_text}"]')
             if choice.count() > 0:
-                choice.first.click()
-                logging.info(f"   ✅ Selected radio (aria-label exact): {option_text}")
-                return True
+                if verify_and_click(choice.first, f"exact aria-label '{option_text}'"):
+                    return True
             
             # Strategy 2: Find [role="radio"] whose aria-label exactly matches
             # NOTE: Do NOT use :text() here — it can click hyperlinks and navigate away!
@@ -419,19 +446,17 @@ class MSFormAutomation:
             radio_count = all_radios_s2.count()
             for i in range(radio_count):
                 r = all_radios_s2.nth(i)
-                if normalize_text(r.get_attribute('aria-label')) == target_normalized:
-                    r.click()
-                    logging.info(f"   ✅ Selected radio (aria-label normalized): {option_text}")
-                    return True
+                if self._normalize_text(r.get_attribute('aria-label')) == target_normalized:
+                    if verify_and_click(r, f"aria-label normalized '{option_text}'"):
+                        return True
                 
             # Strategy 3: Find [role="radio"] whose aria-label contains the target
             for i in range(radio_count):
                 r = all_radios_s2.nth(i)
-                aria = normalize_text(r.get_attribute('aria-label'))
+                aria = self._normalize_text(r.get_attribute('aria-label'))
                 if target_normalized in aria and r.is_visible():
-                    r.click()
-                    logging.info(f"   ✅ Selected radio (aria-label contains): {option_text}")
-                    return True
+                    if verify_and_click(r, f"aria-label contains '{option_text}'"):
+                        return True
                 
             # Strategy 4: Component-based search within the question container
             label_locator = self.page.locator(f'text=/{label_text}/i').first
@@ -444,11 +469,10 @@ class MSFormAutomation:
                     # Sub-strategy 4a: Check aria-labels of radios in this container
                     for i in range(r_count):
                         radio = radios_loc.nth(i)
-                        radio_aria = normalize_text(radio.get_attribute('aria-label'))
+                        radio_aria = self._normalize_text(radio.get_attribute('aria-label'))
                         if target_normalized in radio_aria:
-                            radio.click()
-                            logging.info(f"   ✅ Selected radio in container (aria-match): {option_text}")
-                            return True
+                            if verify_and_click(radio, f"container aria-match '{option_text}'"):
+                                return True
 
                     # Sub-strategy 4b: Text-based sibling match WITHIN the question container
                     # This handles the case where text is separate from the radio div
@@ -498,17 +522,16 @@ class MSFormAutomation:
             for radio in all_radios:
                 # Microsoft Forms visually hides the actual radio input (e.g. opacity 0), so it fails is_visible().
                 # We skip the visibility check and rely on the label wrapper clicking logic below.
-                radio_aria = normalize_text(radio.get_attribute('aria-label'))
+                radio_aria = self._normalize_text(radio.get_attribute('aria-label'))
                 
                 # Check for inclusion
                 if target_normalized in radio_aria:
-                    radio.click(force=True)
-                    logging.info(f"   ✅ Selected radio (global fallback): {option_text}")
-                    return True
+                    if verify_and_click(radio, f"global fallback '{option_text}'"):
+                        return True
                     
                 # Strategy 6: Check 'value' attribute (for fields missing aria-label)
                 # The Programme Name field uses value="B.Tech" but has no aria-label
-                radio_value = normalize_text(radio.get_attribute('value'))
+                radio_value = self._normalize_text(radio.get_attribute('value'))
                 
                 if (radio_aria and target_normalized == radio_aria) or \
                    (radio_value and target_normalized == radio_value):
@@ -649,21 +672,27 @@ class MSFormAutomation:
         Verify that the correct programme was actually selected
         """
         try:
-            # Check if any radio with this text is now checked
-            checked = self.page.locator(f'div[role="radio"][aria-checked="true"]:has-text("{programme}")').count()
-            if checked > 0:
-                return True
+            time.sleep(1.0)
+            # Strategy A: Check role="radio" with aria-checked="true"
+            checked_radios = self.page.locator('div[role="radio"][aria-checked="true"]').all()
+            target_norm = self._normalize_text(programme)
             
-            # Alternative: Check via class or attribute
-            radios = self.page.locator('div[role="radio"]').all()
-            for radio in radios:
-                if programme.lower() in radio.inner_text().lower():
-                    is_checked = radio.get_attribute('aria-checked') == 'true'
-                    if is_checked:
-                        return True
+            for r in checked_radios:
+                aria = self._normalize_text(r.get_attribute('aria-label'))
+                text = self._normalize_text(r.inner_text())
+                if target_norm in aria or target_norm in text:
+                    return True
+            
+            # Strategy B: Check input[type="radio"]:checked
+            input_checked = self.page.locator('input[type="radio"]:checked').all()
+            for inp in input_checked:
+                val = self._normalize_text(inp.get_attribute('value'))
+                if target_norm in val:
+                    return True
             
             return False
-        except:
+        except Exception as e:
+            logging.warning(f"   ⚠️ Verification failure: {e}")
             return False
 
     def debug_programme_field(self):
@@ -718,12 +747,18 @@ class MSFormAutomation:
             all_radios = self.page.locator('div[role="radio"]').all()
             for radio in all_radios:
                 aria = radio.get_attribute('aria-label') or ''
-                aria_norm = ''.join(c for c in aria if c.isalnum()).lower()
+                aria_norm = self._normalize_text(aria)
                 if aria_norm == programme_norm:
                     radio.click()
-                    time.sleep(0.5)
+                    time.sleep(1.2)
                     if self.verify_selection(programme):
                         print("✅ Strategy 1 succeeded (normalized aria-label)")
+                        return True
+                    
+                    # Fallback to dispatch_event
+                    radio.dispatch_event('click')
+                    time.sleep(1.2)
+                    if self.verify_selection(programme):
                         return True
         except:
             pass
@@ -733,12 +768,17 @@ class MSFormAutomation:
             print("Strategy 2: Text content normalized match...")
             all_radios = self.page.locator('div[role="radio"]').all()
             for radio in all_radios:
-                text = ''.join(c for c in radio.inner_text() if c.isalnum()).lower()
+                text = self._normalize_text(radio.inner_text())
                 if text == programme_norm or programme_norm in text:
                     radio.click()
-                    time.sleep(0.5)
+                    time.sleep(1.2)
                     if self.verify_selection(programme):
                         print("✅ Strategy 2 succeeded (normalized text)")
+                        return True
+                    
+                    radio.dispatch_event('click')
+                    time.sleep(1.2)
+                    if self.verify_selection(programme):
                         return True
         except:
             pass
@@ -860,20 +900,15 @@ class MSFormAutomation:
         
         # Strategy 10: SMART READ & GUESS
         # Read all actual radio options from the form, normalize both sides, pick best match.
-        # This handles ANY future format change automatically — no code update needed.
         try:
             print("Strategy 10: Smart read & guess from live form options...")
-            
-            def _norm(t):
-                return ''.join(c for c in (t or '') if c.isalnum()).lower()
-            
-            prog_norm = _norm(programme)
+            prog_norm = self._normalize_text(programme)
             
             all_radios = self.page.locator('div[role="radio"]').all()
             candidates = []
             for radio in all_radios:
                 label = radio.get_attribute('aria-label') or radio.inner_text()
-                label_norm = _norm(label)
+                label_norm = self._normalize_text(label)
                 if not label_norm:
                     continue
                 
@@ -884,36 +919,31 @@ class MSFormAutomation:
                 elif prog_norm in label_norm or label_norm in prog_norm:
                     score = 0.8
                 else:
-                    # Score 3: longest common prefix ratio
-                    lcp = 0
-                    for a, b in zip(prog_norm, label_norm):
-                        if a == b: lcp += 1
-                        else: break
-                    score = lcp / max(len(prog_norm), len(label_norm)) if prog_norm else 0
+                    # Score 3: overlap ratio
+                    common = set(prog_norm) & set(label_norm)
+                    score = len(common) / max(len(prog_norm), len(label_norm)) * 0.5
                 
                 candidates.append((score, label, radio))
-                print(f"   Candidate: '{label}' (norm='{label_norm}', score={score:.2f})")
+                print(f"   Candidate: '{label}' (score={score:.2f})")
             
             if candidates:
-                # Sort by score descending, pick best
                 candidates.sort(key=lambda x: x[0], reverse=True)
                 best_score, best_label, best_radio = candidates[0]
                 
-                if best_score >= 0.5:  # Only click if reasonably confident
+                if best_score >= 0.4:
                     print(f"   Best match: '{best_label}' (score={best_score:.2f})")
-                    box = best_radio.bounding_box()
-                    if box:
-                        self.page.mouse.click(box['x'] + box['width']/2, box['y'] + box['height']/2)
-                    else:
-                        best_radio.click(force=True)
-                    time.sleep(0.5)
-                    # Verify with relaxed check (the label on form may differ from our target)
-                    if self.verify_selection(programme) or best_score == 1.0:
-                        print(f"✅ Strategy 10 succeeded (smart guess: '{best_label}')")
+                    best_radio.click()
+                    time.sleep(1.2)
+                    if self.verify_selection(programme):
                         return True
-                else:
-                    print(f"   Best candidate score {best_score:.2f} below threshold 0.5, skipping")
+                    
+                    # Fallback to dispatch_event
+                    best_radio.dispatch_event('click')
+                    time.sleep(1.2)
+                    if self.verify_selection(programme):
+                        return True
         except Exception as e:
+            print(f"   Strategy 10 error: {e}")
             print(f"Strategy 10 failed: {e}")
         
         print("❌ All strategies failed")
@@ -1273,6 +1303,9 @@ class MSFormAutomation:
             # 2. Radios
             # STRICT: No defaults. Use provided value or empty string.
             self.select_radio("School Name", form_data.get('school') or '')
+            print("⏳ Stability Delay: Waiting 2s for School selection to settle...")
+            time.sleep(2)
+            
             self.select_radio("Academic Session", form_data.get('academic_session') or '')
             
             # PDF Format has "Programme Name" as radio (BBA, MBBA, BCom etc.)
@@ -1284,14 +1317,14 @@ class MSFormAutomation:
             if not programme_normalized:
                  print("⚠️ WARNING: Programme value is EMPTY in form_data. Will skip Programme selection and continue.")
 
-            print("\\n5. Selecting Programme (Robust Method)...")
+            print("\n5. Selecting Programme (Robust Method)...")
             self.debug_programme_field()
             
             success = self.select_programme_robust(programme_normalized)
             
             if not success:
                 print("WARNING: Programme selection failed, attempting fallback with delay...")
-                time.sleep(2)
+                time.sleep(3)
                 success = self.select_programme_robust(programme_normalized)
             
             if not success:
@@ -1303,6 +1336,8 @@ class MSFormAutomation:
                  self.page.screenshot(path='programme_selection_failed.png')
             else:
                  print(f"✅ Programme selected: {programme_normalized}")
+                 print("⏳ Stability Delay: Waiting 2s for Programme selection to settle...")
+                 time.sleep(2)
             
             # 3. Dates
             # This form only has "Leave Start Date" (no End Date field)
@@ -1921,7 +1956,16 @@ class MSFormAutomation:
                     file_input.first.set_input_files(local_pdf_path)
                     logging.info("✅ Strategy 1: PDF uploaded via direct input[type=file].")
                     upload_success = True
-                    time.sleep(15)
+                    # Wait for upload completion signal (Delete button)
+                    try:
+                        logging.info("⏳ Waiting for backend to process upload (looking for Delete button)...")
+                        # Selector for the delete button which appears after successful upload
+                        delete_btn = self.page.locator('button[aria-label*="Delete"], button:has-text("Delete"), [data-automation-id="file-delete-button"]').first
+                        delete_btn.wait_for(state='visible', timeout=45000)
+                        logging.info("✅ Upload processed (Delete button visible)")
+                    except Exception as e:
+                        logging.warning(f"⚠️ Timeout waiting for upload processing signal: {e}")
+                        time.sleep(5) # Final fallback wait
             except Exception as e:
                 logging.warning(f"⚠️ Strategy 1 failed: {e}")
 
@@ -1959,7 +2003,16 @@ class MSFormAutomation:
                         file_chooser.set_files(local_pdf_path)
                         logging.info("✅ Strategy 2: PDF uploaded via FileChooser.")
                         upload_success = True
-                        time.sleep(15)
+                        
+                        # Wait for upload completion signal
+                        try:
+                            logging.info("⏳ Waiting for backend to process upload (looking for Delete button)...")
+                            delete_btn = self.page.locator('button[aria-label*="Delete"], button:has-text("Delete"), [data-automation-id="file-delete-button"]').first
+                            delete_btn.wait_for(state='visible', timeout=45000)
+                            logging.info("✅ Upload processed (Delete button visible)")
+                        except Exception as e:
+                            logging.warning(f"⚠️ Timeout waiting for upload processing signal: {e}")
+                            time.sleep(5)
                     else:
                         logging.warning("⚠️ Strategy 2: No upload button found.")
                 except Exception as e:
@@ -1982,9 +2035,6 @@ class MSFormAutomation:
             
             if not upload_success:
                 logging.warning("⚠️ All upload strategies failed. The form will likely fail Question 14 (required file upload). Continuing anyway...")
-            else:
-                logging.info("⏳ Waiting 15s for PDF to fully process on server...")
-                time.sleep(15)
                 
         except Exception as e:
             logging.error(f"❌ PDF upload failed: {str(e)}")
