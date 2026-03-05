@@ -1,97 +1,97 @@
 Columns: ['id', 'user_id', 'form_url', 'task_id', 'leave_start_date', 'leave_end_date', 'status', 'progress', 'message', 'error_details', 'pdf_path', 'screenshot_path', 'submitted_at', 'completed_at', 'ip_address', 'user_agent', 'form_data', 'blob_name']
 
-  id: 208
-  user_id: 7
+  id: 303
+  user_id: 56
   form_url: https://forms.office.com/r/n7dXnK6P2R
-  task_id: task_7_20260304_100242
+  task_id: task_56_20260304_210927
   leave_start_date: 2026-03-06
   leave_end_date: 2026-03-08
   status: failed
   progress: 0
-  message: Form Validation Errors Found: ["'Leave End date': This question is required.", 'Global/Unknown: 1 question(s) need to be completed before submitting: Question 9.']
+  message: MFA approval timeout (120s) - approve the notification on your phone
   error_details: None
-  pdf_path: https://agesi.blob.core.windows.net/outing-submissions/20260304_043241_outing_7_20260304100237.pdf?se=2026-03-04T06%3A32%3A42Z&sp=r&sv=2026-02-06&sr=b&sig=2bJNLPJC5YjIwR9YVljUfzlypMYF9yu%2BdAYugBOG7yM%3D
-  screenshot_path: screenshots/task_7_20260304_100242_1772600411.jpg
-  submitted_at: 2026-03-04 04:31:57.109765
-  completed_at: None
-  ip_address: 169.254.129.3
-  user_agent: None
-  form_data: {'reason': 'Home Visit', 'school': 'School of Technology', 'programme': 'BTECH', 'parent_name': 'Raghunadha reddy', 'roll_number': '24WU0101111', 'parent2_name': 'Pranitha', 'parent_email': 'rrtradersind@gmail.com', 'parent_phone': '8919455860', 'student_name': 'GUNTAKA. RAJAVARDHAN REDDY', 'parent2_phone': '9010787739', 'student_email': 'guntaka.reddy_2028@woxsen.edu.in', 'student_phone': '8639929405', 'leave_end_date': '3/8/2026', 'specialization': 'CSE', 'academic_session': '2024-2028', 'leave_start_date': '3/6/2026', 'send_parent_email': False}
-  blob_name: 20260304_043241_outing_7_20260304100237.pdf
----
-  id: 207
-  user_id: 54
-  form_url: https://forms.office.com/r/n7dXnK6P2R
-  task_id: auto_54_20260304100154
-  leave_start_date: 2026-03-06
-  leave_end_date: 2026-03-08
-  status: failed
-  progress: 0
-  message: Form Validation Errors Found: ["'Leave End date': This question is required.", 'Global/Unknown: 1 question(s) need to be completed before submitting: Question 9.']
-  error_details: None
-  pdf_path: /app/form_filler/temp_uploads/auto_54_20260304100154.pdf
-  screenshot_path: screenshots/auto_54_20260304100154_1772600279.jpg
-  submitted_at: 2026-03-04 04:31:54.558336
+  pdf_path: https://agesi.blob.core.windows.net/outing-submissions/20260304_210927_outing_56_20260304210925.pdf?se=2026-03-04T17%3A39%3A27Z&sp=r&sv=2026-02-06&sr=b&sig=Rt%2B3ye3lWcpowzqrag/wDJYdpuMeuzyuWcHgiLQAOYY%3D
+  screenshot_path: screenshots/task_56_20260304_210927_1772638931.jpg
+  submitted_at: 2026-03-04 15:39:22.551940
   completed_at: None
   ip_address: 127.0.0.1
   user_agent: None
-  form_data: None
-  blob_name: None
+  form_data: {'reason': 'Home Visit', 'school': 'School of Business', 'programme': 'BBA', 'parent_name': 'Father', 'roll_number': '22WU1234567', 'parent2_name': 'Mother', 'parent_email': 'father@example.com', 'parent_phone': '1234567890', 'student_name': 'Test User', 'parent2_phone': '1234567890', 'student_email': 'test_new@woxsen.edu.in', 'student_phone': '1234567890', 'leave_end_date': '3/8/2026', 'specialization': 'CSE', 'academic_session': '2024-2028', 'leave_start_date': '3/6/2026', 'send_parent_email': False}
+  blob_name: 20260304_210927_outing_56_20260304210925.pdf
 ---
-  id: 206
-  user_id: 49
-  form_url: https://forms.office.com/r/n7dXnK6P2R
-  task_id: auto_49_20260304100154
+  id: 302
+  user_id: 35
+  form_url: https://forms.office.com/pages/responsepage.aspx?id=LSD36rPvekOhA1Bbufv3X62J9sRC8oxAu69or0JA3nxUNzUxN0ZFUUZIR0hLMU9XR1RaMVVHUkpQWS4u
+  task_id: retry_paid_35_20260304164336
   leave_start_date: 2026-03-06
   leave_end_date: 2026-03-08
   status: completed
   progress: 0
   message: Automation Success
   error_details: None
-  pdf_path: /app/form_filler/temp_uploads/auto_49_20260304100154.pdf
-  screenshot_path: screenshots/auto_49_20260304100154_1772600109.jpg
-  submitted_at: 2026-03-04 04:31:54.058059
+  pdf_path: None
+  screenshot_path: screenshots/retry_paid_35_20260304164336_1772627035.jpg
+  submitted_at: 2026-03-04 11:13:36.022932
   completed_at: None
-  ip_address: 127.0.0.1
+  ip_address: None
   user_agent: None
-  form_data: None
+  form_data: {'reason': 'Going home for personal work', 'school': 'School of Business', 'programme': 'BBA', 'parent_name': 'RVS Vinod Kumar ', 'roll_number': '24WU0201050 ', 'parent_email': 'rvsureshbabu@gmail.com', 'parent_phone': '9440504639', 'student_name': 'Lakshmi sowmya', 'student_email': 'venkatalakshmi.rathikindi_2028@woxsen.edu.in', 'student_phone': '8919131677', 'leave_end_date': '2026-03-08', 'specialization': 'AI&DS', 'academic_session': '2024-2028', 'leave_start_date': '2026-03-06', 'send_parent_email': False}
   blob_name: None
 ---
-  id: 205
-  user_id: 48
-  form_url: https://forms.office.com/r/n7dXnK6P2R
-  task_id: auto_48_20260304100153
+  id: 301
+  user_id: 34
+  form_url: https://forms.office.com/pages/responsepage.aspx?id=LSD36rPvekOhA1Bbufv3X62J9sRC8oxAu69or0JA3nxUNzUxN0ZFUUZIR0hLMU9XR1RaMVVHUkpQWS4u
+  task_id: retry_paid_34_20260304164336
+  leave_start_date: 2026-03-06
+  leave_end_date: 2026-03-08
+  status: completed
+  progress: 0
+  message: Automation Success
+  error_details: None
+  pdf_path: None
+  screenshot_path: screenshots/retry_paid_34_20260304164336_1772626913.jpg
+  submitted_at: 2026-03-04 11:13:36.022932
+  completed_at: None
+  ip_address: None
+  user_agent: None
+  form_data: {'reason': 'Going home for personal work', 'school': 'School of Technology', 'programme': 'B.Tech', 'parent_name': 'Dr.G.V.NAGENDRA PRASAD', 'roll_number': '24WU0102182', 'parent_email': 'gandikotavnp@gmail.com', 'parent_phone': '9494939969', 'student_name': 'VAISHNAVI GANDIKOTA', 'student_email': 'vaishnavi.gandikota_2028@woxsen.edu.in', 'student_phone': '9490399696', 'leave_end_date': '2026-03-08', 'specialization': 'CSE AI&ML', 'academic_session': '2024-2028', 'leave_start_date': '2026-03-06', 'send_parent_email': True}
+  blob_name: None
+---
+  id: 300
+  user_id: 33
+  form_url: https://forms.office.com/pages/responsepage.aspx?id=LSD36rPvekOhA1Bbufv3X62J9sRC8oxAu69or0JA3nxUNzUxN0ZFUUZIR0hLMU9XR1RaMVVHUkpQWS4u
+  task_id: retry_paid_33_20260304164336
+  leave_start_date: 2026-03-06
+  leave_end_date: 2026-03-08
+  status: completed
+  progress: 0
+  message: Automation Success
+  error_details: None
+  pdf_path: None
+  screenshot_path: screenshots/retry_paid_33_20260304164336_1772626797.jpg
+  submitted_at: 2026-03-04 11:13:36.022932
+  completed_at: None
+  ip_address: None
+  user_agent: None
+  form_data: {'reason': 'Going home for personal work', 'school': 'School of Technology', 'programme': 'B.Tech', 'parent_name': 'K. MADHU', 'roll_number': '24WU0102194', 'parent_email': 'madhukar.ncl@gmail.com', 'parent_phone': '9030191919', 'student_name': 'Kande Sunhith', 'student_email': None, 'student_phone': '9293242424', 'leave_end_date': '2026-03-08', 'specialization': 'CSE AI&ML', 'academic_session': '2024-2028', 'leave_start_date': '2026-03-06', 'send_parent_email': False}
+  blob_name: None
+---
+  id: 299
+  user_id: 32
+  form_url: https://forms.office.com/pages/responsepage.aspx?id=LSD36rPvekOhA1Bbufv3X62J9sRC8oxAu69or0JA3nxUNzUxN0ZFUUZIR0hLMU9XR1RaMVVHUkpQWS4u
+  task_id: retry_paid_32_20260304164336
   leave_start_date: 2026-03-06
   leave_end_date: 2026-03-08
   status: failed
   progress: 0
-  message: Form Validation Errors Found: ["'Leave End date': This question is required.", 'Global/Unknown: 1 question(s) need to be completed before submitting: Question 9.']
+  message: Unknown page state. URL: https://forms.office.com/pages/responsepage.aspx?id=LSD36rPvekOhA1Bbufv3X62J9sRC8oxAu69or0JA3nxUNzUxN0ZFUUZIR0hLMU9XR1RaMVVHUkpQWS4u
   error_details: None
-  pdf_path: /app/form_filler/temp_uploads/auto_48_20260304100153.pdf
-  screenshot_path: screenshots/auto_48_20260304100153_1772599930.jpg
-  submitted_at: 2026-03-04 04:31:53.137893
+  pdf_path: None
+  screenshot_path: screenshots/retry_paid_32_20260304164336_1772626681.jpg
+  submitted_at: 2026-03-04 11:13:36.022932
   completed_at: None
-  ip_address: 127.0.0.1
+  ip_address: None
   user_agent: None
-  form_data: None
-  blob_name: None
----
-  id: 204
-  user_id: 47
-  form_url: https://forms.office.com/r/n7dXnK6P2R
-  task_id: auto_47_20260304100153
-  leave_start_date: 2026-03-06
-  leave_end_date: 2026-03-08
-  status: failed
-  progress: 0
-  message: Form Validation Errors Found: ["'Leave Start Date': This question is required.", 'Global/Unknown: 1 question(s) need to be completed before submitting: Question 8.']
-  error_details: None
-  pdf_path: /app/form_filler/temp_uploads/auto_47_20260304100145.pdf
-  screenshot_path: screenshots/auto_47_20260304100153_1772599784.jpg
-  submitted_at: 2026-03-04 04:31:45.262623
-  completed_at: None
-  ip_address: 127.0.0.1
-  user_agent: None
-  form_data: None
+  form_data: {'reason': 'Going home for personal work', 'school': 'School of Technology', 'programme': 'B.Tech', 'parent_name': 'Y.Rajendar', 'roll_number': '24WU0104033', 'parent_email': 'Rajendar99@gmail.com', 'parent_phone': '7989412864', 'student_name': 'Navatej', 'student_email': 'navatej.yedavelli_2028@woxsen.edu.in', 'student_phone': '9949924256', 'leave_end_date': '2026-03-08', 'specialization': 'CSE Core', 'academic_session': '2024-2028', 'leave_start_date': '2026-03-06', 'send_parent_email': True}
   blob_name: None
 ---

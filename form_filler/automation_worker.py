@@ -127,7 +127,7 @@ def run_worker(task_id, form_url, email, password, form_data, pdf_path, blob_nam
         local_pdf_path = pdf_path
         temp_pdf_created = False
         
-        if pdf_path.startswith(('http://', 'https://')):
+        if pdf_path and pdf_path.startswith(('http://', 'https://')):
             print(f"DEBUG: Downloading PDF from {pdf_path}")
             import requests
             import tempfile
@@ -250,7 +250,7 @@ if __name__ == "__main__":
     parser.add_argument("--email", required=True)
     parser.add_argument("--password", required=True)
     parser.add_argument("--form_data_json", required=True)
-    parser.add_argument("--pdf_path", required=True)
+    parser.add_argument("--pdf_path", required=False)
     parser.add_argument("--blob_name", required=False)
     
     args = parser.parse_args()

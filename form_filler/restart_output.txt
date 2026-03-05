@@ -1,0 +1,17 @@
+﻿DEBUG: DB Connection SUCCESS!
+Cancelled 10 stale tasks
+
+Found 10 unique students to re-queue
+  Queued: GUNTAKA. RAJAVARDHAN REDDY (24WU0101111) | 2026-03-06 to 2026-03-08
+  Queued: Navatej (24WU0104033) | 2026-03-06 to 2026-03-08
+  Queued: Kande Sunhith (24WU0102194) | 2026-03-06 to 2026-03-08
+  Queued: VAISHNAVI GANDIKOTA (24WU0102182) | 2026-03-06 to 2026-03-08
+  Queued: Lakshmi sowmya (24WU0201050 ) | 2026-03-06 to 2026-03-08
+  Queued: D. Swathi Reddy (24WU0101114) | 2026-03-06 to 2026-03-08
+  Queued: Kavya praktur (24WUO104038) | 2026-03-06 to 2026-03-08
+  Queued: Kodigudla Bhuvana Chandra Rao (24WU0104090T) | 2026-03-06 to 2026-03-08
+  Queued: Ansh Dhingra (24WU0301101) | 2026-03-06 to 2026-03-08
+  Queued: Avinash Anil Kumar (24WU0301140) | 2026-03-06 to 2026-03-08
+
+Done! Inserted 10 clean tasks, skipped 0
+Now start the server and call /api/admin/reload-pending

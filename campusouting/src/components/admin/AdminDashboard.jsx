@@ -700,7 +700,7 @@ export default function AdminDashboard() {
                                 <h2 style={S.sectionTitle}>Form Settings</h2>
                                 <button style={S.btn("action")} onClick={handleSyncFromMail}>✉️ Sync from Mail</button>
                             </div>
-                            <div style={{ ...S.card, padding: 28 }}>
+                            <div style={{ ...S.card, padding: 28, marginBottom: 24 }}>
                                 <form onSubmit={handleSaveSettings}>
                                     <Field label="MS Form Link" name="form_link" value={formSettings.form_link} required onChange={(e) => setFormSettings((p) => ({ ...p, form_link: e.target.value }))} />
                                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
@@ -714,6 +714,34 @@ export default function AdminDashboard() {
                                         </button>
                                     </div>
                                 </form>
+                            </div>
+
+                            <h2 style={S.sectionTitle}>System Actions</h2>
+                            <div style={{ ...S.card, padding: 28 }}>
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 20 }}>
+                                    <div>
+                                        <div style={{ fontSize: 14, fontWeight: 700, color: '#f1f5f9', marginBottom: 4 }}>Manual Task Recovery</div>
+                                        <div style={{ fontSize: 12, color: '#64748b', lineHeight: 1.4 }}>
+                                            Scan database for stuck 'queued' or 'pending' tasks and add them back to the active worker queue.
+                                            Use this if the server restarted or tasks seem stuck.
+                                        </div>
+                                    </div>
+                                    <button
+                                        style={S.btn("warning")}
+                                        onClick={async () => {
+                                            if (!window.confirm("Trigger system-wide task recovery?")) return;
+                                            try {
+                                                const res = await api.post('/admin/system/recover');
+                                                if (res.data.success) toast(`Recovery triggered! ${res.data.queue_size || 0} tasks in queue.`);
+                                                else toast("Recovery failed: " + res.data.error, "error");
+                                            } catch (e) {
+                                                toast("Recovery request failed", "error");
+                                            }
+                                        }}
+                                    >
+                                        ⚡ Recover Tasks
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     )}

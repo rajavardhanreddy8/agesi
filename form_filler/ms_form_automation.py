@@ -337,12 +337,12 @@ class MSFormAutomation:
             
             # Check for MFA/2FA
             if 'login.microsoftonline.com' in self.page.url:
-                logging.warning("MFA/2FA detected! Waiting 120s for approval...")
+                logging.warning("MFA/2FA detected! Waiting 180s for approval...")
                 try:
-                    self.page.wait_for_url('https://forms.office.com/**', timeout=120000)
+                    self.page.wait_for_url('https://forms.office.com/**', timeout=180000)
                     logging.info("MFA approved!")
                 except PlaywrightTimeout:
-                    raise Exception("MFA approval timeout (120s) - approve the notification on your phone")
+                    raise Exception("MFA approval timeout (180s) - approve the notification on your phone")
             
             # Verify login success - wait for form to actually load
             logging.info("Waiting for form to load after login...")
@@ -2062,6 +2062,29 @@ class MSFormAutomation:
                         current_url = self.page.url
                         if "login.microsoftonline.com" in current_url:
                              raise Exception("Authentication Failed - Stuck on Login Page")
+                        
+                        # --- FORM STATUS CHECK ---
+                        # Explicitly check for "Form Closed" or "Restricted" messages
+                        page_text = self.page.inner_text('body').lower()
+                        closed_keywords = [
+                            "no longer accepting responses",
+                            "closed",
+                            "form is currently closed",
+                            "not accepting any more",
+                            "no longer available"
+                        ]
+                        if any(kw in page_text for kw in closed_keywords):
+                             raise Exception("Microsoft Form is closed: 'This form is no longer accepting responses'")
+                        
+                        restricted_keywords = [
+                            "don't have permission to view",
+                            "not authorized",
+                            "restricted to users",
+                            "only people in your organization"
+                        ]
+                        if any(kw in page_text for kw in restricted_keywords):
+                             raise Exception("Microsoft Form is restricted: You do not have permission to view this form.")
+
                         title = self.page.title()
                         
                         # Extra wait and re-check — form might just be slow

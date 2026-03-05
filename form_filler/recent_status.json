@@ -1,0 +1,434 @@
+[
+  {
+    "status": "failed",
+    "message": "Form Validation Errors Found: [\"'Leave Start Date': This question is required.\", \"'Leave End date': This question is required.\", \"'Attach Application by parent in Prescribed Format\\n': This question is required.\", 'Global/Unknown: 3 question(s) need to be completed before submitting: Question 8,Question 9,Question 14.']",
+    "ist_time": "2026-03-04 15:31:15",
+    "email": "navatej.yedavelli_2028@woxsen.edu.in"
+  },
+  {
+    "status": "failed",
+    "message": "Authentication method not supported - password field not found",
+    "ist_time": "2026-03-04 15:31:15",
+    "email": "chinnu.test@example.com"
+  },
+  {
+    "status": "failed",
+    "message": "Form Validation Errors Found: [\"'Leave End date': This question is required.\", \"'Attach Application by parent in Prescribed Format\\n': This question is required.\", 'Global/Unknown: 2 question(s) need to be completed before submitting: Question 9,Question 14.']",
+    "ist_time": "2026-03-04 15:31:15",
+    "email": "guntaka.reddy_2028@woxsen.edu.in"
+  },
+  {
+    "status": "failed",
+    "message": "Form Validation Errors Found: [\"'Leave Start Date': This question is required.\", \"'Leave End date': This question is required.\", \"'Attach Application by parent in Prescribed Format\\n': This question is required.\", 'Global/Unknown: 3 question(s) need to be completed before submitting: Question 8,Question 9,Question 14.']",
+    "ist_time": "2026-03-04 15:31:15",
+    "email": "sunhith.kande_2028@woxsen.edu.in"
+  },
+  {
+    "status": "failed",
+    "message": "Unknown page state. URL: https://forms.office.com/pages/responsepage.aspx?id=LSD36rPvekOhA1Bbufv3X62J9sRC8oxAu69or0JA3nxUNzUxN0ZFUUZIR0hLMU9XR1RaMVVHUkpQWS4u",
+    "ist_time": "2026-03-04 15:21:40",
+    "email": "avinash.kumar_2028@woxsen.edu.in"
+  },
+  {
+    "status": "failed",
+    "message": "Form Validation Errors Found: [\"'Leave Start Date': This question is required.\", \"'Leave End date': This question is required.\", \"'Attach Application by parent in Prescribed Format\\n': This question is required.\", 'Global/Unknown: 3 question(s) need to be completed before submitting: Question 8,Question 9,Question 14.']",
+    "ist_time": "2026-03-04 15:21:40",
+    "email": "navatej.yedavelli_2028@woxsen.edu.in"
+  },
+  {
+    "status": "failed",
+    "message": "Form Validation Errors Found: [\"'Leave Start Date': This question is required.\", \"'Leave End date': This question is required.\", \"'Attach Application by parent in Prescribed Format\\n': This question is required.\", 'Global/Unknown: 3 question(s) need to be completed before submitting: Question 8,Question 9,Question 14.']",
+    "ist_time": "2026-03-04 15:21:40",
+    "email": "ansh.dhingra_2028@woxsen.edu.in"
+  },
+  {
+    "status": "failed",
+    "message": "Form Validation Errors Found: [\"'Leave End date': This question is required.\", \"'Attach Application by parent in Prescribed Format\\n': This question is required.\", 'Global/Unknown: 2 question(s) need to be completed before submitting: Question 9,Question 14.']",
+    "ist_time": "2026-03-04 15:21:40",
+    "email": "devana.swathi_2028@woxsen.edu.in"
+  },
+  {
+    "status": "failed",
+    "message": "Form Validation Errors Found: [\"'Leave Start Date': This question is required.\", \"'Leave End date': This question is required.\", \"'Attach Application by parent in Prescribed Format\\n': This question is required.\", 'Global/Unknown: 3 question(s) need to be completed before submitting: Question 8,Question 9,Question 14.']",
+    "ist_time": "2026-03-04 15:21:40",
+    "email": "guntaka.reddy_2028@woxsen.edu.in"
+  },
+  {
+    "status": "failed",
+    "message": "Form Validation Errors Found: [\"'Leave Start Date': This question is required.\", \"'Leave End date': This question is required.\", \"'Attach Application by parent in Prescribed Format\\n': This question is required.\", 'Global/Unknown: 3 question(s) need to be completed before submitting: Question 8,Question 9,Question 14.']",
+    "ist_time": "2026-03-04 15:21:40",
+    "email": "kavya.praktur_2028@woxsen.edu.in"
+  },
+  {
+    "status": "failed",
+    "message": "Form Validation Errors Found: [\"'Leave Start Date': This question is required.\", \"'Attach Application by parent in Prescribed Format\\n': This question is required.\", 'Global/Unknown: 2 question(s) need to be completed before submitting: Question 8,Question 14.']",
+    "ist_time": "2026-03-04 15:21:40",
+    "email": "vaishnavi.gandikota_2028@woxsen.edu.in"
+  },
+  {
+    "status": "failed",
+    "message": "Form Validation Errors Found: [\"'Leave Start Date': This question is required.\", \"'Leave End date': This question is required.\", \"'Attach Application by parent in Prescribed Format\\n': This question is required.\", 'Global/Unknown: 3 question(s) need to be completed before submitting: Question 8,Question 9,Question 14.']",
+    "ist_time": "2026-03-04 15:21:40",
+    "email": "venkatalakshmi.rathikindi_2028@woxsen.edu.in"
+  },
+  {
+    "status": "failed",
+    "message": "Unknown page state. URL: https://forms.office.com/pages/responsepage.aspx?id=LSD36rPvekOhA1Bbufv3X62J9sRC8oxAu69or0JA3nxUNzUxN0ZFUUZIR0hLMU9XR1RaMVVHUkpQWS4u&route=shorturl",
+    "ist_time": "2026-03-04 15:21:40",
+    "email": "bhuvanachandra.k_2028@woxsen.edu.in"
+  },
+  {
+    "status": "failed",
+    "message": "Form Validation Errors Found: [\"'Leave Start Date': This question is required.\", \"'Leave End date': This question is required.\", \"'Attach Application by parent in Prescribed Format\\n': This question is required.\", 'Global/Unknown: 3 question(s) need to be completed before submitting: Question 8,Question 9,Question 14.']",
+    "ist_time": "2026-03-04 15:21:40",
+    "email": "sunhith.kande_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 15:13:44",
+    "email": "vaishnavi.gandikota_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 15:13:44",
+    "email": "guntaka.reddy_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 15:13:44",
+    "email": "navatej.yedavelli_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 15:13:44",
+    "email": "kavya.praktur_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 15:13:44",
+    "email": "venkatalakshmi.rathikindi_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 15:13:44",
+    "email": "avinash.kumar_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 15:13:44",
+    "email": "devana.swathi_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 15:13:44",
+    "email": "bhuvanachandra.k_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 15:13:44",
+    "email": "ansh.dhingra_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 15:13:44",
+    "email": "sunhith.kande_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 15:09:51",
+    "email": "sunhith.kande_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 15:09:51",
+    "email": "vaishnavi.gandikota_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 15:09:51",
+    "email": "venkatalakshmi.rathikindi_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 15:09:51",
+    "email": "devana.swathi_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 15:09:51",
+    "email": "kavya.praktur_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 15:09:51",
+    "email": "bhuvanachandra.k_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 15:09:51",
+    "email": "ansh.dhingra_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 15:09:51",
+    "email": "avinash.kumar_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 15:09:51",
+    "email": "guntaka.reddy_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 15:09:51",
+    "email": "navatej.yedavelli_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 15:03:43",
+    "email": "navatej.yedavelli_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 15:03:43",
+    "email": "sunhith.kande_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 15:03:43",
+    "email": "avinash.kumar_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 15:03:43",
+    "email": "bhuvanachandra.k_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 15:03:43",
+    "email": "devana.swathi_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 15:03:43",
+    "email": "ansh.dhingra_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 15:03:43",
+    "email": "kavya.praktur_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 15:03:43",
+    "email": "guntaka.reddy_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 15:03:43",
+    "email": "vaishnavi.gandikota_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 15:03:43",
+    "email": "venkatalakshmi.rathikindi_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 15:03:19",
+    "email": "sunhith.kande_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 15:03:19",
+    "email": "vaishnavi.gandikota_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 15:03:19",
+    "email": "venkatalakshmi.rathikindi_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 15:03:19",
+    "email": "devana.swathi_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 15:03:19",
+    "email": "kavya.praktur_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 15:03:19",
+    "email": "bhuvanachandra.k_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 15:03:19",
+    "email": "ansh.dhingra_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 15:03:19",
+    "email": "avinash.kumar_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 15:03:19",
+    "email": "navatej.yedavelli_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 15:03:19",
+    "email": "guntaka.reddy_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 12:06:21",
+    "email": "guntaka.reddy_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 11:54:27",
+    "email": "avinash.kumar_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 11:54:26",
+    "email": "ansh.dhingra_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 11:54:25",
+    "email": "kavya.praktur_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 11:54:23",
+    "email": "devana.swathi_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 11:54:22",
+    "email": "venkatalakshmi.rathikindi_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 11:54:21",
+    "email": "vaishnavi.gandikota_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 11:54:20",
+    "email": "sunhith.kande_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 11:54:19",
+    "email": "navatej.yedavelli_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 10:49:01",
+    "email": "avinash.kumar_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 10:01:54",
+    "email": "ansh.dhingra_2028@woxsen.edu.in"
+  },
+  {
+    "status": "completed",
+    "message": "Automation Success",
+    "ist_time": "2026-03-04 10:01:54",
+    "email": "bhuvanachandra.k_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 10:01:53",
+    "email": "kavya.praktur_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 10:01:45",
+    "email": "devana.swathi_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 10:01:42",
+    "email": "venkatalakshmi.rathikindi_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 10:01:42",
+    "email": "vaishnavi.gandikota_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 10:01:42",
+    "email": "sunhith.kande_2028@woxsen.edu.in"
+  },
+  {
+    "status": "cancelled",
+    "message": "Cancelled for clean restart",
+    "ist_time": "2026-03-04 10:01:41",
+    "email": "navatej.yedavelli_2028@woxsen.edu.in"
+  }
+]

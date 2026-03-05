@@ -1,0 +1,18 @@
+﻿DEBUG: DB Connection SUCCESS!
+ALL Tables: ['activity_logs', 'payments', 'student_profiles', 'submission_history', 'subscriptions', 'system_config', 'users', 'verification_tokens']
+
+activity_logs: ['id', 'user_id', 'action', 'description', 'ip_address', 'user_agent', 'created_at']
+
+payments: ['id', 'user_id', 'plan_type', 'amount', 'currency', 'payment_gateway', 'payment_order_id', 'payment_id', 'status', 'completed_at', 'created_at']
+
+student_profiles: ['id', 'user_id', 'full_name', 'roll_number', 'school', 'academic_year', 'programme', 'specialization', 'student_phone', 'student_email', 'parent1_name', 'parent1_email', 'parent1_phone', 'parent1_relation', 'parent2_name', 'parent2_email', 'parent2_phone', 'parent2_relation', 'signature_data', 'default_reason', 'created_at', 'updated_at', 'send_parent_email']
+
+submission_history: ['id', 'user_id', 'form_url', 'task_id', 'leave_start_date', 'leave_end_date', 'status', 'progress', 'message', 'error_details', 'pdf_path', 'screenshot_path', 'submitted_at', 'completed_at', 'ip_address', 'user_agent', 'form_data', 'blob_name']
+
+subscriptions: ['id', 'user_id', 'plan_type', 'is_auto_submit', 'is_email_notifications', 'is_sms_notifications', 'monthly_submissions_limit', 'submissions_used', 'subscription_start', 'subscription_end', 'created_at', 'updated_at']
+
+system_config: ['key', 'value', 'updated_at']
+
+users: ['id', 'instance_id', 'email', 'id', 'aud', 'password_hash', 'outlook_password_encrypted', 'role', 'email', 'is_verified', 'is_active', 'encrypted_password', 'is_admin', 'email_confirmed_at', 'invited_at', 'verification_token', 'verification_expires', 'confirmation_token', 'confirmation_sent_at', 'reset_token', 'reset_token_expires', 'recovery_token', 'recovery_sent_at', 'created_at', 'email_change_token_new', 'updated_at', 'last_login', 'email_change', 'email_change_sent_at', 'last_sign_in_at', 'raw_app_meta_data', 'raw_user_meta_data', 'is_super_admin', 'created_at', 'updated_at', 'phone', 'phone_confirmed_at', 'phone_change', 'phone_change_token', 'phone_change_sent_at', 'confirmed_at', 'email_change_token_current', 'email_change_confirm_status', 'banned_until', 'reauthentication_token', 'reauthentication_sent_at', 'is_sso_user', 'deleted_at', 'is_anonymous']
+
+verification_tokens: ['id', 'user_id', 'token', 'token_type', 'expires_at', 'used', 'created_at']

@@ -276,9 +276,11 @@ def automation_worker():
                     "--form_url", task_info['form_url'],
                     "--email", task_info['email'],
                     "--password", task_info['password'],
-                    "--form_data_json", json.dumps(task_info['form_data']),
-                    "--pdf_path", task_info['pdf_path']
+                    "--form_data_json", json.dumps(task_info['form_data'])
                 ]
+
+                if task_info.get('pdf_path'):
+                    cmd.extend(["--pdf_path", task_info['pdf_path']])
 
                 if task_info.get('blob_name'):
                     cmd.extend(["--blob_name", task_info['blob_name']])
@@ -850,12 +852,13 @@ def _get_gmail_service():
 
     client_id     = os.environ.get('GMAIL_CLIENT_ID')
     client_secret = os.environ.get('GMAIL_CLIENT_SECRET')
-    refresh_token = os.environ.get('GMAIL_REFRESH_TOKEN')
+    # Use GMAIL_REFRESH_TOKEN or GMAIL_TOKEN (for azure compatibility)
+    refresh_token = os.environ.get('GMAIL_REFRESH_TOKEN') or os.environ.get('GMAIL_TOKEN')
 
     if not all([client_id, client_secret, refresh_token]):
         raise RuntimeError(
             "Gmail OAuth2 not configured. Set GMAIL_CLIENT_ID, GMAIL_CLIENT_SECRET, "
-            "and GMAIL_REFRESH_TOKEN env vars. Run gmail_setup.py to get the refresh token."
+            "and GMAIL_REFRESH_TOKEN (or GMAIL_TOKEN) env vars."
         )
 
     creds = Credentials(
@@ -2968,12 +2971,17 @@ def health_check():
         'version': 'v9-status-fix'
     })
 
-@app.route('/api/admin/recover', methods=['POST'])
-def manual_recover():
+@app.route('/api/admin/system/recover', methods=['POST'])
+@admin_required
+def manual_system_recover():
     """Manually trigger task recovery."""
     try:
         recover_pending_tasks()
-        return jsonify({'success': True, 'msg': 'Recovery triggered', 'queue_size': automation_queue.qsize()})
+        return jsonify({
+            'success': True, 
+            'message': 'Recovery triggered', 
+            'queue_size': automation_queue.qsize()
+        })
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
@@ -3075,7 +3083,7 @@ def recover_pending_tasks():
             SELECT s.*, u.email, u.outlook_password_encrypted 
             FROM submission_history s
             JOIN users u ON s.user_id = u.id
-            WHERE s.status = 'pending'
+            WHERE s.status IN ('pending', 'queued')
         """
         print(f"RECOVERY: Executing query: {query}", flush=True)
         cur.execute(query)
@@ -3153,8 +3161,12 @@ if __name__ == '__main__':
     os.makedirs('temp_uploads', exist_ok=True)
     os.makedirs('signatures', exist_ok=True)
     
+    # Start Gmail Pub/Sub watch in background
+    import threading
+    threading.Thread(target=setup_gmail_watch, daemon=True).start()
+    
     # Recover tasks moved to module level for Gunicorn
-    # recover_pending_tasks()
+    recover_pending_tasks()
     
     # Get port from environment (Railway sets PORT)
     port = int(os.getenv('PORT', 5000))

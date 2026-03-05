@@ -439,6 +439,39 @@ const Dashboard = () => {
                             </div>
                         </div>
 
+                        {/* One-Click Auto Submit for Paid Users */}
+                        {autoMode.planType && autoMode.planType !== 'free' && (
+                            <div style={{ marginBottom: '1rem' }}>
+                                <button
+                                    onClick={handleSubmitForm}
+                                    disabled={submission.loading || !outingData.formLink}
+                                    className="btn-dash"
+                                    style={{
+                                        width: '100%',
+                                        background: 'linear-gradient(135deg, #a855f7, #6366f1)',
+                                        color: 'white',
+                                        fontWeight: 'bold',
+                                        padding: '12px',
+                                        borderRadius: '12px',
+                                        border: 'none',
+                                        cursor: (submission.loading || !outingData.formLink) ? 'not-allowed' : 'pointer',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: '8px',
+                                        boxShadow: '0 4px 15px rgba(168, 85, 247, 0.4)',
+                                        opacity: (submission.loading || !outingData.formLink) ? 0.7 : 1
+                                    }}
+                                >
+                                    <Zap size={18} fill="white" />
+                                    {submission.loading ? 'Processing...' : '⚡ Auto-Submit Now'}
+                                </button>
+                                <p style={{ fontSize: '0.7rem', color: '#94a3b8', textAlign: 'center', marginTop: '6px' }}>
+                                    Uses institutional dates & reason automatically.
+                                </p>
+                            </div>
+                        )}
+
                         {/* Buttons Row */}
                         <div className="dash-form-row pt-2">
                             <button onClick={handleGeneratePdf} className="btn-dash btn-dash-secondary dash-form-col">
