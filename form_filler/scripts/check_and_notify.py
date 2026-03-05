@@ -75,10 +75,6 @@ if not send_email:
     print("\n[DRY-RUN] Gmail not available — listing what would be sent:\n")
     for user in completed:
         print(f"  WOULD SEND ✅ completed → {user['email']} (at {user['submitted_at']})")
-    for user in failed:
-        print(f"  WOULD SEND ❌ failed    → {user['email']} (at {user['submitted_at']})")
-    for user in pending:
-        print(f"  WOULD SEND ⏳ pending   → {user['email']} (at {user['submitted_at']})")
     conn.close()
     sys.exit(0)
 
@@ -131,20 +127,22 @@ for user in completed:
     else: errors += 1
 
 for user in failed:
-    ok = send_status_email(
-        user, "⚠️ Submission Failed", "#ef4444",
-        "Your outing submission encountered an error. Please log in to campusouting.app and try again, or contact your admin."
-    )
-    if ok: sent += 1
-    else: errors += 1
+    pass # Disabled per user request
+    # ok = send_status_email(
+    #     user, "⚠️ Submission Failed", "#ef4444",
+    #     "Your outing submission encountered an error. Please log in to campusouting.app and try again, or contact your admin."
+    # )
+    # if ok: sent += 1
+    # else: errors += 1
 
 for user in pending:
-    ok = send_status_email(
-        user, "⏳ Submission In Progress", "#f59e0b",
-        "Your outing submission is being processed. You will receive another email when it's done."
-    )
-    if ok: sent += 1
-    else: errors += 1
+    pass # Disabled per user request
+    # ok = send_status_email(
+    #     user, "⏳ Submission In Progress", "#f59e0b",
+    #     "Your outing submission is being processed. You will receive another email when it's done."
+    # )
+    # if ok: sent += 1
+    # else: errors += 1
 
 print(f"\n{'='*60}")
 print(f"  Emails sent:    {sent}")
